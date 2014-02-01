@@ -39,6 +39,8 @@
 #' 
 #' @example examples/forestplotCombineRegrObj_example.R
 #' 
+#' @importFrom Gmisc forestplot2
+#'
 #' @author max
 #' @export
 forestplotCombineRegrObj <- function( 

@@ -1,17 +1,19 @@
 Package: Greg
 Version: 0.6.0.0
-Date: 2014-02-1
+Date: 2014-02-01
 Title: A package for regression handling
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description: This R-package provides additional functions that help you 
-  convey regression models using both graphs and tables. It has also a
-  few functions for handling robust confidence intervals for the ols() 
-  regression in the rms-package.
+Description: This R-package provides additional functions that help you
+    convey regression models using both graphs and tables. It has also a
+    few functions for handling robust confidence intervals for the ols()
+    regression in the rms-package.
 License: GPL (>= 3)
 URL: http://gforge.se
 Biarch: yes
 Depends:
+    Hmisc,
+    stringr,
     rms,
     sandwich,
     Gmisc

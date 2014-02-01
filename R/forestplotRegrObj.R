@@ -45,6 +45,9 @@
 #' 
 #' @example examples/forestplotRegrObj_example.R
 #' 
+#' @importFrom Gmisc insertRowAndKeepAttr
+#' @importFrom Gmisc forestplot2
+#' 
 #' @author max
 #' @export
 forestplotRegrObj <- function(  
@@ -215,7 +218,7 @@ forestplotRegrObj <- function(
     for (t in 1:(length(greps)-1)) {
       line_row <- line_row + length(greps[[t]])  + 1
       for(i in 1:length(models_fit_fp_data)){
-        models_fit_fp_data[[i]] <- prInsertRowAndKeepAttr(models_fit_fp_data[[i]], 
+        models_fit_fp_data[[i]] <- insertRowAndKeepAttr(models_fit_fp_data[[i]], 
           r=line_row, 
           rName="* EMPTY ROW *") 
       }
@@ -234,12 +237,12 @@ forestplotRegrObj <- function(
       for(i in 1:length(models_fit_fp_data)){
         if (is.list(row_nr)){
           models_fit_fp_data[[i]] <- 
-            prInsertRowAndKeepAttr(m = models_fit_fp_data[[i]], 
+            insertRowAndKeepAttr(m = models_fit_fp_data[[i]], 
               r = row_nr[[1]]+count,
               rName= row_nr[[2]])
         }else{
           models_fit_fp_data[[i]] <- 
-            prInsertRowAndKeepAttr(m = models_fit_fp_data[[i]], 
+            insertRowAndKeepAttr(m = models_fit_fp_data[[i]], 
               r = row_nr+count,
               rName= "* EMPTY ROW *")
         }
@@ -298,7 +301,7 @@ forestplotRegrObj <- function(
   for(i in 1:length(models_fit_fp_data)){
     models_fit_fp_data[[i]] <- models_fit_fp_data[[i]][keep.variables, ,drop=FALSE]
     models_fit_fp_data[[i]] <- 
-      prInsertRowAndKeepAttr(models_fit_fp_data[[i]], 
+      insertRowAndKeepAttr(models_fit_fp_data[[i]], 
         r=1)
   }
   

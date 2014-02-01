@@ -61,6 +61,7 @@
 #'  print method associated with
 #' 
 #' @importFrom Hmisc latex
+#' @importFrom Gmisc insertRowAndKeepAttr
 #' 
 #' @example examples/printCrudeAndAdjustedModel_example.R
 #' 
@@ -170,7 +171,7 @@ printCrudeAndAdjustedModel <- function(model,
           is.na(add_references[i]) == FALSE){
           within_pos <- ifelse(add_references[i] %in% add_references_pos, 
             add_references_pos[add_references[i]], 0)
-          reordered_groups <- prInsertRowAndKeepAttr(reordered_groups, 
+          reordered_groups <- insertRowAndKeepAttr(reordered_groups, 
               line_row + within_pos, 
               rep(c(reference_zero_effect, "ref"), times=2),  
               rName=add_references[i])
@@ -372,6 +373,8 @@ print.printCrudeAndAdjusted <- function(x,
 #' @param use_labels If labels should be used for rownames
 #' @return list 
 #' 
+#' @importFrom Gmisc copyAllNewAttributes
+#' 
 #' @author max
 prCaAddReferenceAndStatsFromModelData <- function(model, 
   order, 
@@ -552,8 +555,8 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
           rows_2_add <- getRownames(stats[[vn]])[getRownames(stats[[vn]]) %nin% existing_labels]
           for (i in 1:length(rows_2_add)){
             rn <- rows_2_add[i]
-            values <- prInsertRowAndKeepAttr(values, row + attr(values, "n.rgroup")[group_nr], rep("-", length.out=cols), rn)
-            desc_mtrx <- prInsertRowAndKeepAttr(desc_mtrx, row + attr(values, "n.rgroup")[group_nr], getValue(stats[[vn]], rn), rn)
+            values <- insertRowAndKeepAttr(values, row + attr(values, "n.rgroup")[group_nr], rep("-", length.out=cols), rn)
+            desc_mtrx <- insertRowAndKeepAttr(desc_mtrx, row + attr(values, "n.rgroup")[group_nr], getValue(stats[[vn]], rn), rn)
           }
           attr(values, "n.rgroup")[group_nr] <- getRows(stats[[vn]])
         }
@@ -571,7 +574,7 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
       }
     }
     
-    values <- prCopyAllAttribsExceptDim(values, cbind(desc_mtrx, values)) 
+    values <- copyAllNewAttributes(values, cbind(desc_mtrx, values)) 
     if (ncol(desc_mtrx) == 1 && colnames(values)[1] == "")
       colnames(values)[1] <- desc_colnames[1]
     else if(all(colnames(values)[1:2] == ""))
@@ -711,7 +714,7 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
       ". This will therefore be ignored")
     offset <- 0
   }
-  values <- prInsertRowAndKeepAttr(values, 
+  values <- insertRowAndKeepAttr(values, 
     matches[1] + offset, 
     ref_value,  
     rName=reference)
@@ -750,9 +753,10 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
 #'  to the general digits if not specified.
 #' @param desc_colnames The names of the two descriptive columns. By default
 #'  Total and Event.
-#' @return \code{matrix} A matrix from \code{\link{getDescriptionStatsBy}} or
+#' @return \code{matrix} A matrix from \code{\link[Gmisc]{getDescriptionStatsBy}} or
 #'  \code{\link{prGetStatistics}}
 #' 
+#' @importFrom Gmisc getDescriptionStatsBy
 #' @author max
 prCaGetVnStats <- function(model,
   vn, 
@@ -849,6 +853,7 @@ prCaGetVnStats <- function(model,
 #' @return \code{string} The rowname 
 #' 
 #' @importFrom Hmisc capitalize
+#' @importFrom Hmisc label
 #' @author max
 prCaGetRowname <- function(vn, use_labels, dataset){
   vn <- as.character(vn)

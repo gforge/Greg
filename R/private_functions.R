@@ -171,8 +171,8 @@ prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
 #' TODO: Check if this cannot be replaced by model.frame()
 #' @author max
 prGetModelData <- function(x, check_subset = TRUE){
-  data <- Gmisc:::prExtractPredictorsFromModel(x, check_subset)
-  data <- cbind(data, Gmisc:::prExtractOutcomeFromModel(x, check_subset))
+  data <- prExtractPredictorsFromModel(x, check_subset)
+  data <- cbind(data, prExtractOutcomeFromModel(x, check_subset))
   colnames(data)[ncol(data)] = as.character(formula(x)[[2]])
   return(data)
 }
@@ -249,7 +249,7 @@ prGetModelVariables <- function(model,
 
 #' Get statistics according to the type
 #' 
-#' A simple function applied by the \code{\link{getDescriptionStatsBy}}
+#' A simple function applied by the \code{\link[Gmisc]{getDescriptionStatsBy}}
 #' for the total column. This function is also used by \code{\link{printCrudeAndAdjustedModel}}
 #' in case of a basic linear regression is asked for a raw stat column
 #'  
@@ -275,6 +275,8 @@ prGetModelVariables <- function(model,
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default % if you so wish by setting this variable.
 #' @return A matrix or a vector depending on the settings
+#' 
+#' TODO: Use the Gmisc function instead of this copy
 #' 
 #' @author max
 prGetStatistics <- function(x, 
