@@ -135,6 +135,11 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
       rownames(unadjusted)[1] <- "Intercept"
     }
   }
+
+  if (any(rownames(adjusted) != rownames(unadjusted)))
+    stop("The rownames of the adjusted don't match:", 
+         "\n\t a:", rownames(adjusted),
+         "\n\tUa: ", rownames(unadjusted))
   
   # If just one variable it's not a proper matrix
   if (is.null(dim(adjusted))){
