@@ -17,7 +17,7 @@
 #' @param ... Passed on to latex() or htmlTable
 #' @return void See the latex() function 
 #' 
-#' @example examples/simpleRmsAnova_example.R
+#' @example inst/examples/simpleRmsAnova_example.R
 #' 
 #' @rdname SimpleRmsAnova
 #' @author max

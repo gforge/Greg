@@ -1,4 +1,3 @@
-
 # Just a simple simulation
 set.seed(10)
 ds <- data.frame(

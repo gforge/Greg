@@ -43,7 +43,7 @@
 #' 
 #' @seealso \code{\link{forestplot2}}
 #' 
-#' @example examples/forestplotRegrObj_example.R
+#' @example inst/examples/forestplotRegrObj_example.R
 #' 
 #' @importFrom Gmisc insertRowAndKeepAttr
 #' @importFrom Gmisc forestplot2

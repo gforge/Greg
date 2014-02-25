@@ -31,7 +31,7 @@
 #'
 #' @seealso \code{\link{printCrudeAndAdjustedModel}}
 #' 
-#' @example examples/getCrudeAndAdjustedModelData_example.R
+#' @example inst/examples/getCrudeAndAdjustedModelData_example.R
 #' 
 #' @importFrom stringr str_split
 #' 

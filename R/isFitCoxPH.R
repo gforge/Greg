@@ -6,7 +6,7 @@
 #' @return boolean
 #' 
 #' @export 
-#' @example examples/isFitCoxPH_example.R
+#' @example inst/examples/isFitCoxPH_example.R
 isFitCoxPH <- function(fit){
   if ("coxph" %in% class(fit))
     return (TRUE)

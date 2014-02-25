@@ -3,7 +3,7 @@
 #' @param fit Regression object 
 #' @return boolean 
 #' 
-#' @example examples/isFitLogit_example.R
+#' @example inst/examples/isFitLogit_example.R
 #' 
 #' @export
 #' @author max

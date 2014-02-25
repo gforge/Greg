@@ -8,7 +8,7 @@
 #' @param round How many integers to display
 #' @return Returns a matrix with columns HR, 2.5%, 97.5 % and Pr(>|Z|)
 #' 
-#' @example examples/getCphRegrObjData_example.R
+#' @example inst/examples/getCphRegrObjData_example.R
 #' 
 #' @author max
 #' @export
