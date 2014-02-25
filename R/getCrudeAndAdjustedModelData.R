@@ -106,7 +106,8 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
       " from the adjusted values. These names: ", paste(var_names, collapse=", "),
       "\n seem not to exist within the rownames of: ", paste(rownames(adjusted), collapse=", "))
   
-  adjusted <- adjusted[keep, ,drop=FALSE]
+  # Sort in order to keep the order
+  adjusted <- adjusted[sort(keep), ,drop=FALSE]
   
   unadjusted <- c()
   for(variable in var_names){
