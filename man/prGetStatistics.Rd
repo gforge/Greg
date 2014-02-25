@@ -47,11 +47,13 @@ prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
 }
 \value{
 A matrix or a vector depending on the settings
+
+TODO: Use the Gmisc function instead of this copy
 }
 \description{
 A simple function applied by the
-\code{\link{getDescriptionStatsBy}} for the total column.
-This function is also used by
+\code{\link[Gmisc]{getDescriptionStatsBy}} for the total
+column. This function is also used by
 \code{\link{printCrudeAndAdjustedModel}} in case of a basic
 linear regression is asked for a raw stat column
 }

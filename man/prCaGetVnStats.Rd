@@ -66,7 +66,7 @@ prCaGetVnStats(model, vn, outcome, output, ds, add_references,
 }
 \value{
 \code{matrix} A matrix from
-\code{\link{getDescriptionStatsBy}} or
+\code{\link[Gmisc]{getDescriptionStatsBy}} or
 \code{\link{prGetStatistics}}
 }
 \description{
