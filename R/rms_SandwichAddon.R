@@ -12,7 +12,7 @@
 #'  for the \code{\link[sandwich]{vcovHC}} function.
 #' @return model The fitted model with adjusted variance and df.residual set to NULL
 #' 
-#' @example examples/rms_SandwichAddon_example.R
+#' @example inst/examples/rms_SandwichAddon_example.R
 #' @importFrom sandwich vcovHC
 #' @author max
 #' @export
@@ -55,7 +55,7 @@ robcov_alt <- function (fit, type="HC3", ...)
 #'  will be labelled as (1-level)/2 and 1 - (1-level)/2 
 #'  in % (by default 2.5% and 97.5%).
 #' 
-#' @example examples/rms_SandwichAddon_example.R
+#' @example inst/examples/rms_SandwichAddon_example.R
 #' @method confint ols
 #' @method confint ols
 #' @importFrom stats confint
@@ -99,7 +99,7 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @param model The ols model fit
 #' @param ... arguments passed to methods.
 #' @return vector
-#' @example examples/rms_SandwichAddon_example.R
+#' @example inst/examples/rms_SandwichAddon_example.R
 #' 
 #' @importFrom rms ols
 #' @importFrom stats hatvalues
@@ -120,7 +120,7 @@ hatvalues.ols <- function(model, ...) {
 #' @param x The ols model fit
 #' @return matrix The bread for the sandwich vcovHC function
 #' @param ... arguments passed to methods.
-#' @example examples/rms_SandwichAddon_example.R
+#' @example inst/examples/rms_SandwichAddon_example.R
 #'  
 #' @importFrom rms ols
 #' @importFrom sandwich bread
@@ -183,7 +183,7 @@ model.matrix.ols <- function(object, ...){
 #' @param x	A fitted ols model object.
 #' @param ... arguments passed to methods.
 #' @return matrix A matrix containing the empirical estimating functions.
-#' @example examples/rms_SandwichAddon_example.R
+#' @example inst/examples/rms_SandwichAddon_example.R
 #' 
 #' @importFrom rms ols
 #' @importFrom sandwich estfun

@@ -16,7 +16,7 @@
 #' @param ... Additional parameters that are passed on.
 #' @return a matrix with the confidence intervals
 #' 
-#' @example examples/confint_robust_example.R
+#' @example inst/examples/confint_robust_example.R
 #' 
 #' @author Max
 #' @export

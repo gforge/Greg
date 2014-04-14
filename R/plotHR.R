@@ -91,7 +91,7 @@
 #' @return The function does not return anything
 #' @references \url{http://rforge.org/plothr/}
 #' 
-#' @example examples/plotHR_example.R
+#' @example inst/examples/plotHR_example.R
 #' 
 #' @author Reinhard Seifert, Max Gordon
 #' @export

@@ -7,7 +7,7 @@
 #' @param digits Number of digits you want to round to
 #' @return The function only prints
 #' 
-#' @example examples/printSimpleFit_example.R
+#' @example inst/examples/printSimpleFit_example.R
 #' 
 #' @author max
 #' @export

@@ -63,7 +63,7 @@
 #' @importFrom Hmisc latex
 #' @importFrom Gmisc insertRowAndKeepAttr
 #' 
-#' @example examples/printCrudeAndAdjustedModel_example.R
+#' @example inst/examples/printCrudeAndAdjustedModel_example.R
 #' 
 #' @rdname printCrudeAndAdjustedModel
 #' @author max
@@ -76,7 +76,7 @@ printCrudeAndAdjustedModel <- function(model,
   sprintf_ci_str        = "%s to %s",
   add_references        = FALSE, 
   add_references_pos    = list(),
-  reference_zero_effect = NULL,
+  reference_zero_effect,
   groups                = NULL,
   rowname.fn            = NULL,
   use_labels            = TRUE,
@@ -92,7 +92,7 @@ printCrudeAndAdjustedModel <- function(model,
   output                = "html",
   ...)
 {
-  if (length(reference_zero_effect) == 0)
+  if (missing(reference_zero_effect))
     reference_zero_effect <- ifelse(all("lm" %in% class(model)) ||
         "ols" %in% class(model) ||
         (inherits(model, "glm") && model$family$link == "identity"), 0, 1)
@@ -296,6 +296,8 @@ printCrudeAndAdjustedModel <- function(model,
     return(reordered_groups)
   }
 }
+
+setClass("printCrudeAndAdjusted", contains = "matrix")
 
 #' @param x The output object from the printCrudeAndAdjustedModel function 
 #' @param rgroupCSSstyle Css style for the rgorup, if different styles are wanted for each of the

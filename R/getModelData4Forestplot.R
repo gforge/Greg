@@ -15,7 +15,7 @@
 #' @param ref_labels If add_first_as_ref is TRUE then this vector is used for the model
 #'   fits. 
 #' 
-#' @example examples/forestplotCombineRegrObj_example.R
+#' @example inst/examples/forestplotCombineRegrObj_example.R
 #' @author max
 getModelData4Forestplot<- function(regr.obj, 
   exp, 

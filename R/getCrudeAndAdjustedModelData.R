@@ -31,7 +31,7 @@
 #'
 #' @seealso \code{\link{printCrudeAndAdjustedModel}}
 #' 
-#' @example examples/getCrudeAndAdjustedModelData_example.R
+#' @example inst/examples/getCrudeAndAdjustedModelData_example.R
 #' 
 #' @importFrom stringr str_split
 #' 
@@ -135,6 +135,11 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
       rownames(unadjusted)[1] <- variable[grepl("[iI]ntercept", variable)]
     }
   }
+
+  if (any(rownames(adjusted) != rownames(unadjusted)))
+    stop("The rownames of the adjusted don't match:", 
+         "\n\t a:", rownames(adjusted),
+         "\n\tUa: ", rownames(unadjusted))
   
   # If just one variable it's not a proper matrix
   if (is.null(dim(adjusted))){

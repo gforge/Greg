@@ -1,8 +1,8 @@
 library("testthat")
+context("getCrudeAndAdjustedModelData")
 
 library("survival")
 
-context("getCrudeAndAdjustedModelData - coxph")
 s <- Surv(ds$ftime, ds$fstatus == 1)
 fit1 <- coxph(s ~ x1 + x2 + x3, data=ds)
 
@@ -10,15 +10,18 @@ fit1 <- coxph(s ~ x1 + x2 + x3, data=ds)
 # make sense 
 fit2 <- coxph(s ~ x1 + ns(x2, 4) + strata(x3), data=ds)
 
+expect_false(TRUE)
+
 test_that("Correct number of rows and columns", {
     data_matrix <- getCrudeAndAdjustedModelData(fit1)
     expect_that(NROW(data_matrix), equals(4))
     expect_that(NCOL(data_matrix), equals(6))
-    
+
     data_matrix <- getCrudeAndAdjustedModelData(fit2)
     expect_that(NROW(data_matrix), equals(1))
     expect_that(NCOL(data_matrix), equals(6))
 })
+<<<<<<< HEAD
 
 
 test_that("Same order of rows", {
@@ -148,3 +151,5 @@ test_that("Correct values for rows - glm", {
   expect_true(all(abs(data_matrix[grep("^x1", rownames(data_matrix)), 2:3] -
                     confint(fit_glm_ua)[2,]) < .Machine$double.eps))
 })
+=======
+>>>>>>> 9db7029f2a13645ef849a21cd9d601fa6cc43f62

@@ -37,7 +37,7 @@
 #' 
 #' @seealso \code{\link{forestplot2}}
 #' 
-#' @example examples/forestplotCombineRegrObj_example.R
+#' @example inst/examples/forestplotCombineRegrObj_example.R
 #' 
 #' @importFrom Gmisc forestplot2
 #'
