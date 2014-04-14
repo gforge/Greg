@@ -122,3 +122,29 @@ test_that("Correct values for rows - ols", {
                               2:3] ==
                     confint(fit_ols_ua)[2,]))
 })
+
+
+
+test_that("Correct values for rows - glm", {
+  set.seed(200)
+  ds$y <- rnorm(length(ds$x1))
+  fit_glm <- glm(y ~ x1 + x2 + x3, data=ds) 
+  
+  data_matrix <- getCrudeAndAdjustedModelData(fit_glm)
+  expect_true(all(abs(data_matrix[,"Adjusted"] - 
+                        coef(fit_glm)) < .Machine$double.eps))
+  expect_true(all(abs(data_matrix[,tail(1:ncol(data_matrix), 2)] -
+                        confint(fit_glm)) < .Machine$double.eps))
+  
+  fit_glm_ua <- glm(y ~ x3, data=ds)
+  expect_true(all(abs(data_matrix[grep("^x3", rownames(data_matrix)), "Crude"] -
+                        coef(fit_glm_ua)[2:3]) < .Machine$double.eps))
+  expect_true(all(abs(data_matrix[grep("^x3", rownames(data_matrix)), 2:3] -
+                        confint(fit_glm_ua)[2:3,]) < .Machine$double.eps ))
+  
+  fit_glm_ua <- glm(y ~ x1, data=ds)
+  expect_true(all(abs(data_matrix[grep("^x1", rownames(data_matrix)), "Crude"] -
+                        coef(fit_glm_ua)[2]) < .Machine$double.eps))
+  expect_true(all(abs(data_matrix[grep("^x1", rownames(data_matrix)), 2:3] -
+                    confint(fit_glm_ua)[2,]) < .Machine$double.eps))
+})

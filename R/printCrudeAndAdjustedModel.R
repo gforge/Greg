@@ -8,7 +8,7 @@
 #' used in the original call, i.e. the premises are changed, this function will not
 #' remember the original values and the statistics will be faulty! 
 #' 
-#' @param model A regression model
+#' @param model A regression model or the output from \code{\link{getCrudeAndAdjusted}}
 #' @param order A vector with regular expressions for each group.
 #' @param digits The number of digits to round to
 #' @param ci_max A number that specifies if any values should be abbreviated above this value,
@@ -102,11 +102,17 @@ printCrudeAndAdjustedModel <- function(model,
     add_references <- NULL
   
    
-  # Convert the x that should be a model into a matrix that
-  # originally was expected
-  x <- getCrudeAndAdjustedModelData(fit = model)
-  
-  ds <- prExtractPredictorsFromModel(model)
+  if(!"matrix" %in% class(model)){
+    # Convert the x that should be a model into a matrix that
+    # originally was expected
+    x <- getCrudeAndAdjustedModelData(model = model)
+    
+    ds <- prExtractPredictorsFromModel(model)
+  }else{
+    x <- model
+    
+    ds <- prExtractPredictorsFromModel(attr(fir, "model"))
+  }
   
   x <- prCaPrepareCrudeAndAdjusted(x = x, 
     output = output,
@@ -330,7 +336,10 @@ print.printCrudeAndAdjusted <- function(x,
       if (nchar(option) > 0) call_list[option] <- dots[[option]]
   }
 
-  do.call(htmlTable, call_list)
+  htmlTable_str <- do.call(htmlTable, call_list)
+  
+  # Output the string since this is the print function
+  print(htmlTable_str)
 }
 
 
@@ -919,7 +928,7 @@ prCaGetOrderVariables <- function(names, order, ok2skip = FALSE){
 #' A function for adding factor rgroups
 #' 
 #' @param value_mtrx A matrix containing the values of prCa
-#' @param dataset The dataset that is used for the fit
+#' @param dataset The dataset that is used for the model
 #' @param use_labels Wether or not to use labels
 #' @return \code{list} Returns the value matrix with the attributes rgroup and n.rgroup  
 #' 
