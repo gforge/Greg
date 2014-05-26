@@ -20,13 +20,13 @@
 #' Note that the rms regression has a separate function that uses the rms:::summaryrms function
 #' that returns a matrix that is then pruned.
 #' 
-#' @param fit The regression model
+#' @param model The regression model
 #' @param level The confidence interval level
 #' @param remove_interaction_vars Removes the interaction terms as this makes no sense in the output
 #' @param ... Not used
 #' @return Returns a matrix with the columns: 
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
-#'   The row order is not changed from the original fit. The percentages can vary depending
+#'   The row order is not changed from the original model. The percentages can vary depending
 #'   on the set level.
 #'
 #' @seealso \code{\link{printCrudeAndAdjustedModel}}
@@ -38,22 +38,22 @@
 #' @rdname getCrudeAndAdjustedModelData
 #' @author max
 #' @export
-getCrudeAndAdjustedModelData <- function(fit, level, ...)
+getCrudeAndAdjustedModelData <- function(model, level, ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
 #' @author max
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData default
 #' @S3method getCrudeAndAdjustedModelData default
-getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interaction_vars = TRUE, ...){
+getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_interaction_vars = TRUE, ...){
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
-  get_coef_and_ci <- function(fit, skip_intercept=FALSE){
+  get_coef_and_ci <- function(model, skip_intercept=FALSE){
     # Get the coefficients
-    my_coefficients <- coef(fit)
+    my_coefficients <- coef(model)
     coef_names <- names(my_coefficients)
     
-    ci <- suppressMessages(confint(fit, level=level))
+    ci <- suppressMessages(confint(model, level=level))
     
     if (skip_intercept){
       intercept <- grep("[iI]ntercept", coef_names)
@@ -65,9 +65,9 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
     }
     
     # Use the exp() if logit or cox regression
-    if ("coxph" %in% class(fit) ||
-      (!is.null(fit$family$link) &&
-        fit$family$link %in% c("logit", "log"))){
+    if ("coxph" %in% class(model) ||
+      (!is.null(model$family$link) &&
+        model$family$link %in% c("logit", "log"))){
       my_coefficients <- exp(my_coefficients)
       ci <- exp(ci)
     }
@@ -84,7 +84,7 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
     return(ret_val)
   }
   
-  var_names <- prGetModelVariables(fit, 
+  var_names <- prGetModelVariables(model, 
       remove_interaction_vars = remove_interaction_vars,
       add_intercept = TRUE)
   if (length(var_names) == 0)
@@ -92,7 +92,7 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
       " since they all are part of an interaction, spline or strata.")
   
   # Get the adjusted variables
-  adjusted <- get_coef_and_ci(fit)
+  adjusted <- get_coef_and_ci(model)
   # When using splines, rcs in cox regression this shows a little different
   
   keep <- c()
@@ -112,27 +112,27 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
   unadjusted <- c()
   for(variable in var_names){
     if (!grepl("[iI]ntercept", variable)){
-      # Run the same fit but with only one variable
-      fit_only1 <- update(fit, paste(".~", variable))
+      # Run the same model but with only one variable
+      model_only1 <- update(model, paste(".~", variable))
       
       # Get the coefficients processed with some advanced
       # round part()
-      new_vars <- get_coef_and_ci(fit_only1, skip_intercept = TRUE)
+      new_vars <- get_coef_and_ci(model_only1, skip_intercept = TRUE)
       
       # Add them to the previous
       unadjusted <- rbind(unadjusted, new_vars)
     }else{
-      # Run the same fit but without any variables
-      fit_only1 <- update(fit, ".~ 1")
+      # Run the same model but without any variables
+      model_only1 <- update(model, ".~ 1")
       
       # Get the coefficients
-      new_vars <- get_coef_and_ci(fit_only1, skip_intercept = FALSE)
+      new_vars <- get_coef_and_ci(model_only1, skip_intercept = FALSE)
       
       # Add
       unadjusted <- rbind(new_vars, unadjusted)
       
-      # Change name
-      rownames(unadjusted)[1] <- "Intercept"
+      # Change name back to the original
+      rownames(unadjusted)[1] <- variable[grepl("[iI]ntercept", variable)]
     }
   }
 
@@ -152,7 +152,9 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
     sprintf("%.1f %%", 100*(level + (1-level)/2)))
   
   colnames(both) <- c("Crude", levels_str,
-    "Adjusted", levels_str)
+                      "Adjusted", levels_str)
+  
+  attr(both, "model") <- model
   return(both)
 }
 

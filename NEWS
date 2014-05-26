@@ -1,0 +1,12 @@
+NEWS for the Greg package
+
+Changes for 0.6.0.1
+-------------------
+* The getCrudeAndAdjusted now handles the intercept term better for naming the rows (Thanks to Victor)
+* The getCrudeAndAdjusted/printCrudeAndAdjusted now use 'model' instead 'fit' for the model regression object name
+* The printCrudeAndAdjusted now calls print on the htmlTable_str object so that it appears as expected
+* Added unit tests
+
+Changes for 0.6.0.0
+-------------------
+* The split from the Gmisc package

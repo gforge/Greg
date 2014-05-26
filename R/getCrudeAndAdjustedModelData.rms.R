@@ -2,17 +2,20 @@
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData rms
 #' @S3method getCrudeAndAdjustedModelData rms
-getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_vars = TRUE, ...){
+getCrudeAndAdjustedModelData.rms <- function(model, 
+                                             level=.95, 
+                                             remove_interaction_vars = TRUE, 
+                                             ...){
   
   # The skip intercept is not an option as the summary doesn't include the intercept
   # for the rms regression outputs
-  get_coef_and_ci <- function(fit, vn, data){
+  get_coef_and_ci <- function(model, vn, data){
     # We need to standardize the summary call so that it
     # uses the first level as reference since this is not
     # always the case for the summary function
     # Furthermore, we need to set continuous variables to
     # 0 and 1 as this is not certain to be the case
-    scall <- list(object=fit,
+    scall <- list(object=model,
       vnames="names",
       conf.int=level,
       est.all=FALSE)
@@ -35,8 +38,8 @@ getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_
       }
     }
     # Call the antilog if this is a binomial logit
-    if (!is.null(fit$family$link) &&
-      fit$family$link == "logit")
+    if (!is.null(model$family$link) &&
+      model$family$link == "logit")
       scall["antilog"] = TRUE
     
     s <- suppressMessages(do.call(summary, scall))
@@ -63,38 +66,38 @@ getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_
   }
   
 
-  var_names <- prGetModelVariables(fit, remove_interaction_vars = remove_interaction_vars)
+  var_names <- prGetModelVariables(model, remove_interaction_vars = remove_interaction_vars)
   if (length(var_names) == 0)
     stop("You have no variables that can be displayed as adjusted/unadjusted",
       " since they all are part of an interaction, spline or strata.")
 
-  df <- prGetModelData(fit, check_subset = TRUE)
+  df <- prGetModelData(model, check_subset = TRUE)
   
   # Get the adjusted variables
-  adjusted <- get_coef_and_ci(fit, vn=var_names, data=df)
+  adjusted <- get_coef_and_ci(model, vn=var_names, data=df)
   
   unadjusted <- c()
   
   for(variable in var_names){
     
-    # Run the same fit but with only one variable
-    fit_only1 <- update(fit, paste(".~", variable))
-    if ("boot.coef" %in% names(fit)){
+    # Run the same model but with only one variable
+    model_only1 <- update(model, paste(".~", variable))
+    if ("boot.coef" %in% names(model)){
       # Redo bootstrap if this was a bootstrapped
       # rms model by rerunning the bootcov part
-      fit_only1 <- bootcov(fit_only1, B=fit$B, coef.reps="boot.Coef" %in% names(fit))
-    }else if (!is.null(attr(fit, "robust"))){
-      fit_only1 <- robcov_alt(fit_only1, type=attr(fit, "robust"))
-    }else if (!is.null(fit$orig.var)){
+      model_only1 <- bootcov(model_only1, B=model$B, coef.reps="boot.Coef" %in% names(model))
+    }else if (!is.null(attr(model, "robust"))){
+      model_only1 <- robcov_alt(model_only1, type=attr(model, "robust"))
+    }else if (!is.null(model$orig.var)){
       warning("Using the regular robcov function instead of the robcov_alt is not called for.",
         " If you get this message and you haven't used robcov then you may have a bug.", 
-        " Try to set the fit$org.var <- NULL and see if it works better.")
-      fit_only1 <- robcov(fit_only1)
+        " Try to set the model$org.var <- NULL and see if it works better.")
+      model_only1 <- robcov(model_only1)
     }
     
     # Get the coefficients processed with some advanced
     # round part()
-    new_vars <- get_coef_and_ci(fit_only1, vn=variable, data=df)
+    new_vars <- get_coef_and_ci(model_only1, vn=variable, data=df)
     
     # Add them to the previous
     unadjusted <- rbind(unadjusted, new_vars)
@@ -131,6 +134,8 @@ getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_
     sprintf("%.1f %%", 100*(level + (1-level)/2)))
   
   colnames(both) <- c("Crude", levels_str,
-    "Adjusted", levels_str)
+                      "Adjusted", levels_str)
+  
+  attr(both, "model") <- model
   return(both)
 }
