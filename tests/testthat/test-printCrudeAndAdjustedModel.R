@@ -17,7 +17,8 @@ test_that("Check position of reference", {
     expect_match(a[1,2], "ref")
     
     # Getting the name wrong should not change the reference
-    a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, add_references_pos=list(a=2))
+    a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, 
+                                    add_references_pos=list(a=3))
     expect_match(a[1,2], "ref")
     
     # This should move the reference

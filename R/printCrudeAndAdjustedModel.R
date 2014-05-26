@@ -296,17 +296,11 @@ setClass("printCrudeAndAdjusted", contains = "matrix")
 #' @param x The output object from the printCrudeAndAdjustedModel function 
 #' @param rgroupCSSstyle Css style for the rgorup, if different styles are wanted for each of the
 #'  rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.
-#' @param rgroupCSSseparator The line between different rgroups. The line is set to the TR element
-#'  of the lower rgroup, i.e. you have to set the border-top/padding-top etc to a line with
-#'  the expected function. This is only used for rgroups that are printed. You can specify
-#'  different separators if you give a vector of rgroup - 1 length (this is since the first
-#'  rgroup doesn't have a separator). Passed on to \code{\link{htmlTable}}.
 #' @rdname printCrudeAndAdjustedModel
 #' @method print printCrudeAndAdjusted
 #' @S3method print printCrudeAndAdjusted
 print.printCrudeAndAdjusted <- function(x,
-  rgroupCSSstyle        = "",
-  rgroupCSSseparator    = "", ...){
+  rgroupCSSstyle        = "", ...){
   
   call_list <- list(x = x, 
     headings      = attr(x, "headings"), 
@@ -317,8 +311,7 @@ print.printCrudeAndAdjusted <- function(x,
     align         = attr(x, "align"),
     rgroup        = attr(x, "rgroup"), 
     n.rgroup      = attr(x, "n.rgroup"), 
-    rgroupCSSstyle= rgroupCSSstyle,
-    rgroupCSSseparator = rgroupCSSseparator)
+    rgroupCSSstyle= rgroupCSSstyle)
   
   if (length(attr(x, "other")) > 0){
     other <- attr(x, "other")
@@ -332,7 +325,10 @@ print.printCrudeAndAdjusted <- function(x,
       if (nchar(option) > 0) call_list[option] <- dots[[option]]
   }
 
-  do.call(htmlTable, call_list)
+  # When calling print from a print S3 function 
+  # there has to be an additional print or the object wont
+  # get printed
+  print(do.call(htmlTable, call_list))
 }
 
 
