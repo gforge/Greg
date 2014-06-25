@@ -11,12 +11,10 @@
 #' error if unable to find the outcome.
 #' 
 #' @param model The fitted model.1
-#' @param check_subset Check if the model has been subsetted and 
-#'  if so subset the outcome variable too.
 #' @return vector
 #' 
 #' @author max
-prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
+prExtractOutcomeFromModel <- function(model){
   outcome_formula <- formula(model)[[2]]
   outcome <- NULL
   
@@ -87,14 +85,6 @@ prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
     }
   }
 
-  if  (check_subset && is.null(model$call$subset) == FALSE){
-    if (is.null(model$call$data))
-      stop("If you are using the subset argument then please also provide the data= argument.")
-    
-    ds <- eval(model$call$data)
-    outcome <- outcome[with(ds, eval(model$call$subset))]
-  }
-  
   # I was thinking of using the following
   #     outcome <- model$y
   # but it causes issues if there are missing
@@ -114,12 +104,10 @@ prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
 #' error if unable to find the data
 #' 
 #' @param model The fitted model.  
-#' @param check_subset Check if the model has been subsetted and 
-#'  if so subset the outcome variable too.
 #' @return data.frame 
 #' 
 #' @author max
-prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
+prExtractPredictorsFromModel <- function(model){
   vars <- prGetModelVariables(model, remove_splines=FALSE)
   if (is.null(model$call$data)){
     # Try to create the data frame from the environment
@@ -151,9 +139,6 @@ prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
   if (is.data.frame(ds) == FALSE)
     stop(paste("Failed to get the original data that was used for generating the model."))
   
-  if (check_subset && is.null(model$call$subset) == FALSE)
-    ds <- ds[with(ds, eval(model$call$subset)),]
-  
   return(ds)
 }
 
@@ -164,15 +149,13 @@ prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
 #' a full model dataset
 #' 
 #' @param x The fitted model.  
-#' @param check_subset Check if the model has been subsetted and 
-#'  if so subset the outcome variable too.
 #' @return data.frame 
 #' 
 #' TODO: Check if this cannot be replaced by model.frame()
 #' @author max
-prGetModelData <- function(x, check_subset = TRUE){
-  data <- prExtractPredictorsFromModel(x, check_subset)
-  data <- cbind(data, prExtractOutcomeFromModel(x, check_subset))
+prGetModelData <- function(x){
+  data <- prExtractPredictorsFromModel(x)
+  data <- cbind(data, prExtractOutcomeFromModel(x))
   colnames(data)[ncol(data)] = as.character(formula(x)[[2]])
   return(data)
 }

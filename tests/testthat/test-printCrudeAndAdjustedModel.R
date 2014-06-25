@@ -1,15 +1,18 @@
 set.seed(10)
+n <- 500
 ds <- data.frame(
-  ftime = rexp(200),
-  fstatus = sample(0:1,200,replace=TRUE),
-  x = factor(sample(LETTERS[1:4], size=200, replace=TRUE)))
+  ftime = rexp(n),
+  fstatus = sample(0:1, size = n, replace = TRUE),
+  x = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+  boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
+  subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
 
 library(rms)
 dd <- datadist(ds)
 options(datadist="dd")
 
 s <- Surv(ds$ftime, ds$fstatus == 1)
-fit <- cph(s ~ x, data=ds)
+fit <- cph(s ~ x + boolean, data=ds)
 
 context("printCrudeAndAdjustedModel")
 test_that("Check position of reference", {
@@ -33,3 +36,6 @@ test_that("Check position of reference", {
     a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, add_references_pos=list(x=-5))
     expect_match(a[1,2], "ref")
   })
+
+
+

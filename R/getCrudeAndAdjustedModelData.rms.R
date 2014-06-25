@@ -30,6 +30,12 @@ getCrudeAndAdjustedModelData.rms <- function(model,
       }else if (length(unique(data[[name]])) == 2){
         freq <- table(data[[name]])
         scall[[name]] = sort(names(freq))[1]
+        # The sort returns a string and this causes and 
+        # error if the data is actually a numeric variable
+        # therefore we need to change it back
+        if (is.numeric(data[[name]])){
+          scall[[name]] <- as.numeric(scall[[name]])
+        }
       }else{
         # Perhaps a little overkill but it seems better to
         # set it to one step inside the range than just 0 vs 1
@@ -71,7 +77,7 @@ getCrudeAndAdjustedModelData.rms <- function(model,
     stop("You have no variables that can be displayed as adjusted/unadjusted",
       " since they all are part of an interaction, spline or strata.")
 
-  df <- prGetModelData(model, check_subset = TRUE)
+  df <- prGetModelData(model)
   
   # Get the adjusted variables
   adjusted <- get_coef_and_ci(model, vn=var_names, data=df)
