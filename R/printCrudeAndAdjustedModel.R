@@ -111,7 +111,7 @@ printCrudeAndAdjustedModel <- function(model,
   }else{
     x <- model
     
-    ds <- prExtractPredictorsFromModel(attr(fir, "model"))
+    ds <- prExtractPredictorsFromModel(attr(model, "model"))
   }
   
   x <- prCaPrepareCrudeAndAdjusted(x = x, 

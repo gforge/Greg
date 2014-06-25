@@ -1,5 +1,10 @@
 NEWS for the Greg package
 
+Changes for 0.6.1
+-----------------
+* Changed versioning
+* Fixed bug for printCrudeAndAdjusted when using matrix from the getC&A
+
 Changes for 0.6.0.1
 -------------------
 * The getCrudeAndAdjusted now handles the intercept term better for naming the rows (Thanks to Victor)
