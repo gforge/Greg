@@ -8,17 +8,21 @@ ds <- data.frame(
   subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
 
 library(rms)
-dd <- datadist(ds)
-options(datadist="dd")
-
-s <- Surv(ds$ftime, ds$fstatus == 1)
-fit <- cph(s ~ x + boolean, data=ds)
-
 context("printCrudeAndAdjustedModel")
 test_that("Check position of reference", {
-    a <- printCrudeAndAdjustedModel(fit, add_references=TRUE)
-    expect_match(a[1,2], "ref")
-    
+  dd <- datadist(ds)
+  options(datadist="dd")
+  
+  s <- Surv(ds$ftime, ds$fstatus == 1)
+  fit <- cph(s ~ x + boolean, data=ds)
+  
+  a <- printCrudeAndAdjustedModel(fit, add_references=TRUE)
+  expect_match(a[1,2], "ref")
+  
+  tmp <- getCrudeAndAdjustedModelData(fit)
+  b <- printCrudeAndAdjustedModel(tmp, add_references=TRUE)
+  
+  expect_equal(a, b)
     # Getting the name wrong should not change the reference
     a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, 
                                     add_references_pos=list(a=3))
