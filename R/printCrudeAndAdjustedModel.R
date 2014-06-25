@@ -101,7 +101,10 @@ printCrudeAndAdjustedModel <- function(model,
   if (length(add_references) == 1 && add_references == FALSE)
     add_references <- NULL
   
-   
+  if (is.null(add_references) &&
+        desc_column)
+    stop("Descriptive column requires that you also use add_references = TRUE")
+  
   if(!"matrix" %in% class(model)){
     # Convert the x that should be a model into a matrix that
     # originally was expected
