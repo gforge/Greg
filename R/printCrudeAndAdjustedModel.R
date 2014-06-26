@@ -101,9 +101,10 @@ printCrudeAndAdjustedModel <- function(model,
   if (length(add_references) == 1 && add_references == FALSE)
     add_references <- NULL
   
+  # You need references if you're going to have a descriptive column
   if (is.null(add_references) &&
         desc_column)
-    stop("Descriptive column requires that you also use add_references = TRUE")
+    add_references <- TRUE
   
   if(!"matrix" %in% class(model)){
     # Convert the x that should be a model into a matrix that
@@ -113,8 +114,9 @@ printCrudeAndAdjustedModel <- function(model,
     ds <- prExtractPredictorsFromModel(model)
   }else{
     x <- model
+    model <- attr(model, "model")
     
-    ds <- prExtractPredictorsFromModel(attr(model, "model"))
+    ds <- prExtractPredictorsFromModel(model)
   }
   
   x <- prCaPrepareCrudeAndAdjusted(x = x, 
@@ -467,8 +469,8 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
       # this perhaps slightly trickier identification of all the factors
       available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
       
-      # Find the beginning of the string that matches exactly to the var. name
-      matches <- which(substr(rownames(values), 1, nchar(vn)) == vn)
+      matches <- prFindRownameMatches(rownames(values), vn, vars)
+      
       if (length(matches) > 0){
         values <- prCaAddReference(vn = vn, 
           matches = matches, 

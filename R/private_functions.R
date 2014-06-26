@@ -5,6 +5,47 @@
 # Author: max
 ###############################################################################
 
+#' Looks for unique rowname match without grep
+#' 
+#' Since a rowname may contain characters reserved by regular
+#' expressions I've found it easier to deal with the rowname
+#' finding by just checking for matching strings at the beginning
+#' of the name while at the same time excluding names that have the
+#' same stem, i.e. DM and DM_COMP will cause an issue since DM will
+#' match both rows.
+#' 
+#' @param rnames A vector with the rownames that are looked for
+#' @param vn The variable name that is of interest
+#' @param vars A vector with all the names and the potentially competing names
+#' @return integer A vector containing the position of the matches
+prFindRownameMatches <- function(rnames, vn, vars){
+  # Find the beginning of the string that matches exactly to the var. name
+  name_stub <- substr(rnames, 1, nchar(vn))
+  matches <- which(name_stub == vn)
+
+  # Since the beginning of the name may not be unique we need to
+  # check for other "competing matches"
+  # TODO: make this fix more elegant
+  vars_name_stub <- substr(vars, 1, nchar(vn))
+  if (sum(vars_name_stub == vn) > 1){
+    competing_vars <- vars[vars != vn & 
+                             vars_name_stub == vn]
+    
+    competing_matches <- NULL
+    for(comp_vn in competing_vars){
+      competing_name_stub <- substr(rnames, 1, nchar(comp_vn))
+      competing_matches <- 
+        c(competing_matches,
+          which(competing_name_stub == comp_vn))
+    }
+    
+    # Clean out competing matches
+    matches <- matches[!matches %in% competing_matches]
+  }
+  
+  return(matches)
+}
+
 #' Get model outcome
 #' 
 #' Uses the model to extract the outcome variable. Throws
@@ -256,7 +297,7 @@ prGetModelVariables <- function(model,
 #'  \code{\link{describeFactors}}
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable.
+#'  the default \% if you so wish by setting this variable.
 #' @return A matrix or a vector depending on the settings
 #' 
 #' TODO: Use the Gmisc function instead of this copy

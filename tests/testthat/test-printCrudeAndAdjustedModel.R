@@ -4,9 +4,9 @@ ds <- data.frame(
   ftime = rexp(n),
   fstatus = sample(0:1, size = n, replace = TRUE),
   x = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
-  same_label_1 = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
-  same_label_2 = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
-  same_label_3 = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+  same_label = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+  same_labell = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+  same_labelll = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
   boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
   subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
 
@@ -22,13 +22,14 @@ test_that("Check position of reference", {
   a <- printCrudeAndAdjustedModel(fit, add_references=TRUE)
   expect_match(a[1,2], "ref")
   
-  # Bug with the same label
+  # Bug with the same label occurring miultiple times
   a <- printCrudeAndAdjustedModel(update(fit, .~.+
-                                           same_label_1 +
-                                           same_label_2 +
-                                           same_label_3), add_references=TRUE, desc_column=TRUE)
+                                           same_label +
+                                           same_labell +
+                                           same_labelll), add_references=TRUE, desc_column=TRUE)
+  expect_equal(nrow(a), 11)
   
-  tmp <- getCrudeAndAdjustedModelData(fit)
+  tmp <- getCrudeAndAdjustedModelDataAndAdjustedModelData(fit)
   b <- printCrudeAndAdjustedModel(tmp, add_references=TRUE)
   
   expect_equal(a, b)

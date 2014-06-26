@@ -39,7 +39,7 @@ the factor function}
 
 \item{percentage_sign}{If you want to suppress the percentage sign you
 can set this variable to FALSE. You can also choose something else that
-the default % if you so wish by setting this variable.}
+the default \% if you so wish by setting this variable.}
 }
 \value{
 A matrix or a vector depending on the settings

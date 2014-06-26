@@ -115,9 +115,13 @@ getCrudeAndAdjustedModelData.rms <- function(model,
     a_order <- c()
     for(variable in var_names){
       ua_order <- c(ua_order, 
-                    grep(variable, rownames(unadjusted), fixed=TRUE))
+                    prFindRownameMatches(rownames(unadjusted),
+                                         variable,
+                                         var_names))
       a_order <- c(a_order, 
-                   grep(variable, rownames(adjusted), fixed=TRUE))
+                   prFindRownameMatches(rownames(adjusted),
+                                        variable,
+                                        var_names))
     }
     if (length(ua_order) != length(a_order)){
       stop ("An error happend when fetching the",
