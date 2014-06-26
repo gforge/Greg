@@ -441,8 +441,9 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
   
   stats <- list()
   
-  for(vn in vars)
+  for(i in 1:length(vars))
   {
+    vn <- vars[i]
     if (desc_column && !is.null(outcome)){
       stats[[vn]] <- prCaGetVnStats(model = model,
         vn = vn, 
@@ -466,6 +467,7 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
       # this perhaps slightly trickier identification of all the factors
       available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
       
+      # Find the beginning of the string that matches exactly to the var. name
       matches <- which(substr(rownames(values), 1, nchar(vn)) == vn)
       if (length(matches) > 0){
         values <- prCaAddReference(vn = vn, 
@@ -509,8 +511,10 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
         x[rn]
     }
     for(vn in vars){
-      rowname <- prCaGetRowname(vn = vn, use_labels = use_labels, dataset = ds)
-      if (is.factor(ds[,vn]) || is.logical(ds[,vn])){
+      rowname <- prCaGetRowname(vn = vn, 
+                                use_labels = use_labels, 
+                                dataset = ds)
+      if (is.factor(ds[,vn])){
         # Get the row number of the first element in that group of factors
         group_nr <- which(rowname == attr(values, "rgroup"))
         if (length(group_nr) == 0)
@@ -577,6 +581,20 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
             stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix", rowname, vn))
         }
         
+        # This occurrs if the element is logical and you have
+        # a TRUE/FALSE situation
+        if (length(row) == 1 &&
+              NROW(stats[[vn]]) == 2){
+          if (is.logical(ds[,vn])){
+            stats[[vn]] <- stats[[vn]]["TRUE",]
+          }else{
+            stop("The description statistics did not work for '", vn, "'",
+                 " it returned ", NROW(stats[[vn]]), " rows",
+                 " while expecting only ", length(row), " row(s).",
+                 " The rowlabels returned are: ", paste(rownames(stats[[vn]]),
+                                                        collapse=", "))
+          }
+        }
         desc_mtrx[row, ] <- stats[[vn]]
       }
     }
