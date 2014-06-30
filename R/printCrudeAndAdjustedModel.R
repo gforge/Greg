@@ -11,54 +11,60 @@
 #' @param model A regression model or the output from \code{\link{getCrudeAndAdjusted}}
 #' @param order A vector with regular expressions for each group.
 #' @param digits The number of digits to round to
-#' @param ci_max A number that specifies if any values should be abbreviated above this value,
-#'   for instance a value of 1000 would give a value of \deqn{> -1000}{> -1000} for a value of 1001. This gives
+#' @param ci_max A number that specifies if any values should be 
+#'   abbreviated above this value, for instance a value of 1000 
+#'   would give a value of \deqn{> -1000}{> -1000} for a value of 1001. This gives
 #'   a prettier table when you have very wide confidence intervals. 
-#' @param ci_min A number that specifies if any values should be abbreviated above this value,
-#'   for instance a value of -1000 would give a value of \deqn{< -1000}{< -1000} for a value of -1001. This gives
-#'   a prettier table when you have very wide confidence intervals.
-#' @param sprintf_ci_str A string according to \code{\link{sprintf}} to write the confidence
-#'   interval where the first \%s is the lower and the second the upper. 
-#' @param add_references True if it should use the data set to look for references, otherwise
-#'   supply the function with a vector with names. Sometimes you want to indicate 
-#'   the reference row for each group. This needs to be just as many as the 
-#'   groups as the order identified. Use NA if you don't want to have a 
-#'   reference for that particular group.
-#' @param add_references_pos The position where a reference should be added. Sometimes
-#'   you don't want the reference to be at the top, for instance if you have age groups
-#'   then you may have < 25, 25-39, 40-55, > 55 and you have the reference to be 25-39 then
-#'   you should set the reference list for \code{age_groups} as \code{add_references_pos = list(age_groups = 2)}
+#' @param ci_min A number that specifies if any values should be 
+#'   abbreviated above this value, for instance a value of -1000 
+#'   would give a value of \deqn{< -1000}{< -1000} for a value of -1001. 
+#'   This gives a prettier table when you have very wide confidence intervals.
+#' @param sprintf_ci_str A string according to \code{\link{sprintf}} to 
+#'   write the confidence interval where the first \%s is the lower and 
+#'   the second the upper. 
+#' @param add_references True if it should use the data set to look for 
+#'   references, otherwise supply the function with a vector with names. 
+#'   Sometimes you want to indicate the reference row for each group. 
+#'   This needs to be just as many as the  groups as the order identified. 
+#'   Use NA if you don't want to have a reference for that particular group.
+#' @param add_references_pos The position where a reference should be added. 
+#'   Sometimes you don't want the reference to be at the top, for instance 
+#'   if you have age groups then you may have < 25, 25-39, 40-55, > 55 and
+#'   you have the reference to be 25-39 then you should set the reference 
+#'   list for \code{age_groups} as \code{add_references_pos = list(age_groups = 2)}
 #'   so that you have the second group as the position for the reference.
-#' @param reference_zero_effect Used with references, tells if zero effect is in exponential 
-#'   form, i.e. \code{exp(0) = 1}, or in regular format, i.e. \code{0 = 0} (can be set to any value)
-#' @param groups Only used together with regular expression for ordering and grouping. 
-#'   Should be a vector with group names if you want to have groups
+#' @param reference_zero_effect Used with references, tells if zero effect 
+#'   is in exponential form, i.e. \code{exp(0) = 1}, or in regular format, 
+#'   i.e. \code{0 = 0} (can be set to any value)
+#' @param groups Only used together with regular expression for ordering and 
+#'   grouping. Should be a vector with group names if you want to have groups
 #'   to some of the identified order groups. If you wish to skip one just
 #'   us NA for that instance.
 #' @param rowname.fn A function that takes a row name and sees if it needs
-#'   beautifying. The function has only one parameter the coefficients name and should
-#'   return a string or expression.  
+#'   beautifying. The function has only one parameter the coefficients name and 
+#'   should return a string or expression.  
 #' @param use_labels If the rowname.fn function doesn't change the name then 
 #'   the label should be used instead of the name, that is if there is a
 #'   label and it isn't a factor. 
 #' @param desc_column Add descriptive column to the crude and adjusted table
 #' @param desc_show_tot_perc Show percentages for the total column
 #' @param desc_numb_first Whether to show the number before the percentages
-#' @param desc_continuous_fn Stat function used for the descriptive statistics, defaults
-#'   to \code{\link{describeMean}}
-#' @param desc_prop_fn Stat function used for the descriptive statistics, defaults
-#'   to \code{\link{describeProp}}
-#' @param desc_factor_fn Stat function used for the descriptive statistics, defaults
-#'   to \code{\link{describeFactors}}
+#' @param desc_continuous_fn Stat function used for the descriptive statistics, 
+#'   defaults to \code{\link{describeMean}}
+#' @param desc_prop_fn Stat function used for the descriptive statistics, 
+#'   defaults to \code{\link{describeProp}}
+#' @param desc_factor_fn Stat function used for the descriptive statistics, 
+#'   defaults to \code{\link{describeFactors}}
 #' @param desc_show_missing Show missing variables in the descriptive columns
-#' @param desc_digits Number of digits to use in the descriptive columns. Defaults
-#'  to the general digits if not specified.
+#' @param desc_digits Number of digits to use in the descriptive columns. 
+#'   Defaults to the general digits if not specified.
 #' @param desc_colnames The names of the two descriptive columns. By default
-#'  Total and Event.
+#'   Total and Event.
 #' @param output Set to latex if you want latex output
-#' @param ... Passed onto the Hmisc::\code{\link{latex}} function, or to the \code{\link{htmlTable}} via the print call
-#' @return \code{matrix} Returns a matrix of class printCrudeAndAdjusted that has a default
-#'  print method associated with
+#' @param ... Passed onto the Hmisc::\code{\link{latex}} function, or to 
+#'   the \code{\link{htmlTable}} via the print call
+#' @return \code{matrix} Returns a matrix of class printCrudeAndAdjusted that 
+#'   has a default print method associated with
 #' 
 #' @importFrom Hmisc latex
 #' @importFrom Gmisc insertRowAndKeepAttr
