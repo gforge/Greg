@@ -223,7 +223,11 @@ prGetModelData <- function(x){
 prGetModelVariables <- function(model, 
     remove_splines = TRUE, remove_interaction_vars=FALSE,
     add_intercept = FALSE){
-  vars <- attr(model$terms, "term.labels")
+  if (inherits(model, "nlme")){
+    vars <- attr(fit$fixDF$terms, "names")
+  }else{
+    vars <- attr(model$terms, "term.labels")
+  }
   
   # Remove I() as these are not true variables
   # and their names can probably have lots of variants
@@ -519,3 +523,164 @@ prConvertShowMissing <- function(show_missing){
   return(show_missing)
 }
 
+#' A function that tries to resolve what variable corresponds to what row
+#' 
+#' As both the \code{\link{getCrudeAndAdjustedModelData}} and the 
+#' \code{\link{printCrudeAndAdjustedModel}} need to now exactly
+#' what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary}}
+#' correspond to we for generalizeability this rather elaborate function.
+#' 
+#' @param var_names The variable names that are saught after
+#' @param available_names The names that are available to search through
+#' @param data The data set that is sught after
+#' @return \code{list} Returns a list with each element has the corresponding
+#'  variable name and a subsequent list with the parameters \code{no_rows}
+#'  and \code{location} indiciting the number of rows corresponding to that
+#'  element and where those rows are located. For factors the list also contains
+#'  \code{lvls} and \code{no_lvls}.
+prMapVariable2Name <- function(var_names, available_names, data){
+  if (any(duplicated(available_names)))
+    stop("You have non-unique names. You probably need to adjust",
+         " (1) variable names or (2) factor labels.")
+  
+  # Start with figuring out how many rows each variable
+  var_data <- list()
+  for (name in var_names){
+    if (is.factor(data[,name])){
+      var_data[[name]] <- 
+        list(lvls = levels(data[,name]))
+      var_data[[name]][["no_lvls"]] <- length(var_data[[name]][["lvls"]])
+      var_data[[name]][["no_rows"]] <- length(var_data[[name]][["lvls"]]) - 1
+    }else{
+      var_data[[name]] <- 
+        list(no_rows = 1)
+    }
+  }
+  
+  # A function for stripping the name and the additional information
+  # from the available name in order to get the cleanest form
+  getResidualCharacters <- function(search, conflicting_name){
+    residual_chars <- substring(conflicting_name, nchar(search) + 1)
+    if (!is.null(var_data[[search]]$lvls)){
+      # Remove the reference category
+      best_resid <- residual_chars <-
+        sub(var_data[[search]]$lvls[1], "", residual_chars, 
+             fixed = TRUE)
+      
+      for (lvl in var_data[[search]]$lvls){
+        new_resid <- sub(lvl, "", residual_chars, 
+                         fixed = TRUE)
+        if (nchar(new_resid) < nchar(best_resid)){
+          new_resid <- best_resid
+          if (nchar(new_resid) == 0)
+            break;
+        }
+      }
+    }
+    return(residual_chars)
+  }
+
+  matched_names <- c()
+  matched_numbers <- c()
+  org_available_names <- available_names
+  # Start with simple non-factored variables as these should give a single-line match
+  # then continue with the longest named variable
+  for (name in var_names[order(sapply(var_data, function(x) is.null(x$lvls)), 
+                               nchar(var_names), decreasing = TRUE)]){
+    matches <- which(name == substr(available_names, 1, nchar(name)))
+    if(length(matches) == 1){
+      if (var_data[[name]][[no_rows]] != 1)
+        stop("Expected more than one match for varible '", name, "'",
+             " the only positive match was '", available_names[matches], "'")
+      
+    }else if (length(var_names) > length(matched_names) + 1){
+      if (is.null(var_data[[name]]$lvls) &&
+            sum(name == available_names) == 1){
+        # Check if the searched for variable is a non-factor variable
+        # if so then match if there is a perfect match
+        
+        matches <- which(name == available_names)
+        
+      }else if (length(var_names) > length(matched_names) + 1){
+
+        # Check that there is no conflicting match
+        conflicting_vars <- var_names[var_names != name &
+                                        !var_names %in% matched_names]
+        possible_conflicts <- c()
+        for (conf_var in conflicting_vars){
+          possible_conflicts <- 
+            union(possible_conflicts,
+                   which(conflicting_vars == substr(available_names, 
+                                                    1, nchar(conflicting_vars))))
+        }
+        conflicts <- intersect(possible_conflicts, matches)
+        if (length(conflicts) > 0){
+          
+          conflicting_vars <- conflicting_vars[sapply(conflicting_vars,
+                 function(search)
+                   any(search == substr(available_names, 1, nchar(search))))]
+          
+          for (conflict in conflicts){
+            # We will try to find a better match that leaves fewer "residual characters"
+            # than what we started with
+            start_res_chars <- getResidualCharacters(name, available_names[conflict])
+            
+            best_match <- NULL
+            best_conf_name <- NULL
+            for (conf_name in conflicting_vars){
+              resid_chars <- getResidualCharacters(name, available_names[conflict])
+              if (is.null(best_match) ||
+                    nchar(best_match) > nchar(resid_chars)){
+                best_match <- resid_chars
+                best_conf_name <- conf_name
+              }
+            }
+            
+            if (nchar(start_res_chars) == nchar(best_match)){
+              stop("The software can't decide which name belongs to which variable.",
+                   " The variable that is searched for is '", name, "'",
+                   " and there is a conflict with the variable '", best_conf_name ,"'.",
+                   " The best match for '", name, "' leaves: '", start_res_chars, "'",
+                   " while the conflict '", best_conf_name ,"' leaves: '", best_match ,"'",
+                   " when trying to match the name: '", available_names[conflict] ,"'")
+              
+            }else if(nchar(start_res_chars) > nchar(best_match)){
+              # Now remove the matched row if we actually found a better match
+              matches <- matches[matches != conflict]
+            }
+          }
+        }
+      }
+      if (length(matches) == 0)
+        stop("Could not identify the rows corresponding to the variable '", name ,"'",
+             " this could possibly be to similarity between different variable names",
+             " and factor levels. Try to make sure that all variable names are unique",
+             " the variables that are currently looked for are:",
+             " '", paste(var_names, 
+                         collapse="'', '"),
+             "'.")
+    }
+  
+    # Since we remove the matched names we need to look back at the original and
+    # find the exact match in order to deduce the true number
+    true_matches <- which(org_available_names %in% 
+                            available_names[matches])
+    # Avoid accidentally rematching
+    true_matches <- setdiff(true_matches, matched_numbers)
+    var_data[[name]][["location"]] <- true_matches
+    # Update the loop vars
+    available_names <- available_names[-matches]
+    matched_names <- c(matched_names, name)
+    matched_numbers <- c(matched_numbers, true_matches)
+    
+    if (length(var_data[[name]][["location"]]) !=
+          var_data[[name]][["no_rows"]]){
+      warning("Expected the variable '", name ,"'",
+              " to contain '",var_data[[name]][["no_rows"]],"' no. rows",
+              " but got '", length(var_data[[name]][["location"]]), "' no. rows.")
+      var_data[[name]][["no_rows"]] <- length(var_data[[name]][["location"]])
+    }
+  }
+  
+  return(var_data)
+}
