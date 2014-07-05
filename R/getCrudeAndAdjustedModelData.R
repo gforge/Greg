@@ -46,17 +46,27 @@ getCrudeAndAdjustedModelData <- function(model, level, ...)
 #' @method getCrudeAndAdjustedModelData default
 #' @S3method getCrudeAndAdjustedModelData default
 getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_interaction_vars = TRUE, ...){
+  
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
   get_coef_and_ci <- function(model, skip_intercept=FALSE){
     # Get the coefficients
-    my_coefficients <- coef(model)
-    coef_names <- names(my_coefficients)
-    
-    ci <- suppressMessages(confint(model, level=level))
+    if (inherits(model, "lme")){
+      tmp <- intervals(model, level=level)$fixed
+      my_coefficients <- tmp[,"est."]
+      coef_names <- rownames(tmp)
+      
+      ci <- tmp[,c("lower", "upper")]
+    }else{
+      my_coefficients <- coef(model)
+      coef_names <- names(my_coefficients)
+      
+      ci <- suppressMessages(confint(model, level=level))
+    }
     
     if (skip_intercept){
-      intercept <- grep("[iI]ntercept", coef_names)
+      intercept <- grep("intercept", coef_names, 
+                        ignore.case = TRUE)
       if (length(intercept) > 0){
         my_coefficients <- my_coefficients[-intercept]
         ci <- ci[-intercept,]
@@ -65,9 +75,9 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
     }
     
     # Use the exp() if logit or cox regression
-    if ("coxph" %in% class(model) ||
-      (!is.null(model$family$link) &&
-        model$family$link %in% c("logit", "log"))){
+    if (inherits(model, "coxph") ||
+          (!is.null(model$family$link) &&
+             model$family$link %in% c("logit", "log"))){
       my_coefficients <- exp(my_coefficients)
       ci <- exp(ci)
     }
@@ -85,22 +95,26 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
   }
   
   var_names <- prGetModelVariables(model, 
-      remove_interaction_vars = remove_interaction_vars,
-      add_intercept = TRUE)
+                                   remove_interaction_vars = remove_interaction_vars,
+                                   add_intercept = TRUE)
   if (length(var_names) == 0)
-    stop("You have no variables that can be displayed as adjusted/unadjusted",
-      " since they all are part of an interaction, spline or strata.")
+    stop("You have no variables that can be displayed as adjusted/unadjusted.",
+      " They are most likely all are part of an interaction, spline, I(),",
+      " strata, or some other function.")
   
   # Get the adjusted variables
   adjusted <- get_coef_and_ci(model)
-  # When using splines, rcs in cox regression this shows a little different
   
+  # Map rows to variables
+  var_rows <- prMapVariable2Name(var_names = var_names, 
+                                 available_names = rownames(adjusted),
+                                 data = prGetModelData(model))
   keep <- c()
-  for (name in var_names){
-    matches <- grep(name, rownames(adjusted), fixed=TRUE)
-    if(length(matches) > 0)
-      keep <- append(keep, matches)
+  for (vars in var_rows){
+    keep <- c(keep,
+              vars$location)
   }
+  
   if (length(keep) == 0)
     stop("Error when trying to extract the variable names",
       " from the adjusted values. These names: ", paste(var_names, collapse=", "),
@@ -111,7 +125,8 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
   
   unadjusted <- c()
   for(variable in var_names){
-    if (!grepl("[iI]ntercept", variable)){
+    if (!grepl("intercept", variable, 
+               ignore.case = TRUE)){
       # Run the same model but with only one variable
       model_only1 <- update(model, paste(".~", variable))
       
@@ -132,7 +147,8 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
       unadjusted <- rbind(new_vars, unadjusted)
       
       # Change name back to the original
-      rownames(unadjusted)[1] <- variable[grepl("[iI]ntercept", variable)]
+      rownames(unadjusted)[1] <- variable[grepl("intercept", variable, 
+                                                ignore.case = TRUE)]
     }
   }
 

@@ -17,8 +17,7 @@ prCaGetRowname(vn, use_labels, dataset)
 }
 \description{
 Looks for matches inside factors if rowname
-contains the name of the column. Capitalizes
-the name.
+contains the name of the column.
 }
 \author{
 max

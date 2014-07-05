@@ -3,15 +3,13 @@
 \alias{prCaAddReference}
 \title{Adds a reference to value matrix}
 \usage{
-prCaAddReference(vn, matches, available_factors, values, add_references_pos,
+prCaAddReference(vn, var_order, values, add_references_pos,
   reference_zero_effect, ds, use_labels)
 }
 \arguments{
 \item{vn}{Variable name}
 
-\item{matches}{Rows that match}
-
-\item{available_factors}{Factors that are available}
+\item{var_order}{The output from the \code{\link{prMapVariable2Name}}}
 
 \item{values}{The value matrix}
 

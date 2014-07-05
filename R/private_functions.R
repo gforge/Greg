@@ -18,6 +18,8 @@
 #' @param vn The variable name that is of interest
 #' @param vars A vector with all the names and the potentially competing names
 #' @return integer A vector containing the position of the matches
+#' 
+#' TODO: remove this function in favor of the more powerful prMapVariable2Name
 prFindRownameMatches <- function(rnames, vn, vars){
   # Find the beginning of the string that matches exactly to the var. name
   name_stub <- substr(rnames, 1, nchar(vn))
@@ -99,7 +101,16 @@ prExtractOutcomeFromModel <- function(model){
   
   if (length(outcome) == 0){
     if (is.null(model$call$data)){
-      outcome <- get(outcome_var_name)
+      if (grepl("==", outcome_var_name)){
+        outcome <- get(gsub("[ ]*==.+$", "", outcome_var_name))
+        eq_str <- gsub("^.*==[ ]*", "", outcome_var_name)
+        if(grepl("^[0-9]*\\.{0,1}[0-9]*$", eq_str))
+          eq_str <- as.numeric(eq_str)
+        outcome <- eval(substitute(outcome == a, 
+                                   list(a = eq_str)))
+      }else{
+        outcome <- get(outcome_var_name)
+      }
     }else{
       ds <- eval(model$call$data)
       # Remove any $ prior to the call if there is
@@ -197,7 +208,13 @@ prExtractPredictorsFromModel <- function(model){
 prGetModelData <- function(x){
   data <- prExtractPredictorsFromModel(x)
   data <- cbind(data, prExtractOutcomeFromModel(x))
-  colnames(data)[ncol(data)] = as.character(formula(x)[[2]])
+  outcome_name <- as.character(formula(x)[[2]])
+  if (length(outcome_name) > 1){
+    # A cox regression model can give > 1, Surv(ftime, fstatus) will result in three rows
+    colnames(data)[ncol(data)] <- "Outcome"
+  }else{
+    colnames(data)[ncol(data)] <- outcome_name
+  }
   return(data)
 }
 
@@ -265,9 +282,10 @@ prGetModelVariables <- function(model,
     vars <- vars[-in_vars]
   }
   
-  if (add_intercept && any(grepl("[iI]ntercept", names(coef(model))))){
-    vars <- c(vars, 
-        names(coef(model))[grep("[iI]ntercept", names(coef(model)))[1]])
+  if (add_intercept && 
+        grepl("intercept", names(coef(model))[1], ignore.case = TRUE)){
+    vars <- c(names(coef(model))[1],
+              vars)
   }
   
   clean_vars <- unique(vars)
@@ -546,11 +564,19 @@ prMapVariable2Name <- function(var_names, available_names, data){
   # Start with figuring out how many rows each variable
   var_data <- list()
   for (name in var_names){
-    if (is.factor(data[,name])){
+    if (grepl("intercept", name, ignore.case = TRUE)){
+      var_data[[name]] <- 
+        list(no_rows = 1)
+    }else if (is.factor(data[,name])){
       var_data[[name]] <- 
         list(lvls = levels(data[,name]))
-      var_data[[name]][["no_lvls"]] <- length(var_data[[name]][["lvls"]])
-      var_data[[name]][["no_rows"]] <- length(var_data[[name]][["lvls"]]) - 1
+      # Sometimes due to subsetting some factors don't exist
+      # we therefore need to remove those not actually in the dataset
+      var_data[[name]]$lvls <- 
+        var_data[[name]]$lvls[var_data[[name]]$lvls %in%
+                                as.character(unique(data[, name][!is.na(data[, name])]))]
+      var_data[[name]][["no_lvls"]] <- length(var_data[[name]]$lvls)
+      var_data[[name]][["no_rows"]] <- length(var_data[[name]]$lvls) - 1
     }else{
       var_data[[name]] <- 
         list(no_rows = 1)
@@ -562,20 +588,18 @@ prMapVariable2Name <- function(var_names, available_names, data){
   getResidualCharacters <- function(search, conflicting_name){
     residual_chars <- substring(conflicting_name, nchar(search) + 1)
     if (!is.null(var_data[[search]]$lvls)){
-      # Remove the reference category
-      best_resid <- residual_chars <-
-        sub(var_data[[search]]$lvls[1], "", residual_chars, 
-             fixed = TRUE)
+      best_resid <- residual_chars
       
       for (lvl in var_data[[search]]$lvls){
         new_resid <- sub(lvl, "", residual_chars, 
                          fixed = TRUE)
         if (nchar(new_resid) < nchar(best_resid)){
-          new_resid <- best_resid
+          best_resid <- new_resid
           if (nchar(new_resid) == 0)
             break;
         }
       }
+      residual_chars <- best_resid
     }
     return(residual_chars)
   }
@@ -589,7 +613,7 @@ prMapVariable2Name <- function(var_names, available_names, data){
                                nchar(var_names), decreasing = TRUE)]){
     matches <- which(name == substr(available_names, 1, nchar(name)))
     if(length(matches) == 1){
-      if (var_data[[name]][[no_rows]] != 1)
+      if (var_data[[name]]$no_rows != 1)
         stop("Expected more than one match for varible '", name, "'",
              " the only positive match was '", available_names[matches], "'")
       
@@ -610,8 +634,8 @@ prMapVariable2Name <- function(var_names, available_names, data){
         for (conf_var in conflicting_vars){
           possible_conflicts <- 
             union(possible_conflicts,
-                   which(conflicting_vars == substr(available_names, 
-                                                    1, nchar(conflicting_vars))))
+                   which(substr(available_names, 1, nchar(conflicting_vars)) %in% 
+                           conflicting_vars))
         }
         conflicts <- intersect(possible_conflicts, matches)
         if (length(conflicts) > 0){
@@ -628,7 +652,7 @@ prMapVariable2Name <- function(var_names, available_names, data){
             best_match <- NULL
             best_conf_name <- NULL
             for (conf_name in conflicting_vars){
-              resid_chars <- getResidualCharacters(name, available_names[conflict])
+              resid_chars <- getResidualCharacters(conf_name, available_names[conflict])
               if (is.null(best_match) ||
                     nchar(best_match) > nchar(resid_chars)){
                 best_match <- resid_chars
@@ -660,7 +684,17 @@ prMapVariable2Name <- function(var_names, available_names, data){
                          collapse="'', '"),
              "'.")
     }
-  
+
+    # Check that multiple matches are continuous, everything else is suspicious
+    if (length(matches) > 1){
+      matches <- matches[order(matches)]
+      if (any(1 != tail(matches, length(matches) - 1) - 
+                head(matches, length(matches) -1)))
+        stop("The variable '", name, "' failed to provide an adequate",
+             " consequent number of matches, the names matched are located at:",
+             " '", paste(matches, collapse="', '"), "'")
+    }
+    
     # Since we remove the matched names we need to look back at the original and
     # find the exact match in order to deduce the true number
     true_matches <- which(org_available_names %in% 

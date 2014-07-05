@@ -3,12 +3,10 @@
 \alias{prCaPrepareCrudeAndAdjusted}
 \title{Prettify the text}
 \usage{
-prCaPrepareCrudeAndAdjusted(x, output, ci_max, ci_min, digits, sprintf_ci_str)
+prCaPrepareCrudeAndAdjusted(x, ci_max, ci_min, digits, sprintf_ci_str)
 }
 \arguments{
 \item{x}{The value matrix from getCrudeAndAdjusted}
-
-\item{output}{The type of output}
 
 \item{ci_max}{The max confidence interval}
 

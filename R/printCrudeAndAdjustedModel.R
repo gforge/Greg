@@ -60,13 +60,37 @@
 #'   Defaults to the general digits if not specified.
 #' @param desc_colnames The names of the two descriptive columns. By default
 #'   Total and Event.
-#' @param output Set to latex if you want latex output
+#' @param impute_args A list with additional arguments if the provided input is
+#'   a imputed object. Currently the list options \code{coef_change} and
+#'   \code{variance.inflation} are supported. If you want both columns then
+#'   the simplest way is to provide the list: 
+#'   \code{list(coef_change=TRUE, variance.inflation=TRUE)}.
+#'   The \code{coef_change} adds a column with the change in coefficients due to 
+#'   the imputation, the the "raw" model is subtracted from the imputed results.
+#'   The "raw" model is the unimputed model, \code{coef(imputed_model) - coef(raw_model)}.
+#'   The \code{variance.inflation} adds the \code{variance.inflation.impute} from the 
+#'   \code{\link[Hmisc]{fit.mult.impute}} to a separate column. See the description
+#'   for the \code{variance.inflation.impute} in in the \code{\link[Hmisc]{fit.mult.impute}}
+#'   description.
+#'   Both arguments can be customized by providing a \code{list}. The list can have
+#'   the elements \code{type}, \code{name}, \code{out_str}, and/or \code{digits}.
+#'   The \code{type} can for \code{coef_change}/\code{variance.impute} be either 
+#'   "percent" or "ratio", note that \code{variance.inflation.impute} was not
+#'   originally intended to be interpreted as \%. The default for \code{coef_change} is to 
+#'   have "diff", that gives the absolute difference in the coefficient.
+#'   The \code{name} provides the column name, the \code{out_str} should be a string
+#'   that is compatible with \code{\link[base]{sprintf}} and also contains an argument
+#'   for accepting a float value, e.g. "%.0f%%" is used by default iun the coef_change
+#'   column. The \code{digits} can be used if you are not using the \code{out_str}
+#'   argument, it simply specifies the number of digits to show. See the example
+#'   for how for a working example.
+#'   \emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}}
+#'   is supported by this option.
 #' @param ... Passed onto the Hmisc::\code{\link{latex}} function, or to 
 #'   the \code{\link{htmlTable}} via the print call
 #' @return \code{matrix} Returns a matrix of class printCrudeAndAdjusted that 
 #'   has a default print method associated with
 #' 
-#' @importFrom Hmisc latex
 #' @importFrom Gmisc insertRowAndKeepAttr
 #' 
 #' @example inst/examples/printCrudeAndAdjustedModel_example.R
@@ -95,7 +119,7 @@ printCrudeAndAdjustedModel <- function(model,
   desc_show_missing     = FALSE,
   desc_digits           = digits,
   desc_colnames         = c("Total", "Event"),
-  output                = "html",
+  impute_args,
   ...)
 {
   if (missing(reference_zero_effect))
@@ -117,55 +141,95 @@ printCrudeAndAdjustedModel <- function(model,
     # originally was expected
     x <- getCrudeAndAdjustedModelData(model = model)
     
-    ds <- prExtractPredictorsFromModel(model)
+    ds <- prGetModelData(model)
   }else{
     x <- model
     model <- attr(model, "model")
     
-    ds <- prExtractPredictorsFromModel(model)
+    ds <- prGetModelData(model)
   }
   
+  if (!missing(impute_args) && 
+        !inherits(model, "fit.mult.impute")){
+    stop("You aim to use the arguments aimed for imputed results but unfortunately",
+         " the provided model type that you have provided does not support this feature.",
+         " The only compatible imputation is the one based upon the fit.mult.impute",
+         " at this model and your model does not carry that class name:", 
+         " '", paste(class(model), collapse="', '"), "'")
+  }else if(!missing(impute_args) &&
+             any(!names(impute_args) %in% c("coef_change", 
+                                            "variance.inflation"))) {
+    invalid_args <- names(impute_args)[!names(impute_args) %in% c("coef_change", 
+                                                                  "variance.inflation")]
+    warning("The imputation arguments (impute_args):",
+            "'", paste(invalid_args, collapse="', '"), "'",
+            " provided are invalid and will be ignored by the function.",
+            " Currently only arguments coef_change and variance.inflation",
+            " are accepted.")
+  }
+  
+  # The rms doesn't getCrudeAndAdjusted doesn't handle the intercept
+  intercept <- ifelse(inherits(model, "rms"), FALSE, TRUE)
+  var_order <- 
+    prMapVariable2Name(var_names = prGetModelVariables(model = model, 
+                                                       add_intercept = intercept, 
+                                                       remove_interaction_vars = TRUE,
+                                                       remove_splines = TRUE),
+                       available_names = rownames(x),
+                       data = ds)
   x <- prCaPrepareCrudeAndAdjusted(x = x, 
-    output = output,
-    ci_max = ci_max,
-    ci_min = ci_min,
-    digits = digits,
-    sprintf_ci_str = sprintf_ci_str)
+                                   ci_max = ci_max,
+                                   ci_min = ci_min,
+                                   digits = digits,
+                                   sprintf_ci_str = sprintf_ci_str)
   
   if (length(order) > 1 || is.character(order)){
-    greps <- prCaGetOrderVariables(names = rownames(x), order = order)
+    greps <- prCaGetOrderVariables(names = names(var_order), 
+                                   order = order)
+    var_order <- var_order[greps]
+    row_reorder <- c()
+    for (i in 1:length(var_order)){
+      last_pos <- length(row_reorder)
+      row_reorder <- c(row_reorder,
+                       var_order[[i]]$location)
+      var_order[[i]]$location <- last_pos + 1:var_order[[i]]$no_rows
+    }
+    reordered_groups <- x[row_reorder, ,drop=FALSE]
     
-    reordered_groups <- x[unlist(greps), ,drop=FALSE]
-    if (any(rownames(reordered_groups) %nin% rownames(x))){
-      stop(
-        sprintf("An error occurred when reordering, there are now more variables than initially found, the following new vars exist: %s",
-          paste(rownames(reordered_groups)[rownames(reordered_groups) %nin% rownames(x)], collapse=", ")))
-    }else if (any(rownames(x) %nin% rownames(reordered_groups))){
-      warning(
-        sprintf("Not all variables selected from the model when re-ordering, these were not included: %s",
-          paste(rownames(x)[rownames(x) %nin% rownames(reordered_groups)], collapse=", ")))
+    if (any(!rownames(reordered_groups) %in% rownames(x))){
+      groups_not_fount <-
+        rownames(reordered_groups)[!rownames(reordered_groups) %in% rownames(x)]
+      stop("An error occurred when reordering, there are now more",
+           " variables than initially found, the following new",
+           " vars exist: '", paste(groups_not_fount, collapse="', '"), "'")
+    }else if (any(!rownames(x) %in% rownames(reordered_groups))){
+      rows_not_used <-
+        rownames(x)[!rownames(x) %in% rownames(reordered_groups)]
+      warning("Not all variables selected from the model when re-ordering,",
+              " the following were not included:",
+              " '", paste(rows_not_used, collapse="', '"), "'")
     }
     
     if (length(add_references) == 1 && 
       add_references == TRUE){
-      reordered_groups <- prCaAddReferenceAndStatsFromModelData(model = model,
-        order = order, 
-        add_references = add_references,
-        add_references_pos = add_references_pos,
-        reference_zero_effect = reference_zero_effect, 
-        values = reordered_groups, 
-        ds = ds,
-        output = output,
-        desc_column = desc_column, 
-        desc_show_tot_perc = desc_show_tot_perc,
-        desc_numb_first = desc_numb_first,
-        desc_continuous_fn = desc_continuous_fn, 
-        desc_prop_fn = desc_prop_fn,
-        desc_factor_fn = desc_factor_fn, 
-        desc_show_missing = desc_show_missing,
-        desc_digits = desc_digits,
-        desc_colnames = desc_colnames,
-        use_labels = use_labels)
+      reordered_groups <- 
+        prCaAddRefAndStat(model = model,
+                          var_order = var_order,
+                          add_references = add_references,
+                          add_references_pos = add_references_pos,
+                          reference_zero_effect = reference_zero_effect, 
+                          values = reordered_groups, 
+                          ds = ds,
+                          desc_column = desc_column, 
+                          desc_show_tot_perc = desc_show_tot_perc,
+                          desc_numb_first = desc_numb_first,
+                          desc_continuous_fn = desc_continuous_fn, 
+                          desc_prop_fn = desc_prop_fn,
+                          desc_factor_fn = desc_factor_fn, 
+                          desc_show_missing = desc_show_missing,
+                          desc_digits = desc_digits,
+                          desc_colnames = desc_colnames,
+                          use_labels = use_labels)
       if (length(groups) > 0){
         if (length(groups) == length(attr(reordered_groups, "rgroup"))){
           attr(reordered_groups, "rgroup") <- groups
@@ -180,77 +244,63 @@ printCrudeAndAdjustedModel <- function(model,
     }else if (length(add_references) == length(greps)){
       if (desc_column)
         warning("The descriptive column works so far only when used with automated references")
-      
-      line_row <- 1
-      for(i in 1:length(greps)){
+      for(i in 1:length(var_order)){
         # Add reference if it's not empty
         if (length(add_references) > 1 &&
           is.na(add_references[i]) == FALSE){
           within_pos <- ifelse(add_references[i] %in% add_references_pos, 
             add_references_pos[add_references[i]], 0)
           reordered_groups <- insertRowAndKeepAttr(reordered_groups, 
-              line_row + within_pos, 
+              head(var_order[[i]]$location, 1) + within_pos, 
               rep(c(reference_zero_effect, "ref"), times=2),  
               rName=add_references[i])
-          # Dosn't really matter the order since it checks the length
-          greps[[i]] <- append(min(greps[[i]])-1, greps[[i]])
-        }
-        
-        # Move to next position
-        line_row <- line_row + length(greps[[i]])
-      }
-      
-      # Add row groups according to the ordering
-      if (length(groups) > 0){
-          if (length(groups) == length(greps)){
-            attr(reordered_groups, "rgroup") <- groups
-            attr(reordered_groups, "rgroup")[is.na(groups)] <- ""
-            attr(reordered_groups, "n.rgroup") <- c()
-            for(i in 1:length(greps)){
-              attr(reordered_groups, "n.rgroup") <- append(attr(reordered_groups, "n.rgroup"), 
-                length(greps[[i]]))
+
+          var_order[[i]]$no_rows <- 
+            var_order[[i]]$no_rows + 1
+          
+          for (ii in i:length(var_order)){
+            start_pos <- 0
+            if (ii > 1){
+              start_pos <- tail(var_order[[ii-1]]$location, 1)
             }
-          }else{
-            warning("You have wanted to use groups but the number of hits",
-              " by the order regular expression argument (", length(greps), " hits)",
-              " is not equal the number of groups (", length(groups), ").",
-              " You have provided the groups: '", paste(groups, collapse="', '"), "'.")
+            var_order[[ii]]$location <- start_pos + 1:var_order[[ii]]$no_rows
           }
-      }else{
-        warning("If you have no groups parameter set then your factored variables", 
-          " in the table wont be grouped under their variable name.")
+        }
       }
     }
   }else{
     reordered_groups <- x
     if (length(add_references) == 1 && 
       add_references == TRUE){
-      reordered_groups <- prCaAddReferenceAndStatsFromModelData(model = model,
-        order = order, 
-        add_references = add_references,
-        add_references_pos = add_references_pos,
-        reference_zero_effect = reference_zero_effect, 
-        values = reordered_groups, 
-        ds = ds,
-        output = output,
-        desc_column = desc_column, 
-        desc_show_tot_perc = desc_show_tot_perc,
-        desc_numb_first = desc_numb_first,
-        desc_continuous_fn = desc_continuous_fn, 
-        desc_prop_fn = desc_prop_fn,
-        desc_factor_fn = desc_factor_fn, 
-        desc_show_missing = desc_show_missing,
-        desc_digits = desc_digits,
-        desc_colnames = desc_colnames,
-        use_labels = use_labels)
-    }else{
-      reordered_groups <- prCaAddFactorRgroups(value_mtrx = reordered_groups,
-        dataset = ds, 
-        use_labels = use_labels)
+      reordered_groups <- 
+        prCaAddRefAndStat(model = model,
+                          var_order = var_order, 
+                          add_references = add_references,
+                          add_references_pos = add_references_pos,
+                          reference_zero_effect = reference_zero_effect, 
+                          values = reordered_groups, 
+                          ds = ds,
+                          desc_column = desc_column, 
+                          desc_show_tot_perc = desc_show_tot_perc,
+                          desc_numb_first = desc_numb_first,
+                          desc_continuous_fn = desc_continuous_fn, 
+                          desc_prop_fn = desc_prop_fn,
+                          desc_factor_fn = desc_factor_fn, 
+                          desc_show_missing = desc_show_missing,
+                          desc_digits = desc_digits,
+                          desc_colnames = desc_colnames,
+                          use_labels = use_labels)
     }
     greps <- NULL
   }
   
+  # The prCaAddRefAndStat adds references and updates the 
+  # var_order accordingly, therefore we need to change
+  # the var_order according to the reordered_groups if it exists
+  if (!is.null(attr(reordered_groups, "var_order"))){
+    var_order <- attr(reordered_groups, "var_order")
+    attr(reordered_groups, "var_order") <- NULL
+  }
   
   if (is.function(rowname.fn)){
     rn <- list()
@@ -261,9 +311,17 @@ printCrudeAndAdjustedModel <- function(model,
       rn <- append(rn, new_name)
     }
   }else{
-    rn <- c()
-    for (name in rownames(reordered_groups)){
-      rn <- append(rn, prCaGetRowname(vn = name, use_labels = use_labels, dataset = ds))
+    rn <- rownames(reordered_groups)
+    for (name in names(var_order)){
+      # Only change the names of variables if they are not factors
+      # Factors already have variable names assigned to them
+      if (is.null(var_order[[name]]$lvls) &&
+            var_order[[name]]$no_rows == 1){
+        rn[var_order[[name]]$location] <- 
+          prCaGetRowname(vn = name, 
+                         use_labels = use_labels, 
+                         dataset = ds)
+      }
     }
   }
   rownames(reordered_groups) <- unlist(rn)
@@ -286,26 +344,58 @@ printCrudeAndAdjustedModel <- function(model,
     attr(reordered_groups, "cgroup") <- c("Crude", "Adjusted")
   }
   
-  class(reordered_groups) <- c("printCrudeAndAdjusted", class(reordered_groups))
-  
-  if (output == "latex"){
-    return(latex(reordered_groups, 
-        colheads      = latexTranslate(sub("(Crude|Adjusted)", coef_name, colnames(reordered_groups))), 
-        rowlabel.just = "l", 
-        rowlabel      = "Variable",
-        rowname       = latexTranslate(rownames(reordered_groups)),
-        n.cgroup      = attr(reordered_groups, "n.cgroup"), cgroup = attr(reordered_groups, "cgroup"), 
-        align         = attr(reordered_groups, "align"),
-        rgroup        = attr(reordered_groups, "rgroup"), 
-        n.rgroup      = attr(reordered_groups, "n.rgroup"), 
-        ...))
-  } else {
-    attr(reordered_groups, "headings") <- sub("(Crude|Adjusted)", coef_name, colnames(reordered_groups))
-    attr(reordered_groups, "rowlabel.just") <-  "l" 
-    attr(reordered_groups, "rowlabel") <-  "Variable"
-    attr(reordered_groups, "other") <- list(...)
-    return(reordered_groups)
+  if (!missing(impute_args)){
+    impute_cols <- prCaGetImputationCols(impute_args = impute_args,
+                                         output_mtrx = reordered_groups,
+                                         model = model,
+                                         data = ds)
+    
+    if (is.matrix(impute_cols)){
+      # Merge with original
+      tmp <- cbind(reordered_groups, impute_cols)
+      reordered_groups <- copyAllNewAttributes(reordered_groups, tmp)
+      attr(reordered_groups, "align") <- c(attr(reordered_groups, "align"),
+                                           rep("r", times=ncol(impute_cols)))
+      attr(reordered_groups, "n.cgroup") <- c(attr(reordered_groups, "n.cgroup"),
+                                              ncol(impute_cols))
+      attr(reordered_groups, "cgroup") <- c(attr(reordered_groups, "cgroup"),
+                                            "Imputation effect")
+    }
   }
+  
+  # Create rgroup and n.rgroup stuff if any variable is a factor
+  if (any(sapply(var_order, function(var) !is.null(var$lvls)))){
+    rgroup <- n.rgroup <- c()
+    for (vn in names(var_order)){
+      if (var_order[[vn]]$no_rows == 1){
+        if (length(rgroup) == 0 ||
+              tail(rgroup, 1) != ""){
+          rgroup <- c(rgroup,
+                      "")
+          n.rgroup <- c(n.rgroup,
+                        1)
+        }else{
+          n.rgroup[length(rgroup)] <- 
+            n.rgroup[length(rgroup)] + 1
+        }
+      }else{
+        rgroup <- c(rgroup,
+                    prCaGetRowname(vn = vn, use_labels = use_labels, dataset = ds))
+        n.rgroup <- c(n.rgroup,
+                      var_order[[vn]]$no_rows)
+      }
+    }
+    attr(reordered_groups, "rgroup") <- rgroup
+    attr(reordered_groups, "n.rgroup") <- n.rgroup
+  }
+
+  class(reordered_groups) <- c("printCrudeAndAdjusted", class(reordered_groups))
+
+  attr(reordered_groups, "headings") <- sub("(Crude|Adjusted)", coef_name, colnames(reordered_groups))
+  attr(reordered_groups, "rowlabel.just") <-  "l" 
+  attr(reordered_groups, "rowlabel") <-  "Variable"
+  attr(reordered_groups, "other") <- list(...)
+  return(reordered_groups)
 }
 
 setClass("printCrudeAndAdjusted", contains = "matrix")
@@ -326,9 +416,13 @@ print.printCrudeAndAdjusted <- function(x,
     n.cgroup      = attr(x, "n.cgroup"), 
     cgroup        = attr(x, "cgroup"), 
     align         = attr(x, "align"),
-    rgroup        = attr(x, "rgroup"), 
-    n.rgroup      = attr(x, "n.rgroup"), 
     rgroupCSSstyle= rgroupCSSstyle)
+  
+
+  if (!is.null(attr(x, "rgroup"))){
+    call_list[["rgroup"]] <- attr(x, "rgroup")
+    call_list[["n.rgroup"]] <- attr(x, "n.rgroup")
+  }
   
   if (length(attr(x, "other")) > 0){
     other <- attr(x, "other")
@@ -348,6 +442,278 @@ print.printCrudeAndAdjusted <- function(x,
   print(htmlTable_str)
 }
 
+#' @param object The output object from the printCrudeAndAdjustedModel function 
+#' @seealso \code{\link[Hmisc]{latex}} for details regarding the \code{latex()} function.
+#' @rdname printCrudeAndAdjustedModel
+#' @method latex printCrudeAndAdjusted
+#' @S3method latex printCrudeAndAdjusted
+#' @importFrom Hmisc latex
+latex.printCrudeAndAdjusted <- function(object, ...){
+  call_list <- 
+    list(colheads      = attr(reordered_groups, "headings"), 
+         rowlabel.just = attr(reordered_groups, "rowlabel.just"), 
+         rowlabel      = attr(reordered_groups, "rowlabel"),
+         rowname       = latexTranslate(rownames(object)),
+         cgroup        = attr(object, "cgroup"), 
+         n.cgroup      = attr(object, "n.cgroup"), 
+         align         = attr(object, "align"))
+  
+  if (!is.null(attr(object, "rgroup"))){
+    call_list[["rgroup"]] <- attr(object, "rgroup")
+    call_list[["n.rgroup"]] <- attr(object, "n.rgroup")
+  }
+  
+  dots <- list(...)
+  if (length(dots) > 0){
+    for (option in names(dots))
+      if (nchar(option) > 0) 
+        call_list[option] <- dots[[option]]
+  }
+  
+  return(do.call(latex, call_list))
+}
+
+#' Function for retrieving the imputation arguments
+#' 
+#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjusted}}
+#'  function call.
+#' @param output_mtrx The reordered groups matrix (a nx4 matrix)
+#'  that have been prepared in for the \code{\link{printCrudeAndAdjusted}} 
+#'  function. It is important that the references
+#'  if any have been added.
+#' @param model The imputation model. Currently only \code{\link[Hmisc]{fit.mult.impute}}
+#'  is supported by the function.
+#' @param data The data that has been used for generating the model.
+#' @return \code{matrix} Returns a matrix with the requested columns
+prCaGetImputationCols <- function(impute_args,
+                                  output_mtrx,
+                                  model,
+                                  data){
+  # Check if the reqquested imputation information has been implemented
+  # if not return NULL
+  if (!any(names(impute_args) %in% c("coef_change", 
+                                    "variance.inflation"))){
+    return(NULL)
+  }
+  
+  impute_cols <- NULL
+  custom_sprintf <- function(sp_str, variable){
+    digits_search <- regexpr("%.[0-9]+f", sp_str)
+    if(digits_search == -1)
+      stop("Your output string for sprintf does not seem to contain a %.[0-9]+f",
+           " regex compatible string, your output string is: ", sp_str)
+    
+    round_2 <- as.numeric(substr(sp_str, digits_search + 2, 
+                                 digits_search + 2 + attr(digits_search, "match.length") - 4))
+    n <- names(variable)
+    # It's a little tricky to actually remove the -0.0 section...
+    rounded_variable <- as.numeric(as.character(round(variable, digits = round_2)))
+    out <- sprintf(sp_str, rounded_variable)
+    names(out) <- n
+    return(out)
+  }
+  
+  # Compare the coefficients from the imputation with the 
+  # original coefficients. This can give an idea to the 
+  # direction of the imputed results, i.e. if the effect
+  # size increases or decreases when adding the observations 
+  # with missing data
+  if (!is.null(impute_args$coef_change)){
+    
+    # Call the fitter without the imputed data in order
+    # to get the original coefficients
+    raw_call_lst <- list(formula=formula(model),
+                         data=data)
+    for (param_name in names(model$call)){
+      # A few parameters are only used by the fit.mult.impute
+      # and should not be forwarderd to the fitter
+      if (!param_name %in% c("", "xtrans", "fitter", "n.impute",
+                             "data", "formula", "fit.reps", 
+                             "dtrans", "derived", "vcovOpts",
+                             "pr")){
+        raw_call_lst[[param_name]] <- model$call[[param_name]]
+      }
+    }
+    non_imputed_fit <- 
+      do.call(as.character(model$call$fitter),
+              raw_call_lst)
+    
+    diff <- coef(model) - coef(non_imputed_fit)
+    name <- "Coefficient change"
+    
+
+    # Do exp() if the variabels should be presented in that format
+    # for that specific function type
+    antilog <- FALSE
+    if (inherits(model, "coxph") ||
+          (!is.null(model$family) &&
+             !is.null(model$family$link) &&
+             grepl("^log", model$family$link))){
+      antilog <- TRUE
+    }
+    
+    if (!is.list(impute_args$coef_change)){
+      change <- diff
+      out_str <- "%.1f"
+    }else{
+      if (is.logical(impute_args$coef_change$antilog)){
+        antilog <- impute_args$coef_change$antilog
+      }
+      
+      out_str <- impute_args$coef_change$out_str
+      
+      if (tolower(impute_args$coef_change$type) %in% c("%", 
+                                                       "percent", 
+                                                       "percentages")){
+        if (is.null(out_str)){
+          if (!is.numeric(impute_args$coef_change$digits)){
+            out_str <- "%.0f%%"
+          }else{
+            out_str <- paste0("%.",
+                              impute_args$coef_change$digits,
+                              "f%%")
+          }
+        }
+        change <- diff/abs(coef(non_imputed_fit))*100
+
+        if (is.character(impute_args$coef_change$name)){
+          name <- impute_args$coef_change$name
+        }
+      }else if(tolower(impute_args$coef_change$type) %in% c("ratio",
+                                                          "/")){
+        if (is.null(out_str)){
+          if (!is.numeric(impute_args$coef_change$digits)){
+            out_str <- "%.2f"
+          }else{
+            out_str <- paste0("%.",
+                              impute_args$coef_change$digits,
+                              "f")
+          }
+        }
+        change <- diff/abs(coef(non_imputed_fit))
+        
+        if (is.character(impute_args$coef_change$name)){
+          name <- impute_args$coef_change$name
+        }
+        
+      }else if(!is.character(impute_args$coef_change$type) ||
+                 tolower(impute_args$coef_change$type) %in% c("abs",
+                                                          "absolute",
+                                                          "diff",
+                                                          "difference",
+                                                          "-")){
+        if (is.null(out_str)){
+          if (!is.numeric(impute_args$coef_change$digits)){
+            out_str <- "%.2f"
+          }else{
+            out_str <- paste0("%.",
+                              impute_args$coef_change$digits,
+                              "f")
+          }
+        }
+        change <- diff
+        
+        if (is.character(impute_args$coef_change$name)){
+          name <- impute_args$coef_change$name
+        }
+        
+      }else{
+        stop("The requested type '", impute_args$coef_change$type ,"' for coef_reps",
+             " is not yet implemented. Currently only percent or ratio is available.")
+      }
+    }
+    
+    if (antilog){
+      change <- exp(change)
+    }
+    change <- custom_sprintf(out_str, change)
+    impute_cols <- cbind(impute_cols,
+                         change)
+    
+    colnames(impute_cols)[ncol(impute_cols)] <- name
+  }
+  
+  if (!is.null(impute_args$variance.inflation)){
+    
+    name <- "Variance change"
+
+    if (!is.list(impute_args$variance.inflation)){
+      inflation <- custom_sprintf("%.2f", model$variance.inflation.impute)
+    }else{
+      if (is.character(impute_args$variance.inflation$name)) 
+        name <- impute_args$variance.inflation$name
+        
+      if (is.character(impute_args$variance.inflation$type)){
+        type <- tolower(impute_args$variance.inflation$type)
+      }else{
+        type <- "raw"
+      }
+      
+      if (is.character(impute_args$variance.inflation$name)){
+        name <- impute_args$variance.inflation$name
+      }
+      
+      out_str <- impute_args$variance.inflation$out_str
+      
+      if (type %in% c("%", "percent", "percentages")){
+        if (is.null(out_str)){
+          if (!is.numeric(impute_args$variance.inflation$digits)){
+            out_str <- "%.0f%%"
+          }else{
+            out_str <- paste0("%.",
+                              impute_args$variance.inflation$digits,
+                              "f%%")
+          }
+        }
+        
+        inflation <- custom_sprintf(out_str, model$variance.inflation.impute*100)
+      }else if (type %in% c("raw", "ratio")){
+        if (is.null(out_str)){
+          if (!is.numeric(impute_args$variance.inflation.impute$digits)){
+            out_str <- "%.2f"
+          }else{
+            out_str <- paste0("%.",
+                              impute_args$variance.inflation.impute$digits,
+                              "f")
+          }
+        }
+                
+        inflation <- custom_sprintf(out_str, model$variance.inflation.impute)
+      }else{
+        stop("The requested type '", impute_args$coef_change$type ,"'",
+             " for variance.inflation.type",
+             " is not yet implemented. Currently only percent or raw is available.")
+      }
+    }
+    
+    impute_cols <- cbind(impute_cols,
+                         inflation)
+    colnames(impute_cols)[ncol(impute_cols)] <- name
+  }
+  
+  # To add additional imputation information we need to know
+  # what rows contain the reference information
+  reference_rows <- which(output_mtrx[,4] == "ref")
+  
+  if (length(reference_rows) > 0){
+    for (row_no in reference_rows){
+      impute_cols <-
+        insertRowAndKeepAttr(impute_cols, r = row_no, 
+                             v = rep("", times=ncol(impute_cols)))
+      
+    }
+  }
+  
+  # The rms version does not provide the intercept and therefore the
+  # intercept should be removed
+  if (inherits(model, "rms") &&
+        !grepl("intercept", x = rownames(output_mtrx)[1],  ignore.case = TRUE) &&
+        grepl("intercept", x = rownames(impute_cols)[1],  ignore.case = TRUE)){
+    impute_cols <- impute_cols[-1,,drop=FALSE]
+  }
+
+  return(impute_cols)
+}
 
 #' Add reference according to the model
 #' 
@@ -368,9 +734,6 @@ print.printCrudeAndAdjusted <- function(x,
 #' @param reference_zero_effect The zero effect that the reference uses
 #' @param values The values that are to be outputted
 #' @param ds The dataset
-#' @param output Choose the type of output that you want returned, html, latex or raw.
-#'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
-#'   functions, where x is the main content of the table.
 #' @param desc_column Add descriptive column to the crude and adjusted table
 #' @param desc_show_tot_perc Show percentages for the total column
 #' @param desc_numb_first Whether to show the number before the percentages
@@ -391,14 +754,13 @@ print.printCrudeAndAdjusted <- function(x,
 #' @importFrom Gmisc copyAllNewAttributes
 #' 
 #' @author max
-prCaAddReferenceAndStatsFromModelData <- function(model, 
-  order, 
+prCaAddRefAndStat <- function(model, 
+  var_order, 
   add_references,
   add_references_pos,
   reference_zero_effect, 
   values, 
   ds,
-  output,
   desc_column, 
   desc_show_tot_perc,
   desc_numb_first,
@@ -410,30 +772,7 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
   desc_colnames,
   use_labels
   ){
-  if (!is.null(model[["variance.inflation.impute"]]))
-    stop("The model seems to have been created using fit.mult.impute",
-      " and unfortunately that doesn't work with the current version of this function.")
-  
-  if ("rms" %nin% class(model) &&
-    all(class(model) == c("glm", "lm")) == FALSE &&
-    length(class(model)) == 1 && class(model) %nin% c("lm", "glm"))
-    stop("This is only prepared for RMS, glm and lm regressions")
-  
-  # InsertRow fails to notice that the values are a
-  # matrix unless we set the class to matrix
-  if (is.matrix(values))
-    class(values) <- "matrix"
-  
-  vars <- prGetModelVariables(model, remove_splines = TRUE,
-                              remove_interaction_vars = TRUE)
-  if (length(order) > 1 || is.character(order)){
-    greps <- prCaGetOrderVariables(names = vars, order = order, ok2skip=TRUE)
-    vars <- vars[unlist(greps)]
-  }
-  
-  attr(values, "rgroup") = c("")
-  attr(values, "n.rgroup") = c(NROW(values))
-  
+
   outcome <- NULL
   if (desc_column){
     stats <- list()
@@ -449,14 +788,12 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
   
   stats <- list()
   
-  for(i in 1:length(vars))
+  for(vn in names(var_order))
   {
-    vn <- vars[i]
     if (desc_column && !is.null(outcome)){
       stats[[vn]] <- prCaGetVnStats(model = model,
         vn = vn, 
         outcome = outcome,
-        output = output,
         ds = ds,
         add_references = add_references,
         add_references_pos = add_references_pos,
@@ -468,36 +805,37 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
         desc_show_tot_perc=desc_show_tot_perc,
         desc_colnames=desc_colnames)
     }
-    
-    if (is.factor(ds[,vn])){
-      # Sometimes there is a subset argument or something leading to 
-      # that one of the factors isn't included and therefore I use
-      # this perhaps slightly trickier identification of all the factors
-      available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
+
+    # Add the refrence to the values matrix if it is a factor variable with a ref.
+    if (!is.null(var_order[[vn]]$lvls)){
+      values <- prCaAddReference(vn = vn, 
+                                 var_order = var_order, 
+                                 values = values,
+                                 add_references_pos = add_references_pos,
+                                 reference_zero_effect = reference_zero_effect,
+                                 ds = ds,
+                                 use_labels = use_labels)
+      # Add reference to no_rows, i.e. no_rows == lenght(lvls)
+      var_order[[vn]]$no_rows <- var_order[[vn]]$no_lvls
       
-      matches <- prFindRownameMatches(rownames(values), vn, vars)
-      
-      if (length(matches) > 0){
-        values <- prCaAddReference(vn = vn, 
-          matches = matches, 
-          available_factors=available_factors, 
-          values = values,
-          add_references_pos = add_references_pos,
-          reference_zero_effect = reference_zero_effect,
-          ds = ds,
-          use_labels = use_labels)
+      # Update locations after the added references or the 
+      # next reference locator will look for the reference among
+      # the wrong rows
+      for(i in which(vn == names(var_order)):(length(var_order))){
+        start_pos <- 0
+        if (i > 1){
+          start_pos <- tail(var_order[[i-1]]$location, 1)
+        }
+        var_order[[i]]$location <- start_pos + 1:var_order[[i]]$no_rows
       }
     }
   }
   
+  
   if (desc_column){
-    # Intiate empty matrix
-    if (is.matrix(stats[[1]])){
-      cols <- ncol(stats[[1]])
-    }else{
-      cols <- 1
-    }
-    desc_mtrx <- matrix("-", ncol=cols, nrow=nrow(values))
+    desc_mtrx <- matrix("-", 
+                        ncol=NCOL(stats[[1]]), 
+                        nrow=NROW(values))
     rownames(desc_mtrx) <- rownames(values)
     
     # Should probably make sure we're always dealing
@@ -514,45 +852,24 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
     }
     getValue <- function(x, rn){
       if(is.matrix(x))
-        x[rn,] 
+        x[rn,,drop=FALSE] 
       else
         x[rn]
     }
-    for(vn in vars){
-      rowname <- prCaGetRowname(vn = vn, 
-                                use_labels = use_labels, 
-                                dataset = ds)
-      if (is.factor(ds[,vn])){
-        # Get the row number of the first element in that group of factors
-        group_nr <- which(rowname == attr(values, "rgroup"))
-        if (length(group_nr) == 0)
-          stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix: '%s'", 
-              rowname, vn, paste(attr(values, "rgroup"), collapse="', '")))
-        if (length(group_nr) > 1)
-          stop(sprintf(paste("Too many rows matched the row '%s' (org. name %s)\n",
-                "this is probably due to the fact that the name occurs twice",
-                "in the value matrix: '%s'\n",
-                "The most probably cause is that you have the same label() for two variables."), 
-              rowname, vn, paste(attr(values, "rgroup"), collapse="', '")))
-        
-        if (group_nr == 1){
-          row <- 1
-        }else{
-          row <- sum(attr(values, "n.rgroup")[1:(group_nr-1)]) + 1
-        }
-        
-        last_row <- row+attr(values, "n.rgroup")[group_nr]-1
-        existing_labels <- rownames(values)[row:last_row]
-        # TODO: check how this works when no labels are checked while there are labels set for the variables
-        if (any(existing_labels %nin% rownames(stats[[vn]])))
+    for(vn in names(var_order)){
+      if (!is.null(var_order[[vn]]$lvls)){
+        existing_labels <- rownames(values)[var_order[[vn]]$location]
+        if (any(!existing_labels %in% rownames(stats[[vn]])))
           stop(paste("A few labels from factor", vn, "weren't found in the stats:",
-              paste(existing_labels[existing_labels %nin% rownames(stats[[vn]])], 
+              paste(existing_labels[!existing_labels %in% rownames(stats[[vn]])], 
                 collapse=", ")))
         
-        # Add the stats to the desc 
+        # Add the stats to the desc
+        # This slightly complicated structure is to make sure that
+        # the descriptive value corresponds to the regression row
         for(rn in existing_labels){
           # Find that row within the group
-          group_rownames <- rownames(desc_mtrx[row:last_row, ,drop=FALSE])
+          group_rownames <- rownames(desc_mtrx[var_order[[vn]]$location, ,drop=FALSE])
           row_within_group <- which(rn == group_rownames)
           if (length(row_within_group) > 1)
             stop("There are more than one occurrence within group ", vn,
@@ -564,65 +881,77 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
               "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
           
           # Set the value of that row
-          desc_mtrx[row + row_within_group - 1, ] <- getValue(stats[[vn]], rn)
+          desc_mtrx[head(var_order[[vn]]$location, 1) + 
+                      row_within_group - 1, ] <- getValue(stats[[vn]], rn)
         }
         
         # There are more values in the stats than in the 
         # regression, this is probably due to missing values,
         # these will be added to the current group last
-        if (getRows(stats[[vn]]) > attr(values, "n.rgroup")[group_nr]){
-          rows_2_add <- getRownames(stats[[vn]])[getRownames(stats[[vn]]) %nin% existing_labels]
+        if (getRows(stats[[vn]]) > var_order[[vn]]$no_rows){
+          rows_2_add <- getRownames(stats[[vn]])[!getRownames(stats[[vn]]) %in% 
+                                                   existing_labels]
           for (i in 1:length(rows_2_add)){
             rn <- rows_2_add[i]
-            values <- insertRowAndKeepAttr(values, row + attr(values, "n.rgroup")[group_nr], rep("-", length.out=cols), rn)
-            desc_mtrx <- insertRowAndKeepAttr(desc_mtrx, row + attr(values, "n.rgroup")[group_nr], getValue(stats[[vn]], rn), rn)
+            values <- insertRowAndKeepAttr(values, 
+                                           r = tail(var_order[[vn]]$location, 1) + 1, 
+                                           v = rep("-", length.out=cols), 
+                                           rName = rn)
+            desc_mtrx <- insertRowAndKeepAttr(desc_mtrx, 
+                                              r = tail(var_order[[vn]]$location, 1) + 1,
+                                              v = getValue(stats[[vn]], rn), 
+                                              rName = rn)
           }
-          attr(values, "n.rgroup")[group_nr] <- getRows(stats[[vn]])
+          
+          var_no <- which(vn == names(var_order))
+          var_order[[var_no]]$no_rows <- var_order[[var_no]]$no_rows + length(rows_2_add)
+          
+          # Update the value_order
+          for(ii in var_no:length(var_order)){
+            start_pos <- 0
+            if (ii > 1){
+              start_pos <- tail(var_order[[ii - 1]]$location, 1) - 1
+            }
+            var_order[[ii]]$location <- start_pos + 1:var_order[[ii]]$no_rows
+          }
         }
       }else{
-        # This is fairly straight forward as there is only one row per
-        # value and we can find that row by just looking at the row name
-        row <- grep(rowname, rownames(values))
-        if (length(row) == 0){
-          row <- grep(vn, rownames(values))
-          if (length(row) == 0)
-            stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix", rowname, vn))
-        }
-        
         # This occurrs if the element is logical and you have
         # a TRUE/FALSE situation
-        if (length(row) == 1 &&
-              NROW(stats[[vn]]) == 2){
-          if (is.logical(ds[,vn])){
+        
+        if (var_order[[vn]]$no_rows != NROW(stats[[vn]])){
+          if (var_order[[vn]]$no_rows == 1 &&
+                NROW(stats[[vn]]) == 2 &&
+                is.logical(ds[,vn])){
             stats[[vn]] <- stats[[vn]]["TRUE",]
           }else{
             stop("The description statistics did not work for '", vn, "'",
                  " it returned ", NROW(stats[[vn]]), " rows",
-                 " while expecting only ", length(row), " row(s).",
-                 " The rowlabels returned are: ", paste(rownames(stats[[vn]]),
-                                                        collapse=", "))
+                 " while expecting ", var_order[[vn]]$no_rows, " row(s).",
+                 " The rowlabels returned are:",
+                 " '", paste(rownames(stats[[vn]]), collapse="', '"), "'")
           }
         }
-        desc_mtrx[row, ] <- stats[[vn]]
+        desc_mtrx[var_order[[vn]]$location, ] <- stats[[vn]]
       }
     }
     
-    values <- copyAllNewAttributes(values, cbind(desc_mtrx, values)) 
-    if (ncol(desc_mtrx) == 1 && colnames(values)[1] == "")
+    values <- copyAllNewAttributes(from = values, 
+                                   to = cbind(desc_mtrx, values)) 
+    if (NCOL(desc_mtrx) == 1 && colnames(values)[1] == "")
       colnames(values)[1] <- desc_colnames[1]
     else if(all(colnames(values)[1:2] == ""))
       colnames(values)[1:2] <- desc_colnames
-    
   }
   
+  attr(values, "var_order") <- var_order
   return(values)
 }
 
 #' Adds a reference to value matrix
 #' 
 #' @param vn Variable name 
-#' @param matches Rows that match
-#' @param available_factors Factors that are available
+#' @param var_order The output from the \code{\link{prMapVariable2Name}}
 #' @param values The value matrix
 #' @param add_references_pos The position within the factors if it exists
 #' @param reference_zero_effect The reference zero effect 
@@ -631,7 +960,12 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
 #' @return \code{matrix} A matrix with rgroup and n.rgroup attributes 
 #' 
 #' @author max
-prCaAddReference <- function(vn, matches, available_factors, values, add_references_pos, reference_zero_effect, ds, use_labels){
+prCaAddReference <- function(vn, 
+                             var_order, 
+                             values, 
+                             add_references_pos, 
+                             reference_zero_effect, 
+                             ds, use_labels){
   ref_value <- rep(c(reference_zero_effect, "ref"), times=2)
   
   reference <- NULL
@@ -639,29 +973,43 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
   # The rms package generates rownames with factor name:reference factor
   # and it is therefore a good idea to find the refreence by checking
   # which one is at the end
-  for (f_name in available_factors){
-    tmp <- gsub(f_name, "", rownames(values)[matches], fixed=TRUE)
-    if (all(grepl(":$", tmp))){
+  for (f_name in var_order[[vn]]$lvls){
+    # The substr is just to avoid having to check for regular expression
+    # characters within f_name and escaping them
+    beginning <- substr(rownames(values)[var_order[[vn]]$location], 
+                        1,
+                        nchar(rownames(values)[var_order[[vn]]$location])-
+                          nchar(f_name))
+    end <- substring(rownames(values)[var_order[[vn]]$location], 
+                     nchar(rownames(values)[var_order[[vn]]$location])-
+                       nchar(f_name) + 1)
+    if (all(grepl(":$", beginning)) && 
+          all(f_name %in% end)){
       reference <- f_name
       rms_format <- TRUE
       break
     }
   }
   
-  if (length(reference) == 0){
+  if (is.null(reference)){
     # TODO: Could probably be extended to other regression models but needs testing
-    used_factors <- gsub(sprintf("^%s[ ]{0,1}[=-]{0,1}{0,1}", vn), "", rownames(values)[matches])
+    used_factors <- gsub("^[ ]{0,1}[=-]{0,1}{0,1}", "", 
+                         substring(rownames(values)[var_order[[vn]]$location], nchar(vn) + 1))
     
     # Fetch the reference level, would probably work just as well with a levels()[1]
-    reference <- available_factors[!available_factors %in% used_factors]
+    reference <- var_order[[vn]]$lvls[!var_order[[vn]]$lvls %in% used_factors]
     if (length(reference) != 1)
-      stop("Error occurred in looking for reference, found ", length(reference), " reference categories",
-        " instead of expected 1, out of these factors:\n ", paste(available_factors, collapse=", "),
-        ifelse(length(reference) > 1, 
-          sprintf(" \n The refrences found: %s", paste(reference, collapse=", ")),
-          sprintf(" \n The rownames that have searched: %s", paste(rownames(values)[matches], collapse=", "))))
+      stop("Error occurred in looking for reference,",
+           " found ", length(reference), " reference categories",
+           " while expecting 1, out of these factors:",
+           "\n '", paste(var_order[[vn]]$lvls, collapse="'', '"), "'",
+           ifelse(length(reference) > 1, 
+                  sprintf(" \n The refrences found: '%s'",
+                          paste(reference, collapse="', '")),
+                  sprintf(" \n The rownames that have searched: '%s'", 
+                          paste(rownames(values)[var_order[[vn]]$location], collapse="', '"))))
   }else{
-    used_factors <- available_factors[reference != available_factors]
+    used_factors <- var_order[[vn]]$lvls[reference != var_order[[vn]]$lvls]
   }
   
   clean_rn = rownames(values)
@@ -672,84 +1020,35 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
     }else{
       r_no <- grep(uf_name, clean_rn, fixed=TRUE)
     }
-    if (!any(r_no %in% matches))
+    
+    if (!any(r_no %in% var_order[[vn]]$location))
       stop("Could not find rowname with factor ", uf_name, 
-        " among any of the row names: ", paste(clean_rn, collapse=", "))
-    r_no <- r_no[r_no %in% matches]
+           " among any of the row names: ", paste(clean_rn, collapse=", "))
+    
+    r_no <- r_no[r_no %in% var_order[[vn]]$location]
     if (length(r_no) > 1)
       stop("Multiple rows matched the factor ", uf_name,
-        " from the available: ", paste(clean_rn[matches], collapse=", "))
+        " from the available: ", paste(clean_rn[var_order[[vn]]$location], collapse=", "))
     
     # Remove the main label as that goes into the attr(values, "rgroup")
     rownames(values)[r_no] <- uf_name
-    
   }
-  
-  # Add attr(values, "rgroup") information
-  # ... yes this got way more complicated than desired but it seems to work :-)
-  lab <- prCaGetRowname(vn = vn, use_labels = use_labels, dataset = ds)
-  
-  group_2_split <- which(cumsum(attr(values, "n.rgroup")) >= matches[1])
-  if (length(group_2_split) == 0)
-    stop(sprintf("Could not find the group at match %d within %d rows", matches[1], sum(attr(values, "n.rgroup"))))
-  else
-    group_2_split <- group_2_split[1]
-  
-  if (attr(values, "rgroup")[group_2_split] != "")
-    stop(sprintf("An error occurred when adding the group labels, the software tried to overwrite an already existing group: %s", attr(values, "rgroup")[group_2_split]))
-  
-  row_prior_match <- matches[1]-1
-  
-  rgroup_b4 <- attr(values, "rgroup")[1:(group_2_split-1)]
-  n.rgroup_b4 <- attr(values, "n.rgroup")[1:(group_2_split-1)]
-  rgroup_after <- attr(values, "rgroup")[(group_2_split + 1):length(attr(values, "rgroup"))]
-  n.rgroup_after <- attr(values, "n.rgroup")[(group_2_split + 1):length(attr(values, "n.rgroup"))]
-  
-  if (group_2_split == 1){
-    rgroup_b4 <- NULL
-    n.rgroup_b4 <- NULL
-  }
-  # It can be both the first and the last group
-  # avoid therefore an else here
-  if (group_2_split == length(attr(values, "rgroup"))){
-    rgroup_after <- NULL
-    n.rgroup_after <- NULL
-  }
-  
-  attr(values, "rgroup") <- c(rgroup_b4, 
-    "", lab, "",
-    rgroup_after)
-  attr(values, "n.rgroup") <- c(n.rgroup_b4,
-    row_prior_match-sum(n.rgroup_b4), # The number of rows prior to our variable
-    length(used_factors) + 1, # The number of factors + the one were adding
-    attr(values, "n.rgroup")[group_2_split] - 
-      (row_prior_match-sum(n.rgroup_b4)) - 
-      length(used_factors),  # The remaining rows from that group, if 0 then removed below
-    n.rgroup_after)
-  
-  
-  # Remove empty group
-  if (any(attr(values, "n.rgroup") == 0)){
-    attr(values, "rgroup") <- attr(values, "rgroup")[-which(attr(values, "n.rgroup") == 0)]
-    attr(values, "n.rgroup") <- attr(values, "n.rgroup")[-which(attr(values, "n.rgroup") == 0)]
-  }
-  
-  if (any(attr(values, "n.rgroup") < 0))
-    stop(sprintf("Sorry, the software created an invalid group length of less than 0, this occurred when adding the variable: %s (%s)", vn, lab))
   
   offset <- ifelse(vn %in% names(add_references_pos),
-    add_references_pos[[vn]] - 1,
-    0)
-  if (offset > length(available_factors) - 1 ||
-    offset < 0){
-    warning("You have a reference position that is outside the number of levels, '", offset + 1, "'",
-      " is not among, 1 to ", length(available_factors),
-      ". This will therefore be ignored")
+                   add_references_pos[[vn]] - 1,
+                   0)
+  if (offset > length(var_order[[vn]]$lvls) - 1 ||
+        offset < 0){
+    warning("You have a reference position '", add_references_pos[[vn]], "'",
+            " that is outside the number of levels, '", offset + 1, "'",
+            " is not among, 1 to ", length(var_order[[vn]]$lvls),
+            ". This will therefore be ignored")
     offset <- 0
   }
+  
   values <- insertRowAndKeepAttr(values, 
-    matches[1] + offset, 
-    ref_value,  
+    var_order[[vn]]$location[1] + offset, 
+    ref_value,
     rName=reference)
   
   return(values)
@@ -760,9 +1059,6 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
 #' @param model The model
 #' @param vn The variable name
 #' @param outcome The outcome vector
-#' @param output Choose the type of output that you want returned, html, latex or raw.
-#'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
-#'   functions, where x is the main content of the table.
 #' @param ds The dataset
 #' @param add_references True if it should use the dataset to look for references, otherwise
 #'   supply the function with a vector with names. Sometimes you want to indicate 
@@ -794,7 +1090,6 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
 prCaGetVnStats <- function(model,
   vn, 
   outcome, 
-  output,
   ds,
   add_references, 
   add_references_pos,
@@ -814,33 +1109,46 @@ prCaGetVnStats <- function(model,
   if (any(class(model) %in% c("lrm", "coxph")) ||
     ("glm" %in% class(model) &&
       model$family$family == "binomial")){
-    desc_mtrx <- getDescriptionStatsBy(x=ds[is.na(outcome) == FALSE,vn], 
-      by=outcome[is.na(outcome) == FALSE],
-      hrzl_prop = TRUE,
-      digits = desc_digits,
-      continuous_fn = desc_continuous_fn,
-      prop_fn = desc_prop_fn,
-      factor_fn = desc_factor_fn,
-      show_all_values = add_references,
-      show_missing = desc_show_missing,
-      add_total_col = TRUE,
-      total_col_show_perc = desc_show_tot_perc, 
-      html = output == "html")
+    if (grepl("intercept", vn, ignore.case = TRUE)){
+      desc_mtrx <- matrix("-", 
+                          ncol = length(unique(outcome[is.na(outcome) == FALSE])),
+                          nrow = 1)
+    }else{
+      desc_mtrx <- 
+        getDescriptionStatsBy(x=ds[is.na(outcome) == FALSE,vn], 
+                              by=outcome[is.na(outcome) == FALSE],
+                              hrzl_prop = TRUE,
+                              digits = desc_digits,
+                              continuous_fn = desc_continuous_fn,
+                              prop_fn = desc_prop_fn,
+                              factor_fn = desc_factor_fn,
+                              show_all_values = add_references,
+                              show_missing = desc_show_missing,
+                              add_total_col = TRUE,
+                              total_col_show_perc = desc_show_tot_perc, 
+                              html = TRUE)
+    }
     
     # Don't select the no-event alternative as this is usually
     # not interesting since we have the total column
     desc_mtrx <- desc_mtrx[,c(1,3),drop=FALSE]
     colnames(desc_mtrx) <- desc_colnames
   }else{
-    desc_mtrx <- prGetStatistics(x=ds[is.na(outcome) == FALSE,vn],  
-      show_perc = desc_show_tot_perc, 
-      html = output == "html",
-      digits = desc_digits,
-      continuous_fn = desc_continuous_fn,
-      prop_fn = desc_prop_fn,
-      factor_fn = desc_factor_fn,
-      show_missing = desc_show_missing)
-    
+    if (grepl("intercept", vn, ignore.case = TRUE)){
+      desc_mtrx <- matrix("-", 
+                          ncol = 1,
+                          nrow = 1)
+    }else{
+      desc_mtrx <- 
+        prGetStatistics(x=ds[is.na(outcome) == FALSE,vn],  
+                        show_perc = desc_show_tot_perc, 
+                        html = TRUE,
+                        digits = desc_digits,
+                        continuous_fn = desc_continuous_fn,
+                        prop_fn = desc_prop_fn,
+                        factor_fn = desc_factor_fn,
+                        show_missing = desc_show_missing)
+    }
   }
   
   if (!is.matrix(desc_mtrx)){
@@ -853,9 +1161,10 @@ prCaGetVnStats <- function(model,
   # As the first element in a factor is always the
   # reference then we need to move it to the wanted
   # position
-  if (is.factor(ds[,vn]) && 
-    vn %in% names(add_references_pos) &&
-    add_references_pos[[vn]] != 1){
+  if (!grepl("intercept", vn, ignore.case = TRUE) &&
+        is.factor(ds[,vn]) && 
+        vn %in% names(add_references_pos) &&
+        add_references_pos[[vn]] != 1){
     
     if (nrow(desc_mtrx) == 2){
       if (add_references_pos[[vn]] == 2)
@@ -865,8 +1174,8 @@ prCaGetVnStats <- function(model,
         desc_mtrx <- desc_mtrx[c(2:nrow(desc_mtrx), 1), ] 
       }else{
         desc_mtrx <- desc_mtrx[c(2:add_references_pos[[vn]], 
-            1,
-            (add_references_pos[[vn]]+1):nrow(desc_mtrx)), ]
+                                 1,
+                                 (add_references_pos[[vn]]+1):nrow(desc_mtrx)), ]
       }
     }
   }
@@ -877,15 +1186,13 @@ prCaGetVnStats <- function(model,
 #' Gets the labelled rowname if it exists
 #' 
 #' Looks for matches inside factors if rowname
-#' contains the name of the column. Capitalizes
-#' the name.
+#' contains the name of the column. 
 #' 
 #' @param vn The variable name 
 #' @param use_labels If labels should be used
 #' @param dataset The dataset
 #' @return \code{string} The rowname 
 #' 
-#' @importFrom Hmisc capitalize
 #' @importFrom Hmisc label
 #' @author max
 prCaGetRowname <- function(vn, use_labels, dataset){
@@ -893,27 +1200,51 @@ prCaGetRowname <- function(vn, use_labels, dataset){
   if(vn %in% colnames(dataset) &&
     use_labels && 
     label(dataset[,vn]) != ""){
-    return(capitalize(label(dataset[,vn])))
+    return(label(dataset[,vn]))
   }else if (any(vn == colnames(dataset))){
     # An exact match means that there is no factor information
     # for this row and we should be able to return this row
-    return(capitalize(vn))
+    return(vn)
+  }else if (grepl("intercept", vn, ignore.case = TRUE)){
+    return(vn)
   }
     
   # Check if this is actually a factor and return that factors name
-  colno_containing_name = unlist(lapply(colnames(dataset), function(x) grepl(x, vn, fixed=TRUE)))
+  colno_containing_name <-
+    unlist(lapply(colnames(dataset), 
+                  function(x) grepl(x, vn, fixed=TRUE)))
   if (sum(colno_containing_name) == 1){
+    # Remove the column name from the beginning of the vn 
+    # as this may otherwise cause a search conflict if
+    # the name consists the searched labels
+    cn <- colnames(dataset)[colno_containing_name]
+    if (cn == substr(vn, 1, nchar(cn))){
+      vn <- substring(vn, nchar(cn) + 1)
+    }
+    
     lvls <- levels(dataset[,colno_containing_name])
     matching_lvl <- unlist(lapply(lvls, function(x) grepl(x, vn, fixed=TRUE)))
     if (sum(matching_lvl) == 1)
-      return(capitalize(lvls[matching_lvl]))
+      return(lvls[matching_lvl])
+    
+    # The rms-package returns the levels so that the reference appears after
+    # each level and thus may give the appearance that the levels appears
+    # several times. We therefore need to remove that information.
+    if (grepl(sprintf("%s$", lvls[1]), vn)){
+      vn <- gsub(sprintf("%s$", lvls[1]), "", vn)
+      matching_lvl <- unlist(lapply(lvls, function(x) grepl(x, vn, fixed=TRUE)))
+      if (sum(matching_lvl) == 1)
+        return(lvls[matching_lvl])
+    }
+    
     
     warning("Could not identify the rowname '", vn, "'",
       " from the factor variable '", colnames(dataset)[colno_containing_name], "'",
-      " that has the factors: '", paste(lvls, collapse="', '"), "'")
+      " that has the factors: '", paste(lvls, collapse="', '"), "'",
+      " The rowname with label therefore defaults to ", vn)
   }
   
-  return(capitalize(vn))
+  return(vn)
 }
 
 #' Re-order variables
@@ -933,10 +1264,12 @@ prCaGetOrderVariables <- function(names, order, ok2skip = FALSE){
     matches <- grep(r_expr, names)
     if (length(matches) == 0 & !ok2skip){
       stop("You have a strange selection order,",
-           "this could be due to that you try to select a factor subvariable and not the full variable.",
-           "Re-arranging factors should be done in the factor() function and not here.",
-           sprintf("Anyway the expression '%s' was not found in these variable names:", r_expr),
-           paste(names, collapse=", "))
+           "this could be due to that you try to select a factor level",
+           " and not the full variable.",
+           " Re-arranging factors should be done in the factor() function and not here.",
+           " Anyway the expression '", r_expr, "' was not found",
+           " in these variable names: '",
+           paste(names, collapse="', '"), "'")
     }else if (length(matches) > 0){
       # Avoid reselecting
       new_vars <- setdiff(matches, unlist(greps))
@@ -945,73 +1278,9 @@ prCaGetOrderVariables <- function(names, order, ok2skip = FALSE){
       }
     }
   }
-  return(greps)
+  return(unlist(greps))
 }
 
-
-#' A function for adding factor rgroups
-#' 
-#' @param value_mtrx A matrix containing the values of prCa
-#' @param dataset The dataset that is used for the model
-#' @param use_labels Wether or not to use labels
-#' @return \code{list} Returns the value matrix with the attributes rgroup and n.rgroup  
-#' 
-#' @author max
-prCaAddFactorRgroups <- function(value_mtrx, dataset, use_labels){
-  rn <- rownames(value_mtrx)
-  cols <- colnames(dataset)[unlist(lapply(colnames(dataset), function(x) any(grepl(x, rn, fixed=TRUE))))]
-  if (length(cols) > 0){
-    rgroup <- c()
-    n.rgroup <- c()
-    last_single_row <- FALSE
-    for (i in 1:length(rn)){
-      col_match <- unlist(lapply(cols, function(x) any(grepl(x, rn[i], fixed=TRUE))))
-      if (!any(col_match)){
-        rgroup <- append(rgroup, "")
-        n.rgroup <- append(n.rgroup, 1)
-      }else{
-        colname <- cols[col_match]
-        if (is.numeric(dataset[,colname])){
-          if (last_single_row){
-            n.rgroup[length(n.rgroup)] <- n.rgroup[length(n.rgroup)] + 1 
-          }else{
-            last_single_row = TRUE
-            rgroup <- append(rgroup, "")
-            n.rgroup <- append(n.rgroup, 1)
-          }
-        }else{
-          affected_rows <- rn[unlist(lapply(rn, function(x) any(grepl(colname, x, fixed=TRUE))))]
-          # If the row name is just one then there is no need for a 
-          # separate group
-          if (length(affected_rows) <= 1){
-            if (last_single_row){
-              n.rgroup[length(n.rgroup)] <- n.rgroup[length(n.rgroup)] + 1 
-            }else{
-              last_single_row = TRUE
-              rgroup <- append(rgroup, "")
-              n.rgroup <- append(n.rgroup, 1)
-            }
-          }else{
-            last_single_row = FALSE
-            name <- prCaGetRowname(colname, use_labels = use_labels, dataset = dataset)
-            if (length(rgroup) == 0 ||
-              rgroup[length(rgroup)] != name){
-              rgroup <- append(rgroup, name)
-              n.rgroup <- append(n.rgroup, 1)
-            }else{
-              n.rgroup[length(n.rgroup)] <- n.rgroup[length(n.rgroup)] + 1
-            }
-          }
-        }
-      }
-
-    }
-  }
-  
-  attr(value_mtrx, "rgroup") <- rgroup
-  attr(value_mtrx, "n.rgroup") <- n.rgroup
-  return(value_mtrx)
-}
 
 #' Prettify the text
 #' 
@@ -1020,7 +1289,6 @@ prCaAddFactorRgroups <- function(value_mtrx, dataset, use_labels){
 #' meet in one string column
 #' 
 #' @param x The value matrix from getCrudeAndAdjusted 
-#' @param output The type of output
 #' @param ci_max The max confidence interval
 #' @param ci_min The min confidence interval
 #' @param digits The number of decimal digits to use
@@ -1028,7 +1296,7 @@ prCaAddFactorRgroups <- function(value_mtrx, dataset, use_labels){
 #' @return \code{matrix} A string matrix with the values formated
 #' 
 #' @author max
-prCaPrepareCrudeAndAdjusted <- function(x, output, ci_max, ci_min, digits, sprintf_ci_str){
+prCaPrepareCrudeAndAdjusted <- function(x, ci_max, ci_min, digits, sprintf_ci_str){
   is.wholenumber <-
     function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
   
@@ -1064,13 +1332,13 @@ prCaPrepareCrudeAndAdjusted <- function(x, output, ci_max, ci_min, digits, sprin
     
     upper <- max(ci)
     if (upper > ci_max)
-      upper <- sprintf(ifelse(output == "html", "&gt; %s", "$> %s$"), format_number(ci_max))
+      upper <- sprintf("&gt; %s", format_number(ci_max))
     else
       upper <- format_number(upper)
     
     lower <- min(ci)
     if (lower < ci_min)
-      lower <- sprintf(ifelse(output == "html", "&gt; %s", "$ %s$"), format_number(ci_min))
+      lower <- sprintf("&gt; %s", format_number(ci_min))
     else
       lower <- format_number(lower)
     

@@ -1,5 +1,12 @@
 NEWS for the Greg package
 
+Changes for 0.7.0
+-----------------
+* Major remake of the print-/getCrudeAndAdjusted so that they depend on prMapVariable2Name and everything is now centered around the variables 
+* The printCrudeAndAdjustedModel no longer capitalizes the first letter in order to allow all lower case var names
+* Added imputation compatibility with the Hmisc::fit.mult.impute function
+* Added multiple test cases for stability
+
 Changes for 0.6.1
 -----------------
 * Changed versioning

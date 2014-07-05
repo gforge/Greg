@@ -3,23 +3,71 @@ set.seed(10)
 ds <- data.frame(
   ftime = rexp(200),
   fstatus = sample(0:1,200,replace=TRUE),
-	x1 = runif(200),
-	x2 = runif(200),
-	x3 = runif(200),
-  x4 = factor(sample(LETTERS[1:4], size=200, replace=TRUE)))
+	Variable1 = runif(200),
+  Variable2 = runif(200),
+  Variable3 = runif(200),
+  Variable4 = factor(sample(LETTERS[1:4], size=200, replace=TRUE)))
 
 library(rms)
 dd <- datadist(ds)
 options(datadist="dd")
 
-s <- Surv(ds$ftime, ds$fstatus == 1)
-fit <- cph(s ~ x1 + x2 + x3, data=ds)
+fit <- cph(Surv(ftime, fstatus) ~ Variable1 + Variable3 + Variable2 +  Variable4,
+           data=ds, x=TRUE, y=TRUE)
+printCrudeAndAdjustedModel(fit, order = c("Variable[12]", "Variable3"))
 
-printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")
+printCrudeAndAdjustedModel(fit, 
+                           order=c("Variable3", "Variable4"),
+                           add_references = TRUE, 
+                           desc_column=TRUE)
 
-fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds, x=TRUE, y=TRUE)
-printCrudeAndAdjustedModel(fit, file="", add_references = TRUE, 
-                           desc_column=TRUE, order=c("x3", "x4"))
+# Now to a missing example
+n <- 500
+ds <- data.frame(
+  x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+  x2 = rnorm(n, mean = 3, 2),
+  x3 = factor(sample(letters[1:3], size = n, replace = TRUE)))
+
+ds$Missing_var1 <- factor(sample(letters[1:4], size=n, replace=TRUE))
+ds$Missing_var2 <- factor(sample(letters[1:4], size=n, replace=TRUE))
+ds$y <- rnorm(nrow(ds)) +
+  (as.numeric(ds$x1)-1) * 1 +
+  (as.numeric(ds$Missing_var1)-1)*1 + 
+  (as.numeric(ds$Missing_var2)-1)*.5
+
+# Create a messy missing variable
+non_random_missing <- sample(which(ds$Missing_var1 %in% c("b", "d")), 
+                             size = 150, replace=FALSE)
+# Restrict the non-random number on the x2 variables
+non_random_missing <- non_random_missing[non_random_missing %in%
+                                           which(ds$x2 > mean(ds$x2)*1.5) &
+                                           non_random_missing %in%
+                                           which(ds$x2 > mean(ds$y))]
+ds$Missing_var1[non_random_missing] <- NA
+
+# Simple missing variable
+ds$Missing_var2[sample(1:nrow(ds), size=50)] <- NA
+
+# Setup the rms environment
+ddist <- datadist(ds)
+options(datadist = "ddist")
+
+impute_formula <- 
+  as.formula(paste("~",
+                   paste(colnames(ds),
+                         collapse="+")))
+
+imp_ds <- aregImpute(impute_formula, data = ds, n.impute = 10)
+
+fmult <- fit.mult.impute(y ~ x1 + x2 + x3 + 
+                           Missing_var1 + Missing_var2, 
+                         fitter = ols, xtrans = imp_ds, data = ds)
+
+printCrudeAndAdjustedModel(fmult, 
+                           impute_args = list(variance.inflation=TRUE,
+                                              coef_change=list(type="diff",
+                                                               digits=3)))
+
 
 # Use some labels to prettify the output
 # fro the mtcars dataset
@@ -43,7 +91,7 @@ label(mtcars$col) <- "Car color"
 
 require(splines)
 fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
-printCrudeAndAdjustedModel(fit_mtcar, file="", 
+printCrudeAndAdjustedModel(fit_mtcar, 
                            add_references=TRUE,
                            ctable=TRUE, 
                            desc_column = TRUE)
@@ -55,9 +103,8 @@ printCrudeAndAdjustedModel(fit_mtcar,
 
 # Alterntive print - just an example, doesn't make sense to skip reference
 printCrudeAndAdjustedModel(fit_mtcar, 
-                           file="", 
                            order=c("col", "gear"), 
                            groups=c("Color", "Gears"),
                            add_references=c("Black", NA),
-                           ctable=TRUE,
-                           output = "html")
+                           ctable=TRUE)
+

@@ -1,0 +1,137 @@
+library("testthat")
+library("rms")
+
+set.seed(10)
+n <- 500
+ds <- data.frame(
+  ftime = rexp(n),
+  fstatus = sample(0:1, size = n, replace = TRUE),
+  x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+  x2 = rnorm(n, mean = 3, 2),
+  x3 = factor(sample(letters[1:3], size = n, replace = TRUE)),
+  subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+
+ds$missing_var_1 <- factor(sample(letters[1:4], size=n, replace=TRUE))
+ds$missing_var_2 <- factor(sample(letters[1:4], size=n, replace=TRUE))
+ds$y <- rnorm(nrow(ds)) +
+  (as.numeric(ds$x1)-1) * 1 +
+  (as.numeric(ds$missing_var_1)-1)*1 + 
+  (as.numeric(ds$missing_var_2)-1)*.5
+
+# Create a messy missing variable
+non_random_missing <- sample(which(ds$missing_var_1 %in% c("b", "d")), 
+                             size = 150, replace=FALSE)
+# Restrict the non-random number on the x2 variables
+non_random_missing <- non_random_missing[non_random_missing %in%
+                                           which(ds$x2 > mean(ds$x2)*1.5) &
+                                           non_random_missing %in%
+                                           which(ds$x2 > mean(ds$y))]
+ds$missing_var_1[non_random_missing] <- NA
+
+# Simple missing
+ds$missing_var_2[sample(1:nrow(ds), size=50)] <- NA
+
+# Setup the rms environment
+ddist <- datadist(ds)
+options(datadist = "ddist")
+
+context("The fit.mult.impute for printCrudeAndAdjusted")
+
+test_that("Check regular linear regression with getC&A",{
+  fit_ols <- ols(y ~ x1 + x2 + x3 + 
+                   missing_var_1 + missing_var_2, data=ds) 
+  impute_formula <- 
+    as.formula(paste("~",
+                     paste(names(attr(fit_ols$terms, "dataClasses")),
+                           collapse="+")))
+  
+  imp_ds <- aregImpute(impute_formula, data = ds, n.impute = 10)
+  
+  fmult <- fit.mult.impute(formula(fit_ols), 
+                           fitter = lm, xtrans = imp_ds, data = ds)
+  
+  a <- getCrudeAndAdjustedModelData(fmult)
+  expect_equivalent(a[,"Adjusted"], coef(fmult))
+  
+  fmult <- fit.mult.impute(formula(fmult), 
+                           fitter = ols, xtrans = imp_ds, data = ds)
+  
+  a <- getCrudeAndAdjustedModelData(fmult)
+  # Remove the intercept as the fitter was ols
+  expect_equivalent(a[,"Adjusted"], coef(fmult)[-1])
+  
+  single_fit <- fit.mult.impute(y ~ missing_var_1, 
+                                fitter = ols, xtrans = imp_ds, data = ds)
+  expect_equivalent(a[grep("missing_var_1", rownames(a)),"Crude"],
+                    coef(single_fit)[grep("missing_var_1", names(coef(single_fit)))])
+})
+
+test_that("Check regular linear regression with printC&A",{
+  fit_ols <- ols(y ~ x1 + x2 + x3 + 
+                   missing_var_1 + missing_var_2, data=ds) 
+  impute_formula <- 
+    as.formula(paste("~",
+                     paste(names(attr(fit_ols$terms, "dataClasses")),
+                           collapse="+")))
+  
+  imp_ds <- aregImpute(impute_formula, data = ds, n.impute = 10)
+  
+  fmult <- fit.mult.impute(formula(fit_ols), 
+                           lm, imp_ds, data = ds)
+  
+  a <- printCrudeAndAdjustedModel(fmult)
+  expect_equivalent(tail(attr(a, "rgroup"), 1), capitalize("missing_var_2"))
+  
+  expect_equivalent(tail(rownames(a), 4),
+                    capitalize(c(tail(levels(ds$missing_var_1), 1), 
+                                 levels(ds$missing_var_2)[-1])),
+                    info=paste("The reference should not be included by default",
+                               "without specifying add_reference"))
+  
+  expect_equivalent(ncol(a), 4)
+  
+  a <- printCrudeAndAdjustedModel(fmult, add_references = TRUE)
+  expect_equivalent(tail(rownames(a), 5),
+                    capitalize(c(tail(levels(ds$missing_var_1), 1), 
+                                 levels(ds$missing_var_2))),
+                    info=paste("The reference should be included ",
+                               "if add_reference == TRUE"))
+  expect_equivalent(ncol(a), 4)
+  
+  a <- printCrudeAndAdjustedModel(fmult, 
+                                  add_references = TRUE, 
+                                  impute_args = list(coef_perc=TRUE))
+  expect_equivalent(ncol(a), 5)
+  
+  a <- printCrudeAndAdjustedModel(fmult, 
+                                  add_references = TRUE, 
+                                  impute_args = list(coef_perc=list(name="test")))
+  expect_equivalent(tail(colnames(a), 1),
+                    "test")
+  
+  a <- printCrudeAndAdjustedModel(fmult, 
+                                  add_references = TRUE, 
+                                  impute_args = list(variance.inflation=list(name="test")))
+  expect_equivalent(tail(colnames(a), 1),
+                    "test")
+  
+})
+  
+test_that("Check logistic, survival, and poissong for antilog and more",{
+  s <- Surv(ds$ftime, ds$fstatus == 1)
+  imp_ds <- aregImpute(as.formula(paste("~",
+                                        paste(colnames(ds),
+                                              collapse="+"))),
+                       data = ds, n.impute = 10)
+  
+  fit <- fit.mult.impute(s ~ x1 + x2 + strat(x3) + 
+                           missing_var_1 + missing_var_2, 
+                         fitter = cph, data=ds, xtrans = imp_ds)
+
+  fit <- coxph(s ~ x1 + x2 + strata(x3) + 
+                 missing_var_1 + missing_var_2, data=ds)
+  printCrudeAndAdjustedModel(fit)
+  
+  fit <- glm(fstatus ~ offset(log(ftime)) + x1 + x2 + x3, data=ds, family = binomial)
+  
+})

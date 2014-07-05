@@ -27,6 +27,16 @@ test_that("Check how well variables are identified and stratification, etc are r
   expect_equivalent(prGetModelVariables(fit),
                     c("a", "aa"))
   
+  fit <- lm(ftime ~ a * aa, data=ds)
+  expect_equivalent(length(prGetModelVariables(fit, 
+                                               remove_interaction_vars = TRUE)),
+                    0)
+
+  fit <- lm(ftime ~ a * aa + aaa, data=ds)
+  expect_equivalent(length(prGetModelVariables(fit, 
+                                               remove_interaction_vars = TRUE)),
+                    1)
+
   fit <- lm(ftime ~ a : aa, data=ds)
   expect_equivalent(length(prGetModelVariables(fit)),
                     0)
@@ -88,6 +98,11 @@ test_that("Check how well variables are identified and stratification, etc are r
   expect_equivalent(prGetModelVariables(fit),
                     c("a", "aa"))
   
+  fit <- ols(ftime ~ a * aa + aaa, data=ds)
+  expect_equivalent(length(prGetModelVariables(fit, 
+                                               remove_interaction_vars = TRUE)),
+                    1)
+
 #Bug:
 #   fit <- ols(ftime ~ a : aa, data=ds)
 #   expect_equivalent(length(prGetModelVariables(fit)),
@@ -168,4 +183,55 @@ test_that("Check how the mapping of rows work", {
   expect_error(prMapVariable2Name(prGetModelVariables(fit),
                                   names(coef(fit)),
                                   data=ds))
+
+  ds <- data.frame(
+    y = rnorm(n),
+    a = factor(sample(c("a", "aa", "aaa"), size = n, replace = TRUE)),
+    ada = rnorm(n, mean = 3, 2),
+    aal = factor(sample(c("a", "aa", "aaa"), size = n, replace = TRUE)))
+  fit <- lm(y~a*ada+aal, data=ds)
+  prMapVariable2Name(prGetModelVariables(fit, remove_interaction_vars = TRUE),
+                     names(coef(fit)),
+                     data=ds)
+  
+  fit <- lm(y~a+ada+aal, data=ds)
+  out <- prMapVariable2Name(prGetModelVariables(fit, 
+                                                add_intercept = TRUE,
+                                                remove_interaction_vars = TRUE),
+                     names(coef(fit)),
+                     data=ds)
+  expect_equal(out$`(Intercept)`$location, 1)
+  expect_equal(out$`a`$location, 2:3)
+  expect_equal(out$`ada`$location, 4)
+  expect_equal(out$`aal`$location, 5:6)
+  
+  fit <- ols(y~a+ada+aal, data=ds)
+  out <- prMapVariable2Name(prGetModelVariables(fit, 
+                                                add_intercept = TRUE,
+                                                remove_interaction_vars = TRUE),
+                            names(coef(fit)),
+                            data=ds)
+  expect_equal(out$`Intercept`$location, 1)
+  expect_equal(out$`a`$location, 2:3)
+  expect_equal(out$`ada`$location, 4)
+  expect_equal(out$`aal`$location, 5:6)
+  
+  ds <- data.frame(
+    ftime = rexp(n),
+    fstatus = sample(0:1, size = n, replace = TRUE),
+    a = factor(sample(c("a", "aa", "aaa"), size = n, replace = TRUE)),
+    aa = rnorm(n, mean = 3, 2),
+    aaa = factor(sample(c("a", "aa", "aaa"), size = n, replace = TRUE)))
+  
+  fit <- cph(Surv(ftime, fstatus)~a+aa+aaa, data=ds)
+  out  <- prMapVariable2Name(prGetModelVariables(fit, 
+                                                 add_intercept = TRUE,
+                                                 remove_interaction_vars = TRUE),
+                             names(coef(fit)),
+                             data=ds)
+  expect_equivalent(length(out), 3)
+  expect_equal(out$`a`$location, 1:2)
+  expect_equal(out$`aa`$location, 3)
+  expect_equal(out$`aaa`$location, 4:5)
+  
 })

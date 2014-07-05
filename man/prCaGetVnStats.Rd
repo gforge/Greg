@@ -3,9 +3,9 @@
 \alias{prCaGetVnStats}
 \title{Gets the variable stats}
 \usage{
-prCaGetVnStats(model, vn, outcome, output, ds, add_references,
-  add_references_pos, desc_digits, desc_continuous_fn, desc_prop_fn,
-  desc_factor_fn, desc_show_missing, desc_show_tot_perc, desc_colnames)
+prCaGetVnStats(model, vn, outcome, ds, add_references, add_references_pos,
+  desc_digits, desc_continuous_fn, desc_prop_fn, desc_factor_fn,
+  desc_show_missing, desc_show_tot_perc, desc_colnames)
 }
 \arguments{
 \item{model}{The model}
@@ -13,10 +13,6 @@ prCaGetVnStats(model, vn, outcome, output, ds, add_references,
 \item{vn}{The variable name}
 
 \item{outcome}{The outcome vector}
-
-\item{output}{Choose the type of output that you want returned, html, latex or raw.
-The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
-functions, where x is the main content of the table.}
 
 \item{ds}{The dataset}
 

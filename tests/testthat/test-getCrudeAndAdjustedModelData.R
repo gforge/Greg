@@ -6,11 +6,16 @@ n <- 500
 ds <- data.frame(
   ftime = rexp(n),
   fstatus = sample(0:1, size = n, replace = TRUE),
+  y = rnorm(n = n),
   x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
   x2 = rnorm(n, mean = 3, 2),
   x3 = factor(sample(letters[1:3], size = n, replace = TRUE)),
   boolean = sample(0L:1L, size = n, replace = TRUE),
   subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+
+library(rms)
+dd <- with(ds, datadist(ds))
+options(datadist="dd")
 
 context("getCrudeAndAdjustedModelData - coxph")
 test_that("Correct number of rows and columns", {
@@ -53,25 +58,33 @@ test_that("Check subsetting", {
   expect_true(data_matrix["x2","Crude"] == exp(coef(unadjusted_fit)))
   expect_true(all(data_matrix["x2",2:3] == exp(confint(unadjusted_fit))))
 
-  fit1 <- with(ds, coxph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3,  
-                         subset=subsetting == TRUE))
+  # Doesn't seem to work to get the with() environment
+#   fit1 <- with(ds, coxph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3,  
+#                          subset=subsetting == TRUE))
+#   data_matrix <- getCrudeAndAdjustedModelData(fit1)
+#   expect_equal(rownames(data_matrix), names(coef(fit1)))
+#   expect_equal(data_matrix[,"Adjusted"], exp(coef(fit1)))
+#   expect_equal(data_matrix[,tail(1:ncol(data_matrix), 2)], exp(confint(fit1)))
+
+  attach(ds)
+  fit1 <- coxph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3,  
+                         subset=subsetting == TRUE)
   data_matrix <- getCrudeAndAdjustedModelData(fit1)
   expect_equal(rownames(data_matrix), names(coef(fit1)))
   expect_equal(data_matrix[,"Adjusted"], exp(coef(fit1)))
   expect_equal(data_matrix[,tail(1:ncol(data_matrix), 2)], exp(confint(fit1)))
-  
+
   unadjusted_fit <- update(fit1, .~x2)
   expect_true(data_matrix["x2","Crude"] == exp(coef(unadjusted_fit)))
   expect_true(all(data_matrix["x2",2:3] == exp(confint(unadjusted_fit))))
 
   unadjusted_fit <- update(fit1, .~x2, subset =  subsetting == FALSE)
   expect_false(data_matrix["x2","Crude"] == exp(coef(unadjusted_fit)))
+  detach(ds)
 })
 
 context("getCrudeAndAdjustedModelData - cph")
 test_that("Same order of rows", {
-  dd <- with(ds, datadist(ds))
-  options(datadist="dd")
   fit1 <- cph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data=ds)
   data_matrix <- getCrudeAndAdjustedModelData(fit1)
   expect_match(rownames(data_matrix)[1:(length(levels(ds$x1))-1)], "^x1")
@@ -85,8 +98,6 @@ test_that("Same order of rows", {
 })
 
 test_that("A few bug tests",{
-  dd <- with(ds, datadist(ds))
-  options(datadist="dd")
   
   # Produced an  error with integer as input due to sort:
   #   Error in value.chk(at, i, factors[[jf]], 0, Limval) : 
@@ -97,24 +108,17 @@ test_that("A few bug tests",{
 })
 context("getCrudeAndAdjustedModelData - lm")
 test_that("Same order of rows", {
-  set.seed(200)
-  ds$y <- rnorm(length(ds$x1))
   fit_lm <- lm(y ~ x1 + x2 + x3, data=ds) 
   
   data_matrix <- getCrudeAndAdjustedModelData(fit_lm)
-  expect_match(rownames(data_matrix)[1], "^Intercept")
+  expect_match(rownames(data_matrix)[1], "^\\(Intercept\\)")
   expect_match(rownames(data_matrix)[2], "^x1")
-  expect_match(rownames(data_matrix)[3], "^x2")
-  expect_match(rownames(data_matrix)[4:5], "^x3.*[BC]")
+  expect_match(rownames(data_matrix)[5], "^x2")
+  expect_match(rownames(data_matrix)[6:7], "^x3[bc]")
 
-  dd <- with(ds, datadist(x1, x2, x3, y))
-  options(datadist="dd")
-  
 })
 
 test_that("Correct values for rows - lm", {
-  set.seed(200)
-  ds$y <- rnorm(length(ds$x1))
   fit_lm <- lm(y ~ x1 + x2 + x3, data=ds) 
   
   data_matrix <- getCrudeAndAdjustedModelData(fit_lm)
@@ -132,49 +136,41 @@ test_that("Correct values for rows - lm", {
   fit_lm_ua <- lm(y ~ x1, data=ds)
   expect_true(all(data_matrix[grep("^x1", rownames(data_matrix)),
                               "Crude"] ==
-                    coef(fit_lm_ua)[2]))
+                    coef(fit_lm_ua)[-1]))
   expect_true(all(data_matrix[grep("^x1", rownames(data_matrix)),
                               2:3] ==
-                    confint(fit_lm_ua)[2,]))
+                    confint(fit_lm_ua)[-1,]))
 })
 
 
 test_that("Correct values for rows - ols", {
-  set.seed(200)
-  ds$y <- rnorm(length(ds$x1))
-  dd <- with(ds, datadist(x1, x2, x3, y))
-  options(datadist="dd")
-  
   fit_ols <- ols(y ~ x1 + x2 + x3, data=ds) 
   
   # The rms-package does not report the intercept in summary
   # and we therefore skip
   data_matrix <- getCrudeAndAdjustedModelData(fit_ols)
-  expect_true(all(data_matrix[,"Adjusted"] == coef(fit_ols)[-1]))
-  expect_true(all(data_matrix[,tail(1:ncol(data_matrix), 2)] ==confint(fit_ols)[-1,]))
+  expect_equivalent(data_matrix[,"Adjusted"], coef(fit_ols)[-1])
+  expect_equivalent(data_matrix[,tail(1:ncol(data_matrix), 2)],
+                    confint(fit_ols)[-1,])
   
   fit_ols_ua <- ols(y ~ x3, data=ds)
-  expect_true(all(data_matrix[grep("^x3", rownames(data_matrix)),
-                              "Crude"] ==
-                    coef(fit_ols_ua)[2:3]))
-  expect_true(all(data_matrix[grep("^x3", rownames(data_matrix)),
-                              2:3] ==
-                    confint(fit_ols_ua)[2:3,]))
+  data_matrix <- getCrudeAndAdjustedModelData(fit_ols_ua)
+  expect_equivalent(data_matrix[grep("^x3", rownames(data_matrix)), "Crude"],
+                    coef(fit_ols_ua)[2:3])
+  expect_equivalent(data_matrix[grep("^x3", rownames(data_matrix)), 2:3],
+                    confint(fit_ols_ua)[2:3,])
   
   fit_ols_ua <- ols(y ~ x1, data=ds)
-  expect_true(all(data_matrix[grep("^x1", rownames(data_matrix)),
-                              "Crude"] ==
-                    coef(fit_ols_ua)[2]))
-  expect_true(all(data_matrix[grep("^x1", rownames(data_matrix)),
-                              2:3] ==
-                    confint(fit_ols_ua)[2,]))
+  data_matrix <- getCrudeAndAdjustedModelData(fit_ols_ua)
+  expect_equivalent(data_matrix[grep("^x1", rownames(data_matrix)), "Crude"],
+                    coef(fit_ols_ua)[-1])
+  expect_equivalent(data_matrix[grep("^x1", rownames(data_matrix)), 2:3],
+                    confint(fit_ols_ua)[-1,])
 })
 
 
 
 test_that("Correct values for rows - glm", {
-  set.seed(200)
-  ds$y <- rnorm(length(ds$x1))
   fit_glm <- glm(y ~ x1 + x2 + x3, data=ds) 
   
   data_matrix <- getCrudeAndAdjustedModelData(fit_glm)
@@ -191,9 +187,7 @@ test_that("Correct values for rows - glm", {
   
   fit_glm_ua <- glm(y ~ x1, data=ds)
   expect_true(all(abs(data_matrix[grep("^x1", rownames(data_matrix)), "Crude"] -
-                        coef(fit_glm_ua)[2]) < .Machine$double.eps))
+                        coef(fit_glm_ua)[-1]) < .Machine$double.eps))
   expect_true(all(abs(data_matrix[grep("^x1", rownames(data_matrix)), 2:3] -
-                    confint(fit_glm_ua)[2,]) < .Machine$double.eps))
+                    confint(fit_glm_ua)[-1,]) < .Machine$double.eps))
 })
-
-

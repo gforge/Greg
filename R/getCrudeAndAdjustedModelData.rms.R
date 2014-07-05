@@ -72,11 +72,19 @@ getCrudeAndAdjustedModelData.rms <- function(model,
   }
   
 
-  var_names <- prGetModelVariables(model, remove_interaction_vars = remove_interaction_vars)
+  var_names <- prGetModelVariables(model, 
+                                   remove_splines = TRUE,
+                                   add_intercept = FALSE,
+                                   remove_interaction_vars = remove_interaction_vars)
   if (length(var_names) == 0)
     stop("You have no variables that can be displayed as adjusted/unadjusted",
       " since they all are part of an interaction, spline or strata.")
 
+  if (grepl("intercept", coef(model)[1], ignore.case = TRUE))
+    warning("The rms-funcitons allow no easy way of extracting the intercept",
+            ", it is thefore omitted from the output. Use regular lm/glm",
+            " if the intercept is of interest")
+  
   df <- prGetModelData(model)
   
   # Get the adjusted variables
@@ -113,15 +121,17 @@ getCrudeAndAdjustedModelData.rms <- function(model,
   if (any(rownames(adjusted) != rownames(unadjusted))){
     ua_order <- c()
     a_order <- c()
+    ua_map <- prMapVariable2Name(var_names = var_names, 
+                                 available_names = rownames(unadjusted),
+                                 data = df)
+    a_map <- prMapVariable2Name(var_names = var_names, 
+                                available_names = rownames(adjusted),
+                                data = df)
     for(variable in var_names){
       ua_order <- c(ua_order, 
-                    prFindRownameMatches(rownames(unadjusted),
-                                         variable,
-                                         var_names))
+                    ua_map[[variable]]$location)
       a_order <- c(a_order, 
-                   prFindRownameMatches(rownames(adjusted),
-                                        variable,
-                                        var_names))
+                   a_map[[variable]]$location)
     }
     if (length(ua_order) != length(a_order)){
       stop ("An error happend when fetching the",
