@@ -297,7 +297,7 @@ test_that("Handling simple linear regression outcomes", {
                     ds$y_fact == "A (1)")
   
 
-  fit <- glm(ds$y_fact == "B" ~ x1 + x2 + x3, data=ds)
+  fit <- glm(y_fact == "B" ~ x1 + x2 + x3, data=ds)
   expect_equivalent(prExtractOutcomeFromModel(fit), 
                     ds$y_fact == "B")
 })
