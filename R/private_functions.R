@@ -20,6 +20,7 @@
 #' @return integer A vector containing the position of the matches
 #' 
 #' TODO: remove this function in favor of the more powerful prMapVariable2Name
+#' @keywords internal
 prFindRownameMatches <- function(rnames, vn, vars){
   # Find the beginning of the string that matches exactly to the var. name
   name_stub <- substr(rnames, 1, nchar(vn))
@@ -57,6 +58,7 @@ prFindRownameMatches <- function(rnames, vn, vars){
 #' @return vector
 #' 
 #' @author max
+#' @keywords internal
 prExtractOutcomeFromModel <- function(model){
   outcome_formula <- formula(model)[[2]]
   outcome <- NULL
@@ -82,10 +84,21 @@ prExtractOutcomeFromModel <- function(model){
       else
         stop("Could not figure out in your Surv() call what parameter to pick for the descriptive column")
     }else{
+      outcome <- try({
+        if (is.null(model$call$data)){
+          eval(outcome_formula)
+        }else{
+          with(eval(model$call$data), 
+               eval(outcome_formula))
+        }})
+      
+      if (!inherits(outcome, "try-error"))
+        return(outcome)
+      
       stop(paste("You seem to have some kind of complex outcome:", 
-          as.character(outcome_formula),
-          "\n In order for this function to work in a predictive way",
-          "you can only have one outcome - sorry"))
+                 deparse(outcome_formula),
+                 "\n In order for this function to work in a predictive way",
+                 "you can only have one outcome - sorry"))
     }
   }else if (length(outcome_formula) > 1){
     # A complex outcome formula
@@ -159,6 +172,7 @@ prExtractOutcomeFromModel <- function(model){
 #' @return data.frame 
 #' 
 #' @author max
+#' @keywords internal
 prExtractPredictorsFromModel <- function(model){
   vars <- prGetModelVariables(model, remove_splines=FALSE)
   if (is.null(model$call$data)){
@@ -205,6 +219,7 @@ prExtractPredictorsFromModel <- function(model){
 #' 
 #' TODO: Check if this cannot be replaced by model.frame()
 #' @author max
+#' @keywords internal
 prGetModelData <- function(x){
   data <- prExtractPredictorsFromModel(x)
   data <- cbind(data, prExtractOutcomeFromModel(x))
@@ -236,7 +251,7 @@ prGetModelData <- function(x){
 #' @return vector with names 
 #' 
 #' @importFrom stringr str_split
-#' @author max
+#' @keywords internal
 prGetModelVariables <- function(model, 
     remove_splines = TRUE, remove_interaction_vars=FALSE,
     add_intercept = FALSE){
@@ -324,7 +339,7 @@ prGetModelVariables <- function(model,
 #' 
 #' TODO: Use the Gmisc function instead of this copy
 #' 
-#' @author max
+#' @keywords internal
 prGetStatistics <- function(x, 
   show_perc = FALSE, 
   html = TRUE, 
@@ -396,7 +411,7 @@ prGetStatistics <- function(x,
 #' \item{high}{The upper confidence interval}
 #' \item{order}{A column that later can be used in ordering}
 #' 
-#' @author max
+#' @keywords internal
 prGetFpDataFromSurvivalFit <- function (fit, 
   conf.int = 0.95,
   exp      = TRUE){
@@ -442,7 +457,7 @@ prGetFpDataFromSurvivalFit <- function (fit,
 #' \item{high}{The upper confidence interval}
 #' \item{order}{A column that later can be used in ordering}
 #' 
-#' @author max
+#' @keywords internal
 prGetFpDataFromGlmFit <- function(glm.fit, 
   conf.int = 0.95,
   exp      = TRUE){
@@ -502,7 +517,7 @@ prGetFpDataFromGlmFit <- function(glm.fit,
 #' \item{high}{The upper confidence interval}
 #' \item{order}{A column that later can be used in ordering}
 #' 
-#' @author max
+#' @keywords internal
 prGetFpDataFromFit <- function(model_fit, 
   conf.int = 0.95,
   exp = TRUE){
@@ -528,7 +543,7 @@ prGetFpDataFromFit <- function(model_fit,
 #' @param show_missing Boolean or "no", "ifany", "always" 
 #' @return string 
 #' 
-#' @author max
+#' @keywords internal
 prConvertShowMissing <- function(show_missing){
   if (show_missing == FALSE || show_missing == "no")
     show_missing <- "no"
@@ -556,6 +571,7 @@ prConvertShowMissing <- function(show_missing){
 #'  and \code{location} indiciting the number of rows corresponding to that
 #'  element and where those rows are located. For factors the list also contains
 #'  \code{lvls} and \code{no_lvls}.
+#' @keywords internal
 prMapVariable2Name <- function(var_names, available_names, data){
   if (any(duplicated(available_names)))
     stop("You have non-unique names. You probably need to adjust",
