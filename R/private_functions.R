@@ -91,7 +91,7 @@ prExtractOutcomeFromModel <- function(model){
           with(eval(model$call$data), 
                eval(outcome_formula))
         }})
-      
+    
       if (!inherits(outcome, "try-error"))
         return(outcome)
       
@@ -126,6 +126,9 @@ prExtractOutcomeFromModel <- function(model){
       }
     }else{
       ds <- eval(model$call$data)
+      if (!is.null(model$call$subset))
+        ds <- ds[with(ds, eval(model$call$subset)), ]
+      
       # Remove any $ prior to the call if there is
       # a dataset that was used
       if (grepl("$", outcome_var_name, fixed=TRUE)){
