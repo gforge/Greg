@@ -23,7 +23,5 @@ A matrix with the columns:
 \description{
 Gets the boundaries for a survival fit
 }
-\author{
-max
-}
+\keyword{internal}
 

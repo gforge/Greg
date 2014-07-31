@@ -25,4 +25,5 @@ As both the \code{\link{getCrudeAndAdjustedModelData}} and the
 what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary}}
 correspond to we for generalizeability this rather elaborate function.
 }
+\keyword{internal}
 

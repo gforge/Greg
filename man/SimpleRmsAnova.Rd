@@ -94,4 +94,5 @@ simpleRmsAnova(a_out,
 \author{
 max
 }
+\keyword{internal}
 

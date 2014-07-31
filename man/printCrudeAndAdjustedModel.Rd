@@ -262,4 +262,5 @@ max
 \seealso{
 \code{\link[Hmisc]{latex}} for details regarding the \code{latex()} function.
 }
+\keyword{internal}
 

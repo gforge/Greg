@@ -25,4 +25,5 @@ of the name while at the same time excluding names that have the
 same stem, i.e. DM and DM_COMP will cause an issue since DM will
 match both rows.
 }
+\keyword{internal}
 

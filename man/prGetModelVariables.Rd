@@ -28,7 +28,5 @@ This function extract the modelled variables. Any interaction
 terms are removed as those should already be represented by
 the individual terms.
 }
-\author{
-max
-}
+\keyword{internal}
 

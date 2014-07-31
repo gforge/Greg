@@ -1,7 +1,8 @@
 #' @author max
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData rms
-#' @S3method getCrudeAndAdjustedModelData rms
+#' @export
+#' @keywords internal
 getCrudeAndAdjustedModelData.rms <- function(model, 
                                              level=.95, 
                                              remove_interaction_vars = TRUE, 

@@ -104,9 +104,9 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @importFrom rms ols
 #' @importFrom stats hatvalues
 #' @method hatvalues ols
-#' @S3method hatvalues ols
 #' @export
 #' @author max
+#' @keywords internal
 hatvalues.ols <- function(model, ...) {
   return(ols.influence(model, ...)$hat)
 }
@@ -125,8 +125,8 @@ hatvalues.ols <- function(model, ...) {
 #' @importFrom rms ols
 #' @importFrom sandwich bread
 #' @method bread ols
-#' @S3method bread ols
 #' @export 
+#' @keywords internal
 #' @author max
 bread.ols <- function(x, ...)
 {
@@ -152,11 +152,11 @@ bread.ols <- function(x, ...)
 #' @return matrix
 #' 
 #' @method model.matrix ols
-#' @S3method model.matrix ols
 #' @importFrom rms ols
 #' @importFrom stats model.matrix
 #' @author max
 #' @export
+#' @keywords internal
 model.matrix.ols <- function(object, ...){
   # If the ols already has a model.matrix saved
   # then use that one but add the intercept
@@ -189,8 +189,8 @@ model.matrix.ols <- function(object, ...){
 #' @importFrom sandwich estfun
 #' @author Max
 #' @method estfun ols
-#' @S3method estfun ols
 #' @export 
+#' @keywords internal
 estfun.ols <- function(x, ...){
   if (!inherits(x, "ols"))
     stop("You have provided a non-ols object that is not defined for this function, the classes of the object:", paste(class(x), collapse=", "))

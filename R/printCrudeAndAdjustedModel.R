@@ -405,7 +405,8 @@ setClass("printCrudeAndAdjusted", contains = "matrix")
 #'  rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.
 #' @rdname printCrudeAndAdjustedModel
 #' @method print printCrudeAndAdjusted
-#' @S3method print printCrudeAndAdjusted
+#' @export
+#' @keywords internal
 print.printCrudeAndAdjusted <- function(x,
   rgroupCSSstyle        = "", ...){
   
@@ -446,7 +447,8 @@ print.printCrudeAndAdjusted <- function(x,
 #' @seealso \code{\link[Hmisc]{latex}} for details regarding the \code{latex()} function.
 #' @rdname printCrudeAndAdjustedModel
 #' @method latex printCrudeAndAdjusted
-#' @S3method latex printCrudeAndAdjusted
+#' @export
+#' @keywords internal
 #' @importFrom Hmisc latex
 latex.printCrudeAndAdjusted <- function(object, ...){
   call_list <- 

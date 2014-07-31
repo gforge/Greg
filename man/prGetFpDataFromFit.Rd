@@ -25,7 +25,5 @@ A matrix with the columns:
 Gets the confidence interval, p-values,
 coefficients from a survival object
 }
-\author{
-max
-}
+\keyword{internal}
 

@@ -23,7 +23,5 @@ A matrix with the columns:
 \description{
 Gets the boundaries for a GLM fit that is poisson or quasipoisson based
 }
-\author{
-max
-}
+\keyword{internal}
 

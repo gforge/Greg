@@ -22,4 +22,5 @@ to generate the actual model.matrix() by just accessing the formula.
 \author{
 max
 }
+\keyword{internal}
 

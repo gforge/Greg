@@ -44,7 +44,8 @@ getCrudeAndAdjustedModelData <- function(model, level, ...)
 #' @author max
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData default
-#' @S3method getCrudeAndAdjustedModelData default
+#' @export
+#' @keywords internal
 getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_interaction_vars = TRUE, ...){
   
   # Just a prettifier for the output an alternative could be:
