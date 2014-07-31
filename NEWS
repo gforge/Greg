@@ -1,5 +1,10 @@
 NEWS for the Greg package
 
+Changes for 0.7.1
+-----------------
+* Internalized some of the private function documentation
+* Improved the outcome extractor function and added test cases
+
 Changes for 0.7.0
 -----------------
 * Major remake of the print-/getCrudeAndAdjusted so that they depend on prMapVariable2Name and everything is now centered around the variables 
