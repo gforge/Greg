@@ -22,7 +22,8 @@
 #' 
 #' @param model The regression model
 #' @param level The confidence interval level
-#' @param remove_interaction_vars Removes the interaction terms as this makes no sense in the output
+#' @param remove_interaction_vars Removes the interaction terms as they in 
+#'  the raw state are difficult to understand
 #' @param ... Not used
 #' @return Returns a matrix with the columns: 
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
@@ -36,17 +37,17 @@
 #' @importFrom stringr str_split
 #' 
 #' @rdname getCrudeAndAdjustedModelData
-#' @author max
 #' @export
-getCrudeAndAdjustedModelData <- function(model, level, ...)
+getCrudeAndAdjustedModelData <- function(model, level=.95, 
+                                         remove_interaction_vars = TRUE, ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
-#' @author max
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData default
 #' @export
 #' @keywords internal
-getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_interaction_vars = TRUE, ...){
+getCrudeAndAdjustedModelData.default <- 
+  function(model, level=.95, remove_interaction_vars = TRUE, ...){
   
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
@@ -129,7 +130,7 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
     if (!grepl("intercept", variable, 
                ignore.case = TRUE)){
       # Run the same model but with only one variable
-      model_only1 <- update(model, paste(".~", variable))
+      model_only1 <- prEnvModelCall(model, update, paste(".~", variable))
       
       # Get the coefficients processed with some advanced
       # round part()
@@ -139,7 +140,7 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95, remove_intera
       unadjusted <- rbind(unadjusted, new_vars)
     }else{
       # Run the same model but without any variables
-      model_only1 <- update(model, ".~ 1")
+      model_only1 <- prEnvModelCall(model, update, ".~1")
       
       # Get the coefficients
       new_vars <- get_coef_and_ci(model_only1, skip_intercept = FALSE)

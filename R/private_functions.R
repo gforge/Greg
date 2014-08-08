@@ -57,183 +57,63 @@ prFindRownameMatches <- function(rnames, vn, vars){
 #' @param model The fitted model.1
 #' @return vector
 #' 
-#' @author max
 #' @keywords internal
 prExtractOutcomeFromModel <- function(model){
-  outcome_formula <- formula(model)[[2]]
-  outcome <- NULL
-  
-  if (length(all.vars(outcome_formula)) != 1){
-    # We can probably figure this one out if we have
-    # the Surv() call to work with
-    if (grepl("^Surv", outcome_formula)[1]){
-      ls <- as.list(outcome_formula)
-      if(is.null(names(ls))){
-        if (length(ls) %in% 3:4){
-          outcome_var_name <- as.character(tail(ls, 1))
-        }else{
-          stop("Could not identify the survival outcome from the elements:",
-               paste(ls, collapse=", "))
-        }
-      }else if ("event" %in% names(ls))
-        outcome_var_name <- ls$event
-      else if(sum("" == names(ls)) >= 4)
-        outcome_var_name <- ls[[which("" ==  names(ls))[4]]]
-      else if(sum("" == names(ls)) <= 3)
-        outcome_var_name <- ls[[tail(which("" ==  names(ls)), 1)]]
-      else
-        stop("Could not figure out in your Surv() call what parameter to pick for the descriptive column")
-    }else{
-      outcome <- try({
-        if (is.null(model$call$data)){
-          eval(outcome_formula)
-        }else{
-          with(eval(model$call$data), 
-               eval(outcome_formula))
-        }})
-    
-      if (!inherits(outcome, "try-error"))
-        return(outcome)
-      
-      stop(paste("You seem to have some kind of complex outcome:", 
-                 deparse(outcome_formula),
-                 "\n In order for this function to work in a predictive way",
-                 "you can only have one outcome - sorry"))
-    }
-  }else if (length(outcome_formula) > 1){
-    # A complex outcome formula
-    if (is.null(model$call$data))
-      stop("You need to use the regression model together with the data= option",
-        " when you have complex outcomes that consist out of more than one thing or",
-        " the software will get confused on how to extract that information.")
-    ds <- eval(model$call$data)
-    outcome <- with(ds, eval(outcome_formula))
-  }else{
-    outcome_var_name <- all.vars(outcome_formula)[1]
-  }
-  
-  if (length(outcome) == 0){
-    if (is.null(model$call$data)){
-      if (grepl("==", outcome_var_name)){
-        outcome <- get(gsub("[ ]*==.+$", "", outcome_var_name))
-        eq_str <- gsub("^.*==[ ]*", "", outcome_var_name)
-        if(grepl("^[0-9]*\\.{0,1}[0-9]*$", eq_str))
-          eq_str <- as.numeric(eq_str)
-        outcome <- eval(substitute(outcome == a, 
-                                   list(a = eq_str)))
-      }else{
-        outcome <- get(outcome_var_name)
-      }
-    }else{
-      ds <- eval(model$call$data)
-      if (!is.null(model$call$subset))
-        ds <- ds[with(ds, eval(model$call$subset)), ]
-      
-      # Remove any $ prior to the call if there is
-      # a dataset that was used
-      if (grepl("$", outcome_var_name, fixed=TRUE)){
-        outcome_var_name <- gsub(".+\\$", "", outcome_var_name)
-      }
-      
-      if (grepl("==", outcome_var_name, fixed=TRUE)){
-        o_vars <- strsplit(outcome_var_name, "[ ]*==[ ]*")
-        if (o_vars[[1]][1] %in% colnames(ds))
-          outcome <- ds[,o_vars[[1]][1]]
-        else
-          outcome <- get(o_vars[[1]][1])
-        outcome <- outcome == gsub("\\\"", "", o_vars[[1]][2])
-      }else if (grepl("%in%", outcome_var_name, fixed=TRUE)){
-        stop("The %in% is not yet implemented, try creating a new variable")
-      }else{
-        if (outcome_var_name %in% colnames(ds))
-          outcome <- ds[,outcome_var_name]
-        else
-          outcome <- get(outcome_var_name)
-      }
-    }
-  }
-
-  # I was thinking of using the following
-  #     outcome <- model$y
-  # but it causes issues if there are missing
-  # as the predictors with missing will be included
-  # while the outcome with missing are unfortunately not
-  # inlcuded - hence we don't know how to match them
-  
+  mf <- model.frame(model)
+  outcome <- mf[,names(mf) == deparse(as.formula(model)[[2]])]
   if (is.null(outcome))
-    stop(paste("Could not find outcome variable:", outcome_var_name))
+    stop("Could not identify the outcome: ", deparse(as.formula(model)[[2]]),
+         " among the model.frame variables: '", paste(names(mf), collapse="', '"),"'")
+  
+  # Only use the status when used for survival::Surv objects
+  if (inherits(outcome, "Surv"))
+    return(outcome[,"status"])
   
   return(outcome)
 }
 
-#' Get model predictors
-#' 
-#' Uses the model to extract the dataset. Throws
-#' error if unable to find the data
-#' 
-#' @param model The fitted model.  
-#' @return data.frame 
-#' 
-#' @author max
-#' @keywords internal
-prExtractPredictorsFromModel <- function(model){
-  vars <- prGetModelVariables(model, remove_splines=FALSE)
-  if (is.null(model$call$data)){
-    # Try to create the data frame from the environment
-    ds <- data.frame(get(vars[1]))
-    colnames(ds) <- c(vars[1])
-    if (length(vars) > 1){
-      for (i in 2:length(vars)){
-        ds[vars[i]] <- get(vars[i])
-      }
-    }
-  }else{
-    ds <- eval(model$call$data)
-    if (any(vars %nin% colnames(ds)))
-      stop(paste("Could not find all the variables in the model in the dataset specified,",
-          "these were missing:",
-          paste(vars[vars %nin% colnames(ds)]), collapse=", "))
-    
-    # The drop is needed in case we only have one variable
-    ds <- ds[,vars, drop=FALSE]
-  }
-
-  # Also tried using the rms package x=TRUE functionality but it unfortunately
-  # converts everything to dummy variables making it difficult for regenerating
-  # the original dataset
-  
-  if (is.matrix(ds) & is.data.frame(ds))
-    ds <- as.data.frame(ds)
-  
-  if (is.data.frame(ds) == FALSE)
-    stop(paste("Failed to get the original data that was used for generating the model."))
-  
-  return(ds)
-}
-
 #' Get model data.frame
 #' 
-#' Combines the \code{\link{prExtractPredictorsFromModel}}
-#' with the \code{\link{prExtractOutcomeFromModel}} to generate
-#' a full model dataset
+#' Returns the raw variables from the original data
+#' frame using the \code{\link[base]{get_all_vars}}
+#' but with the twist that it also performs any associated 
+#' subsetting based on the model's \code{subset} argument.
 #' 
 #' @param x The fitted model.  
 #' @return data.frame 
 #' 
-#' TODO: Check if this cannot be replaced by model.frame()
-#' @author max
 #' @keywords internal
 prGetModelData <- function(x){
-  data <- prExtractPredictorsFromModel(x)
-  data <- cbind(data, prExtractOutcomeFromModel(x))
-  outcome_name <- as.character(formula(x)[[2]])
-  if (length(outcome_name) > 1){
-    # A cox regression model can give > 1, Surv(ftime, fstatus) will result in three rows
-    colnames(data)[ncol(data)] <- "Outcome"
-  }else{
-    colnames(data)[ncol(data)] <- outcome_name
+  # Extract the variable names
+  true_vars <- all.vars(as.formula(x))
+
+  # Get the environment of the formula
+  env <- environment(as.formula(x))
+  data <- eval(x$call$data, 
+               envir = env)
+  
+  # The data frame without the 
+  mf <- get_all_vars(as.formula(x), 
+                     data=data)
+  
+  if (!is.null(x$call$subset)){
+    if (!is.null(data)){
+      mf <- try(mf[with(data, 
+                        eval(x$call$subset)), ])
+      # As we don't know if the subsetting argument
+      # contained data from the data frame or the environment
+      # we need this additional check
+      if (inherits(mf, "try-error")){
+        mf <- mf[eval(x$call$subset, 
+                      envir=env), ]
+      }
+    }else{
+      mf <- mf[eval(x$call$subset, 
+                    envir=env), ]
+    }
   }
-  return(data)
+
+  return(mf)
 }
 
 #' Get the models variables
@@ -256,16 +136,19 @@ prGetModelData <- function(x){
 #' @importFrom stringr str_split
 #' @keywords internal
 prGetModelVariables <- function(model, 
-    remove_splines = TRUE, remove_interaction_vars=FALSE,
-    add_intercept = FALSE){
+                                remove_splines = TRUE, 
+                                remove_interaction_vars=FALSE,
+                                add_intercept = FALSE){
+  # We need the call names in order to identify
+  # - interactions
+  # - functions such as splines, I()
   if (inherits(model, "nlme")){
-    vars <- attr(fit$fixDF$terms, "names")
+    vars <- attr(model$fixDF$terms, "names")
   }else{
     vars <- attr(model$terms, "term.labels")
   }
   
   # Remove I() as these are not true variables
-  # and their names can probably have lots of variants
   unwanted_vars <- grep("^I\\(.*$", vars)
   if (length(unwanted_vars) > 0){
     attr(vars, "I() removed") <- vars[unwanted_vars]
@@ -293,7 +176,8 @@ prGetModelVariables <- function(model,
   in_vars <- grep(int_term, vars)
   if (length(in_vars) > 0){
     if (remove_interaction_vars){
-      in_vn <- unlist(str_split(vars[in_vars], ":"))
+      in_vn <- unlist(str_split(vars[in_vars], ":"), 
+                      use.names = FALSE)
       in_vars <- unique(c(in_vars, which(vars %in% in_vn)))
     }
     attr(vars, "interactions removed") <- vars[in_vars]
@@ -443,7 +327,6 @@ prGetFpDataFromSurvivalFit <- function (fit,
   
   # Set the names of the rows
   rownames(ret_matrix) <- names(fit$coef)
-  
   
   return(ret_matrix)
 }
@@ -736,4 +619,37 @@ prMapVariable2Name <- function(var_names, available_names, data){
   }
   
   return(var_data)
+}
+
+#' Runs an \code{do.call} within the environment of the model
+#' 
+#' Sometimes the function can't find some of the variables that
+#' were available when running the original variable. This function
+#' uses the \code{\link[stats]{as.formula}} together with 
+#' \code{\link[base]{environment}} in order to get the environment
+#' that the original code used.
+#' 
+#' @param model The model used
+#' @param what The function or non-empty character string used for 
+#'  \code{\link[base]{do.call}}
+#' @param ... Additional arguments passed to the function
+#' @keywords internal
+prEnvModelCall <- function(model, what, ...){
+  call_lst <- list(object = model)
+  dots <- list(...)
+  if (length(dots) > 0){
+    for(i in 1:length(dots)){
+      if (!is.null(names(dots)[i])){
+        call_lst[[names(dots)[i]]] <- dots[[i]]
+      }else{
+        call_lst <- c(call_lst,
+                      dots[[i]])
+      }
+    }
+  }
+  model_env <- new.env(parent=environment(as.formula(model)))
+  model_env$what <- what
+  model_env$call_lst <- call_lst
+  do.call(what, call_lst, 
+          envir = model_env)
 }

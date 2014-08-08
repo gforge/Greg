@@ -1,4 +1,3 @@
-#' @author max
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData rms
 #' @export
@@ -96,7 +95,8 @@ getCrudeAndAdjustedModelData.rms <- function(model,
   for(variable in var_names){
     
     # Run the same model but with only one variable
-    model_only1 <- update(model, paste(".~", variable))
+    model_only1 <- prEnvModelCall(model, update, paste(".~", variable))
+
     if ("boot.coef" %in% names(model)){
       # Redo bootstrap if this was a bootstrapped
       # rms model by rerunning the bootcov part
