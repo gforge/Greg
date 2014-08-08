@@ -3,7 +3,7 @@ library("survival")
 
 set.seed(10)
 n <- 500
-ds <- data.frame(
+ds <<- data.frame(
   ftime = rexp(n),
   fstatus = sample(0:1, size = n, replace = TRUE),
   y = rnorm(n = n),
@@ -14,8 +14,8 @@ ds <- data.frame(
   subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
 
 library(rms)
-dd <- with(ds, datadist(ds))
-options(datadist="dd")
+ddist <<- datadist(ds)
+options(datadist="ddist")
 
 context("getCrudeAndAdjustedModelData - coxph")
 test_that("Correct number of rows and columns", {

@@ -1,21 +1,21 @@
-set.seed(10)
-n <- 500
-ds <- data.frame(
-  ftime = rexp(n),
-  fstatus = sample(0:1, size = n, replace = TRUE),
-  x = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
-  same_label = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
-  same_labell = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
-  same_labelll = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
-  boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
-  subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
-
-library(rms)
-dd <- datadist(ds)
-options(datadist="dd")
-
 context("printCrudeAndAdjustedModel")
 test_that("Check position of reference", {
+  set.seed(10)
+  n <- 500
+  ds <- data.frame(
+    ftime = rexp(n),
+    fstatus = sample(0:1, size = n, replace = TRUE),
+    x = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+    same_label = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    same_labell = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    same_labelll = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+  
+  library(rms)
+  dd <<- datadist(ds)
+  options(datadist="dd")
+
   fit <- cph(Surv(ftime, fstatus == 1) ~ x + boolean, data=ds)
   
   a <- printCrudeAndAdjustedModel(fit, add_references=TRUE)
@@ -55,6 +55,3 @@ test_that("Check position of reference", {
                                   add_references=TRUE, desc_column=TRUE)
   expect_equal(nrow(a), 11)
 })
-
-
-

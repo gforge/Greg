@@ -3,7 +3,7 @@ library(testthat)
 context("prGetModelVariables")
 test_that("Check how well variables are identified and stratification, etc are removed", {
   set.seed(10)
-  n <- 500
+  n <- 50
   ds <- data.frame(
     ftime = rexp(n),
     fstatus = sample(0:1, size = n, replace = TRUE),
@@ -53,14 +53,20 @@ test_that("Check how well variables are identified and stratification, etc are r
   expect_equivalent(prGetModelVariables(fit),
                     c("a"))
   
-  fit <- glm(ftime ~ I(aa*2) + a + aa:a, data=ds)
+  fit <- with(ds, glm(ftime ~ I(aa*2) + a + aa:a))
   expect_equivalent(prGetModelVariables(fit),
                     c("a"))
   
-  fit <- Glm(fstatus ~ I(aa*2) + a + aa:a, data=ds, family=binomial)
+  library(rms)
+  ddist <<- datadist(ds)
+  options(datadist = "ddist")
+  fit <- Glm(fstatus ~ a * aa, data=ds, family=binomial)
   expect_equivalent(prGetModelVariables(fit),
-                    c("a"))
-
+                    c("a", "aa"))
+  expect_equivalent(prGetModelVariables(fit, 
+                                        remove_interaction_vars = TRUE),
+                    character(0))
+  
   library(nlme)
   fit <- lme( distance ~ age , data=Orthodont)
   expect_equivalent(prGetModelVariables(fit),
@@ -77,14 +83,10 @@ test_that("Check how well variables are identified and stratification, etc are r
   expect_equivalent(prGetModelVariables(fit),
                     c("Asym","R0","lrc"))
   
-  library(rms)
-  ddist <- datadist(ds)
-  options(datadist = "ddist")
   # Bug:
 #   fit <- ols(ftime ~ ., data=ds)
 #   expect_equivalent(prGetModelVariables(fit),
 #                     colnames(ds)[-1])
-
   
   fit <- ols(ftime ~ a, data=ds)
   expect_equivalent(prGetModelVariables(fit),
@@ -243,7 +245,7 @@ test_that("Handling cox regression survival object", {
   
   set.seed(10)
   n <- 500
-  ds <- data.frame(
+  ds <<- data.frame(
     ftime = rexp(n),
     fstatus = sample(0:1, size = n, replace = TRUE),
     y = rnorm(n = n),
@@ -253,14 +255,31 @@ test_that("Handling cox regression survival object", {
     boolean = sample(0L:1L, size = n, replace = TRUE),
     subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
   
-  library(rms)
-  dd <- with(ds, datadist(ds))
-  options(datadist="dd")
-
   fit <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data=ds)
   
   expect_equivalent(prExtractOutcomeFromModel(fit), 
-                    ds$fstatus == 1)
+                    as.numeric(ds$fstatus == 1))
+  
+  s <- Surv(ds$ftime, ds$fstatus == 0)
+  fit <- coxph(s ~ x1 + x2 + x3, data=ds)
+  
+  expect_equivalent(prExtractOutcomeFromModel(fit), 
+                    as.numeric(ds$fstatus == 0))
+
+  library(rms)
+  ddist <<- datadist(ds)
+  options(datadist="ddist")
+  
+  fit <- cph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data=ds)
+  
+  expect_equivalent(prExtractOutcomeFromModel(fit), 
+                    as.numeric(ds$fstatus == 1))
+  
+  s <- Surv(ds$ftime, ds$fstatus == 0)
+  fit <- cph(s ~ x1 + x2 + x3, data=ds)
+  
+  expect_equivalent(prExtractOutcomeFromModel(fit), 
+                    as.numeric(ds$fstatus == 0))
   
 })
 
@@ -316,5 +335,47 @@ test_that("Subsetting", {
   
   expect_equivalent(prExtractOutcomeFromModel(fit), 
                     subset(ds, subsetting == TRUE)$y)
+  
+})
+
+
+context("prGetModelData tests")
+test_that("Subsetting", {
+  set.seed(10)
+  n <- 10
+  ds <- data.frame(
+    y = rnorm(n = n),
+    x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+    x2 = rnorm(n, mean = 3, 2),
+    x3 = factor(sample(letters[1:3], size = n, replace = TRUE)),
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+  
+  fit <- lm(y ~ x1 + x2 + x3, data=ds, subset = subsetting == TRUE)
+  for (n in c("y", "x1", "x2", "x3")){
+    expect_equivalent(prGetModelData(fit)[,n,drop=FALSE], 
+                      subset(ds, subsetting == TRUE, n))
+  }
+  
+  fit <- lm(y ~ ., data=ds)
+  fit <- update(fit, .~.-subsetting, subset=subsetting==TRUE)
+  for (n in c("y", "x1", "x2", "x3")){
+    expect_equivalent(prGetModelData(fit)[,n,drop=FALSE], 
+                      subset(ds, subsetting == TRUE, n))
+  }
+  
+  
+  fit <- with(ds, lm(y ~ x1 + x2 + x3, subset = subsetting == TRUE))
+  for (n in c("y", "x1", "x2", "x3")){
+    expect_equivalent(prGetModelData(fit)[,n,drop=FALSE], 
+                      subset(ds, subsetting == TRUE, n))
+  }
+
+  attach(ds)
+  fit <- lm(y ~ x1 + I(x2^2) + x3, subset = subsetting == TRUE)
+  for (n in c("y", "x1", "x2", "x3")){
+    expect_equivalent(prGetModelData(fit)[,n,drop=FALSE], 
+                      subset(ds, subsetting == TRUE, n))
+  }
+  detach(ds)
   
 })
