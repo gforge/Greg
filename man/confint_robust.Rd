@@ -9,26 +9,31 @@ confint_robust(object, parm, level = 0.95, HC_type = "HC3",
 \arguments{
 \item{object}{The regression model object, either an ols or lm object}
 
-\item{parm}{The names or number of the coefficients of interest}
-
-\item{level}{Level of confidence interval, defaults to 0.95}
-
 \item{HC_type}{See options for \code{\link[sandwich]{vcovHC}}}
 
 \item{t_distribution}{A boolean for if the t-distribution should be used
-or not. Defaults to FALSE.}
+or not. Defaults to FALSE. According to Cribari-Nieto and Lima's study from
+2009 this should not be the case.}
 
-\item{...}{Additional parameters that are passed on.}
+\item{...}{Additional parameters that are passed on to
+\code{\link[sandwich]{vcovHC}}}
+
+\item{parm}{a specification of which parameters are to be given
+    confidence intervals, either a vector of numbers or a vector of
+    names.  If missing, all parameters are considered.}
+
+\item{level}{the confidence level required.}
 }
 \value{
-a matrix with the confidence intervals
+\code{matrix} A matrix (or vector) with columns giving lower and
+ upper confidence limits for each parameter. These will be labelled as
+ (1-level)/2 and 1 - (1-level)/2 in % (by default 2.5% and 97.5%).
 }
 \description{
 The confint.lm uses the t-distribution as the default
-confidence interval estimator. According to Cribari-Nieto's
-study 2008 this should be the normal distribution. This
-is also supported by my own resampling study with heteroscedastic
-outcomes.
+confidence interval estimator. When there is reason to believe that
+the normal distribution is violated an alternative approach using
+the \code{\link[sandwich]{vcovHC}} may be more suitable.
 }
 \examples{
 n <- 50
@@ -38,7 +43,11 @@ y <- x + rnorm(n)
 fit <- lm(y~x)
 confint_robust(fit, HC_type = "HC4m")
 }
-\author{
-Max
+\references{
+\href{http://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
+ F. Cribari-Neto and M. da G. A. Lima,
+ "Heteroskedasticity-consistent interval estimators",
+ Journal of Statistical Computation and Simulation,
+ vol. 79, no. 6, pp. 787–803, 2009.}
 }
 
