@@ -91,8 +91,5 @@ simpleRmsAnova(a_out,
                caption="Anova output for a logistic regression model",
                ctable=FALSE)
 }
-\author{
-max
-}
 \keyword{internal}
 

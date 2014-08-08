@@ -20,7 +20,6 @@
 #' @example inst/examples/simpleRmsAnova_example.R
 #' 
 #' @rdname SimpleRmsAnova
-#' @author max
 #' @export
 simpleRmsAnova <- function(anova_output, subregexps = NA, digits=4, pval_threshold = 10^-4, rowlabel="Variable", ...){
   

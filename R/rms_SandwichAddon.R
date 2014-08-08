@@ -14,7 +14,6 @@
 #' 
 #' @example inst/examples/rms_SandwichAddon_example.R
 #' @importFrom sandwich vcovHC
-#' @author max
 #' @export
 robcov_alt <- function (fit, type="HC3", ...) 
 {
@@ -59,7 +58,6 @@ robcov_alt <- function (fit, type="HC3", ...)
 #' @method confint ols
 #' @method confint ols
 #' @importFrom stats confint
-#' @author max
 #' @export
 confint.ols <- function(object, parm, level = 0.95, ...) {
   cf <- coef(object)
@@ -105,7 +103,6 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @importFrom stats hatvalues
 #' @method hatvalues ols
 #' @export
-#' @author max
 #' @keywords internal
 hatvalues.ols <- function(model, ...) {
   return(ols.influence(model, ...)$hat)
@@ -127,7 +124,6 @@ hatvalues.ols <- function(model, ...) {
 #' @method bread ols
 #' @export 
 #' @keywords internal
-#' @author max
 bread.ols <- function(x, ...)
 {
   if (!inherits(x, "ols"))
@@ -154,7 +150,6 @@ bread.ols <- function(x, ...)
 #' @method model.matrix ols
 #' @importFrom rms ols
 #' @importFrom stats model.matrix
-#' @author max
 #' @export
 #' @keywords internal
 model.matrix.ols <- function(object, ...){
@@ -187,7 +182,6 @@ model.matrix.ols <- function(object, ...){
 #' 
 #' @importFrom rms ols
 #' @importFrom sandwich estfun
-#' @author Max
 #' @method estfun ols
 #' @export 
 #' @keywords internal

@@ -19,8 +19,5 @@ The model.matrix.lm that the ols falls back upon
 the vcovHC() funcitons. I've therefore created this subfunction
 to generate the actual model.matrix() by just accessing the formula.
 }
-\author{
-max
-}
 \keyword{internal}
 
