@@ -1,13 +1,16 @@
 Package: Greg
-Version: 0.7.1
-Date: 2014-07-31
+Version: 1.0.0
+Date: 2014-08-08
 Title: A package for regression handling
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description: This R-package provides additional functions that help you
-    convey regression models using both graphs and tables. It has also a
-    few functions for handling robust confidence intervals for the ols()
-    regression in the rms-package.
+Description: 
+This R-package provides functions that primarily aimed at helping you work 
+with regression models. While mych of the data presented by the standard 
+regression output is useful and important - there is often a need for further
+simplifaction prior to publication. The methods implemented in this package
+are inspired by some of the top journals such as NEJM, BMJ, and other medical
+journals as this is my research field.
 License: GPL (>= 3)
 URL: http://gforge.se
 Biarch: yes
