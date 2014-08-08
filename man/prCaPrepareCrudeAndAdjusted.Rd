@@ -3,14 +3,12 @@
 \alias{prCaPrepareCrudeAndAdjusted}
 \title{Prettify the text}
 \usage{
-prCaPrepareCrudeAndAdjusted(x, ci_max, ci_min, digits, sprintf_ci_str)
+prCaPrepareCrudeAndAdjusted(x, ci_lim, digits, sprintf_ci_str)
 }
 \arguments{
 \item{x}{The value matrix from getCrudeAndAdjusted}
 
-\item{ci_max}{The max confidence interval}
-
-\item{ci_min}{The min confidence interval}
+\item{ci_lim}{The limits of the confidence interval}
 
 \item{digits}{The number of decimal digits to use}
 
@@ -24,7 +22,19 @@ Sets the number of digits, formats the confidence interval and
 changes the number of cols into 4 where the upper and lower CI
 meet in one string column
 }
-\author{
-max
+\seealso{
+Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+  \code{\link{print.printCrudeAndAdjusted}},
+  \code{\link{printCrudeAndAdjustedModel}};
+  \code{\link{prCaAddRefAndStat}};
+  \code{\link{prCaAddReference}};
+  \code{\link{prCaAddUserReferences}};
+  \code{\link{prCaGetImputationCols}};
+  \code{\link{prCaGetOrderVariables}};
+  \code{\link{prCaGetRowname}};
+  \code{\link{prCaGetVnStats}};
+  \code{\link{prCaReorderReferenceDescribe}};
+  \code{\link{prCaReorder}}; \code{\link{prCaSetRownames}}
 }
+\keyword{internal}
 

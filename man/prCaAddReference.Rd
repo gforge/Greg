@@ -13,7 +13,12 @@ prCaAddReference(vn, var_order, values, add_references_pos,
 
 \item{values}{The value matrix}
 
-\item{add_references_pos}{The position within the factors if it exists}
+\item{add_references_pos}{The position where a reference should be added. Sometimes
+you don't want the reference to be at the top, for instance if you have age groups
+then you may have < 25, 25-39, 40-55, > 55 and you have the reference to be 25-39 then
+you should set the reference list for \code{age_groups} as
+\code{add_references_pos = list(age_groups = 2)}
+so that you have the second group as the position for the reference.}
 
 \item{reference_zero_effect}{The reference zero effect}
 
@@ -27,7 +32,19 @@ prCaAddReference(vn, var_order, values, add_references_pos,
 \description{
 Adds a reference to value matrix
 }
-\author{
-max
+\seealso{
+Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+  \code{\link{print.printCrudeAndAdjusted}},
+  \code{\link{printCrudeAndAdjustedModel}};
+  \code{\link{prCaAddRefAndStat}};
+  \code{\link{prCaAddUserReferences}};
+  \code{\link{prCaGetImputationCols}};
+  \code{\link{prCaGetOrderVariables}};
+  \code{\link{prCaGetRowname}};
+  \code{\link{prCaGetVnStats}};
+  \code{\link{prCaPrepareCrudeAndAdjusted}};
+  \code{\link{prCaReorderReferenceDescribe}};
+  \code{\link{prCaReorder}}; \code{\link{prCaSetRownames}}
 }
+\keyword{internal}
 
