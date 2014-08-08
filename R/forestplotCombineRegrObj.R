@@ -9,16 +9,10 @@
 #' @param variablesOfInterest.regexp A regular expression identifying the variables
 #'   that are of interest of comparing. For instance it can be "(score|index|measure)"
 #'   that finds scores in different models that should be compared.
-#' @param plot_title The title of the plot. 
-#' @param clip If the plot confidence bands should be clipped
-#' @param col.zero The color of the vertical zero-effect line
 #' @param reference.names Additional reference names to be added to each model
 #' @param rowname.fn A function that takes a rowname and sees if it needs
 #'   beautifying. The function has only one parameter the coefficients name and should
 #'   return a string or expression.  
-#' @param box.default.size Override the default box size based on precision
-#' @param xlab The label of the x-axis
-#' @param xlog If TRUE, x-axis tick marks are exponentiated
 #' @param estimate.txt The text of the estimate, usually HR for hazard ratio, OR for 
 #'  odds ratio
 #' @param zero Indicates what is zero effect. For survival/logistic fits the zero is
@@ -32,31 +26,25 @@
 #'   fits. 
 #' @param ref_txt Text instead of estimate number
 #' @param digits Number of digits to use for the estimate output
-#' @param ... Passed to forestplot2 
-#' @return void 
-#' 
-#' @seealso \code{\link{forestplot2}}
+#' @param ... Passed to \code{\link[Gmisc]{forestplot2}}
 #' 
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' 
+#' @inheritParams Gmisc::foresplot2
 #' @importFrom Gmisc forestplot2
-#'
-#' @author max
+#' @family \code{\link[Gmisc]{forestplot2}} wrappers
 #' @export
 forestplotCombineRegrObj <- function( 
   regr.obj,
   variablesOfInterest.regexp,
-  plot_title       = NULL,
-  clip             = c(-Inf, Inf), 
-  col.zero         = "lightgray",
-  reference.names  = NULL,
-  rowname.fn       = NULL,
-  box.default.size = .5,
-  xlab             = NULL,
-  xlog             = FALSE,
-  estimate.txt     = NULL,
-  zero             = NULL,
-  exp              = TRUE,
+  reference.names,
+  rowname.fn,
+  xlab,
+  xlog,
+  estimate.txt,
+  zero,
+  is.summary,
+  exp              = xlog,
   add_first_as_ref = FALSE,
   ref_txt          = "ref.",
   ref_labels       = c(),
@@ -68,32 +56,46 @@ forestplotCombineRegrObj <- function(
   
   if (is.object(regr.obj) == TRUE)
     stop("The model_fits need to be a list of fits")
-  
+
+  if (!missing(reference.names) &&
+        length(reference.names) != length(regr.obj))
+    stop("The number or reference names need to be equal to the number of",
+         " regression model fits. You have ", length(reference.names), " references ",
+         " and ", length(regr.obj), " regression objects")
+    
   # Initiate some standard values if the user
   # hasn't supplied any
-  if (is.null(xlab) ||
-    is.null(estimate.txt)){
+  if (missing(xlab)){
     if (isFitCoxPH(regr.obj[[1]])){
-      if (is.null(xlab))
-        xlab = "Hazard Ratio"
-      
-      if (is.null(estimate.txt))
-        estimate.txt = "HR"
+      xlab <- "Hazard Ratio"
     }else if(isFitLogit(regr.obj[[1]])){
-      if (is.null(xlab))
-        xlab = "Odds Ratio"
-      
-      if (is.null(estimate.txt))
-        estimate.txt = "OR"
+      xlab <- "Odds Ratio"
     }
   }
   
-  if (is.null(zero)){
+  if (missing(estimate.txt)){
+    if (isFitCoxPH(regr.obj[[1]])){
+      estimate.txt <- "HR"
+    }else if(isFitLogit(regr.obj[[1]])){
+      estimate.txt <- "OR"
+    }
+  }
+  
+  if (missing(xlog)){
     if (isFitCoxPH(regr.obj[[1]]) ||
-      isFitLogit(regr.obj[[1]]))
-      zero = 1
-    else
-      zero = 0
+          isFitLogit(regr.obj[[1]])){
+      xlog <- TRUE
+      if (missing(zero))
+        zero <- 1
+      if (missing(exp))
+        exp <- TRUE
+    }else{
+      xlog <- FALSE
+      if (missing(zero))
+        zero <- 0
+      if (missing(exp))
+        exp <- FALSE
+    }
   }
   
   models_fit_fp_data = getModelData4Forestplot(regr.obj = regr.obj,
@@ -101,11 +103,6 @@ forestplotCombineRegrObj <- function(
                                                variablesOfInterest.regexp = variablesOfInterest.regexp,
                                                ref_labels = ref_labels,
                                                add_first_as_ref = add_first_as_ref)
-  
-  t.clr <- fpColors(box="royalblue",
-    lines="darkblue", 
-    summary="royalblue", 
-    zero=col.zero)
   
   rn <- list()
   t.coef <- c(NA)
@@ -120,14 +117,17 @@ forestplotCombineRegrObj <- function(
       t.high <- append(t.high, NA)
       t.is_ref <- append(t.is_ref, FALSE)
     }
-    if (length(reference.names) > 1 || is.null(reference.names) == FALSE){
+    if (!missing(reference.names)){
       rn <- append(rn, reference.names[i])
       t.coef <- append(t.coef, NA)
       t.low <- append(t.low, NA)
       t.high <- append(t.high, NA)
     }
     raw_row_names <- as.list(rownames(models_fit_fp_data[[i]]))
-    if (is.function(rowname.fn)){
+    if (!missing(rowname.fn)){
+      if (is.character(rowname.fn))
+        rowname.fn <- get(rowname.fn)
+      
       for(c in 1:length(raw_row_names))
         raw_row_names[[c]] <- rowname.fn(raw_row_names[[c]])
     }
@@ -137,11 +137,6 @@ forestplotCombineRegrObj <- function(
     t.high <- append(t.high, models_fit_fp_data[[i]][, "high"])
     t.is_ref <- append(t.is_ref, is.na(models_fit_fp_data[[i]][, "p_val"]))
   }
-  
-  xticks <- getTicks(low = t.low, 
-    high = t.high, 
-    clip = clip, 
-    exp = exp)
   
   rn <- append("Variable", rn)
   
@@ -159,24 +154,19 @@ forestplotCombineRegrObj <- function(
     rn,
     col2)
   
-  b_size <- rep(box.default.size, length(t.coef))
-  is.summary <- c(TRUE, rep(FALSE, length(t.coef)-1))
+  if (missing(is.summary))
+    is.summary <- c(TRUE, rep(FALSE, length(t.coef)-1))
   
   forestplot2(rn, 
     xlim       = c(0,10),
     mean       = t.coef, 
     lower      = t.low, 
     upper      = t.high,
-    col        = t.clr,
     clip       = clip,
-    boxsize    = b_size,
-    xticks     = xticks,
     is.summary = is.summary,
     zero       = zero,
     xlab       = xlab,
     xlog       = xlog,
     ...)
   
-  if (is.null(plot_title) == FALSE)
-    title(main=plot_title)
 }

@@ -1,19 +1,18 @@
 #' Foresplot for multiple models
 #' 
-#' Plot survival objects with different lines for each survival object.
-#' This gives a very nice overview of how different outcomes compare
-#' but can also be used for comparing different methods as long as they
-#' have the same variable names.
+#' Plot different model fits with similar variables in order to 
+#' compare the model's estimates and confidence intervals. Each
+#' model is represented by a separate line on top of eachother
+#' and are therefore ideal for comparing different models. This 
+#' extra appealing when you have lots of variables included in
+#' the models.
 #' 
 #' @param regr.obj A regression model object. It should be of coxph, crr or glm class.
 #'   Warning: The glm is not fully tested.
-#' @param title The title of the plot. Optional
-#' @param clip Lower and upper limits for clipping confidence intervals to arrows
-#' @param col.zero The color of the zero effect line (HR=1)
 #' @param skip.variables Which variables to use. The variables should be the 
 #'   names of the fit output and not the true output names if you're using
 #'   the rowname_translate_function. 
-#' @param insertEmptyRows Add empty rows. This can either be a 
+#' @param add.empty_row Add empty rows. This can either be a 
 #'   vector or a list. 
 #'   When you have a vector the number indicates the row number where 
 #'   the empty row should be added, the format is: c(3, 5).
@@ -29,42 +28,38 @@
 #'   empty rows between groups.
 #' @param box.default.size The size of the boxes indicating the 
 #'   estimate in the forestplot. Default is the p-value.
-#' @param rowname.fn A function that takes a rowname and sees if it needs
-#'   beautifying. The function has only one parameter the coefficients name and should
-#'   return a string or expression. 
-#' @param xlab The label of the x-axis
-#' @param xlog If TRUE, x-axis tick marks are exponentiated
-#' @param estimate.txt The text of the estimate, usually HR for hazard ratio, OR for 
-#'  odds ratio
-#' @param zero Indicates what is zero effect. For survival/logistic fits the zero is
-#'   1 while in most other cases it's 0.
-#' @param ... Passed to \code{\link{forestplot2}}()
-#' @return Does not return anything
-#' 
-#' @seealso \code{\link{forestplot2}}
 #' 
 #' @example inst/examples/forestplotRegrObj_example.R
 #' 
 #' @importFrom Gmisc insertRowAndKeepAttr
 #' @importFrom Gmisc forestplot2
 #' 
-#' @author max
+#' @inheritParams forestplotCombineRegrObj
+#' @inheritParams Gmisc::forestplot2
+#' 
+#' @family \code{\link[Gmisc]{forestplot2}} wrappers
 #' @export
 forestplotRegrObj <- function(  
   regr.obj, 
-  title            = NULL,
-  clip             = c(-Inf, Inf), 
-  col.zero         = "lightgray",
-  skip.variables   = NULL,
-  insertEmptyRows  = NULL,
-  order.regexps    = NULL,
-  order.addrows    = FALSE,
-  box.default.size = NULL,
-  rowname.fn       = NULL,
-  xlab             = NULL,
-  xlog             = NULL,
-  estimate.txt     = NULL,
-  zero             = NULL,
+  col,
+  skip.variables,
+  add.empty_row,
+  order.regexps,
+  order.addrows,
+  box.default.size,
+  rowname.fn,
+  xlab,
+  xlog,
+  estimate.txt     = xlab,
+  zero,
+  get_box_size = function(p_values, 
+                           variable_count, 
+                           box.default.size, 
+                           significant = .05){
+    b_size <- c(NA, rep(box.default.size, variable_count))
+    b_size[p_values < significant] <- box.default.size*1.5
+    return(b_size)
+  },
   ...)
 {
   # Treat always as multiple regression object fits
@@ -75,28 +70,35 @@ forestplotRegrObj <- function(
   
   # Initiate some standard values if the user
   # hasn't supplied any
-  if (is.null(xlab) ||
-    is.null(estimate.txt)){
+  if (missing(xlab)){
     if (isFitCoxPH(regr.obj[[1]])){
-      if (is.null(xlab))
         xlab <- "Hazard Ratio"
-      
-      if (is.null(estimate.txt))
-        estimate.txt <- "HR"
-      
-      if (is.null(xlog))
-        xlog = TRUE
     }else if(isFitLogit(regr.obj[[1]])){
-      if (is.null(xlab))
-        xlab <- "Odds Ratio"
-      
-      if (is.null(estimate.txt))
-        estimate.txt <- "OR"
-    
-      if (is.null(xlog))
-        xlog <- TRUE
+      xlab <- "Odds Ratio"
     }
   }
+  
+  if (missing(estimate.txt)){
+    if (isFitCoxPH(regr.obj[[1]])){
+      estimate.txt <- "HR"
+    }else if(isFitLogit(regr.obj[[1]])){
+      estimate.txt <- "OR"
+    }
+  }
+  
+  if (missing(xlog)){
+    if (isFitCoxPH(regr.obj[[1]]) ||
+          isFitLogit(regr.obj[[1]])){
+      xlog <- TRUE
+      if (missing(zero))
+        zero <- 1
+    }else{
+      xlog <- FALSE
+      if (missing(zero))
+        zero <- 0
+    }
+  }
+  
   
   if (is.null(zero)){
     if (isFitCoxPH(regr.obj[[1]]) ||
@@ -176,7 +178,7 @@ forestplotRegrObj <- function(
   # models against
   fit_data <- prGetFpDataFromFit(regr.obj[[1]],
     conf.int = 0.95,
-    exp = xlog)
+    exp = exp)
   models_fit_fp_data <- list(fit_data)
   if (length(regr.obj) > 1){
     for(i in 2:length(regr.obj)){
@@ -193,46 +195,57 @@ forestplotRegrObj <- function(
   
   # Change the order according to a regexp vector
   greps <- list()
-  if (is.null(order.regexps) == FALSE && 
-    is.vector(order.regexps) && 
-    is.character(order.regexps)){
-    
-    rn <- rownames(models_fit_fp_data[[1]])
-    # Use the first one since they all should have the same rownames
-    for (expression in order.regexps) {
-      matches <- grep(expression, rn)
-      new_vars <- setdiff(matches, unlist(greps))
-      if (length(new_vars) > 0){
-        greps <- append(greps, list(new_vars))
-      }
+  if (!missing(order.regexps)){
+    if(is.vector(order.regexps) && 
+      is.character(order.regexps)){
+        for (i in 1:length(models_fit_fp_data)){
+          rn <- rownames(models_fit_fp_data[[i]])
+          # Use the first one since they all should have the same rownames
+          for (expression in order.regexps){
+            matches <- grep(expression, rn)
+            new_vars <- setdiff(matches, 
+                                unlist(greps, use.names = FALSE))
+            if (length(new_vars) > 0){
+              greps <- append(greps, 
+                              list(new_vars))
+            }
+          }
+          
+          models_fit_fp_data[[i]] <- 
+            models_fit_fp_data[[i]][unlist(greps, use.names = FALSE), ,drop=FALSE]
+          
+          if (!missing(order.addrows) && length(greps) > 0){
+            line_row <- 0
+            for (t in 1:(length(greps)-1)) {
+              line_row <- line_row + length(greps[[t]])  + 1
+              for(i in 1:length(models_fit_fp_data)){
+                  dels_fit_fp_data[[i]] <- 
+                    insertRowAndKeepAttr(models_fit_fp_data[[i]], 
+                                         r=line_row, ,
+                                         rName= "* EMPTY ROW *")
+              }
+            }
+          }
+        }
+        
+        no_rows <- sapply(models_fit_fp_data, nrow)
+        if (any(no_rows != no_rows[1]))
+          stop("Failed to get the same number of rows after ordering the rows",
+               " according to the order.regexps/addrows arguments. The number of rows",
+               " returned were ", paste(no_rows, collapse=", "), " rows for",
+               " the different objects")
+    }else{
+      stop("Your order.regexps should be of a vector of characters.")
     }
-    
-    # Sort each list
-    for (i in 1:length(models_fit_fp_data)){
-      models_fit_fp_data[[i]] <- models_fit_fp_data[[i]][unlist(greps), ]
-    }
-  }
+  } 
   
-  if (order.addrows && length(greps) > 0){
-    line_row <- 0
-    for (t in 1:(length(greps)-1)) {
-      line_row <- line_row + length(greps[[t]])  + 1
-      for(i in 1:length(models_fit_fp_data)){
-        models_fit_fp_data[[i]] <- insertRowAndKeepAttr(models_fit_fp_data[[i]], 
-          r=line_row, 
-          rName="* EMPTY ROW *") 
-      }
-    }
-  }
   
   # Add empty rows if specified
-  if (is.null(insertEmptyRows) == FALSE && (
-      length(insertEmptyRows) > 1 || 
-      is.list(insertEmptyRows))){
+  if (!missing(add.empty_row)){
     
     count = 0
     # Walk through the additions
-    for(row_nr in insertEmptyRows){
+    for(row_nr in add.empty_row){
       # Add to each model
       for(i in 1:length(models_fit_fp_data)){
         if (is.list(row_nr)){
@@ -254,9 +267,10 @@ forestplotRegrObj <- function(
   
   getVariables2Keep <- function (fit_data, skip.variables){
     rn <- rownames(fit_data)
+    #TODO: change to map variable fn
     keep.variables = rep(TRUE, length=length(rn))
     # Find those variables that are set to be skipped
-    if (is.null(skip.variables) == FALSE){
+    if (!missing(skip.variables)){
       for(sk in skip.variables){
         keep.variables = !(sk == rn) & keep.variables
       }
@@ -264,25 +278,31 @@ forestplotRegrObj <- function(
     return(keep.variables)
   }
   
-  keep.variables <- getVariables2Keep(models_fit_fp_data[[1]],
-    skip.variables = skip.variables)
-  
   geRownames <- function(fit_data, 
-    rowname_transle_function,
-    keep.variables){
+                         rn_translate_fn){
     if (is.matrix(fit_data) == FALSE){
       stop("You must provide a proper matrix from the getForsetplotData functions")
     }
     
+    keep.variables <- getVariables2Keep(fit_data,
+                                        skip.variables = skip.variables)
+    
     # Prepare the row names
     rn <- rownames(fit_data)
+    
+    keep.variables <- getVariables2Keep(fit_data,
+                                        skip.variables = skip.variables)
+    
     
     # Modify the row names so that you can have
     # true expressions if you so wish
     rn <- as.list(rn[keep.variables])
-    if (is.function(rowname_transle_function)){
+    if (!missing(rn_translate_fn)){
+      if (is.character(rn_translate_fn))
+        rn_translate_fn <- get(rn_translate_fn)
+      
       for (i in 1:length(rn)){
-        rn[[i]] <- rowname_transle_function(rn[[i]]) 
+        rn[[i]] <- rn_translate_fn(rn[[i]]) 
       }
     }
     
@@ -291,14 +311,17 @@ forestplotRegrObj <- function(
   }
   
   col1 <- geRownames(models_fit_fp_data[[1]], 
-    rowname_transle_function = rowname.fn,
-    keep.variables = keep.variables)
+                     rn_translate_fn = rowname.fn)
+  
   # The top is the header and should be bold
   is.summary <- c(TRUE, rep(FALSE, length(col1)-1))
   
   # Select the variables to display
   # and add empty top row
   for(i in 1:length(models_fit_fp_data)){
+    keep.variables <- getVariables2Keep(models_fit_fp_data[[i]],
+                                        skip.variables = skip.variables)
+    
     models_fit_fp_data[[i]] <- models_fit_fp_data[[i]][keep.variables, ,drop=FALSE]
     models_fit_fp_data[[i]] <- 
       insertRowAndKeepAttr(models_fit_fp_data[[i]], 
@@ -312,19 +335,11 @@ forestplotRegrObj <- function(
   
   # Make the box smaller if there are many
   # models that share the same space
-  if (is.null(box.default.size)){
+  if (missing(box.default.size)){
     box.default.size <- .75/length(models_fit_fp_data)
   }
   
   variable_count <- nrow(models_fit_fp_data[[1]])-1
-  get_box_size <- function(p_values, 
-    variable_count, 
-    box.default.size, 
-    significant = .05){
-    b_size <- c(NA, rep(box.default.size, variable_count))
-    b_size[p_values < significant] <- box.default.size*1.5
-    return(b_size)
-  }
   b_size <- get_box_size(p_values = models_fit_fp_data[[1]][, "p_val"],
     variable_count = variable_count,
     box.default.size = box.default.size)
@@ -395,9 +410,5 @@ forestplotRegrObj <- function(
               is.summary           = is.summary,
               zero                 = zero,
               ...)
-  
-  # Plot a titla
-  if (is.null(title) == FALSE)
-    title(main=list(title))
   
 }
