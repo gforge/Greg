@@ -94,7 +94,10 @@ fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
 printCrudeAndAdjustedModel(fit_mtcar, 
                            add_references=TRUE,
                            ctable=TRUE, 
-                           desc_column = TRUE)
+                           desc_column = TRUE,
+                           digits=1,
+                           desc_args = caDescribeOpts(digits = 1,
+                                                      colnames = c("Avg.")))
 
 printCrudeAndAdjustedModel(fit_mtcar, 
                            add_references=TRUE,
