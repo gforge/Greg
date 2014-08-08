@@ -1,5 +1,18 @@
 NEWS for the Greg package
 
+Changes for 1.0.0
+-----------------
+* Changed the desc_ arguments into a list using the caDescribeOpts
+* Refactored major parts of the printCrudeAndAdjusted
+* Changed to use model.frame() under the hood - hopefully stabilizing the functions
+  as it uses a more standard R-approach
+* The update() now actively runs under the model environment
+* The plotHR is updated and can now plot contrasts if provided a rms-package regression
+  allowing for efficient comparison of multiple models. Internal functions have also
+  been externalized.
+* All current unit tests now pass and several new ones have been added
+* Implemented DRY roxygen2 code
+
 Changes for 0.7.1
 -----------------
 * Internalized some of the private function documentation
@@ -7,8 +20,10 @@ Changes for 0.7.1
 
 Changes for 0.7.0
 -----------------
-* Major remake of the print-/getCrudeAndAdjusted so that they depend on prMapVariable2Name and everything is now centered around the variables 
-* The printCrudeAndAdjustedModel no longer capitalizes the first letter in order to allow all lower case var names
+* Major remake of the print-/getCrudeAndAdjusted so that they depend on prMapVariable2Name
+  and everything is now centered around the variables 
+* The printCrudeAndAdjustedModel no longer capitalizes the first letter in order 
+  to allow all lower case var names
 * Added imputation compatibility with the Hmisc::fit.mult.impute function
 * Added multiple test cases for stability
 
@@ -21,9 +36,12 @@ Changes for 0.6.1
 
 Changes for 0.6.0.1
 -------------------
-* The getCrudeAndAdjusted now handles the intercept term better for naming the rows (Thanks to Victor)
-* The getCrudeAndAdjusted/printCrudeAndAdjusted now use 'model' instead 'fit' for the model regression object name
-* The printCrudeAndAdjusted now calls print on the htmlTable_str object so that it appears as expected
+* The getCrudeAndAdjusted now handles the intercept term better for naming the 
+  rows (Thanks to Victor)
+* The getCrudeAndAdjusted/printCrudeAndAdjusted now use 'model' instead 'fit' for 
+  the model regression object name
+* The printCrudeAndAdjusted now calls print on the htmlTable_str object so that it 
+  appears as expected
 * Added unit tests
 
 Changes for 0.6.0.0
