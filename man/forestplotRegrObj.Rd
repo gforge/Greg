@@ -3,27 +3,22 @@
 \alias{forestplotRegrObj}
 \title{Foresplot for multiple models}
 \usage{
-forestplotRegrObj(regr.obj, title = NULL, clip = c(-Inf, Inf),
-  col.zero = "lightgray", skip.variables = NULL, insertEmptyRows = NULL,
-  order.regexps = NULL, order.addrows = FALSE, box.default.size = NULL,
-  rowname.fn = NULL, xlab = NULL, xlog = NULL, estimate.txt = NULL,
-  zero = NULL, ...)
+forestplotRegrObj(regr.obj, col, skip.variables, add.empty_row, order.regexps,
+  order.addrows, box.default.size, rowname.fn, xlab, xlog,
+  estimate.txt = xlab, zero, get_box_size = function(p_values,
+  variable_count, box.default.size, significant = 0.05) {     b_size <- c(NA,
+  rep(box.default.size, variable_count))     b_size[p_values < significant] <-
+  box.default.size * 1.5     return(b_size) }, ...)
 }
 \arguments{
 \item{regr.obj}{A regression model object. It should be of coxph, crr or glm class.
 Warning: The glm is not fully tested.}
 
-\item{title}{The title of the plot. Optional}
-
-\item{clip}{Lower and upper limits for clipping confidence intervals to arrows}
-
-\item{col.zero}{The color of the zero effect line (HR=1)}
-
 \item{skip.variables}{Which variables to use. The variables should be the
 names of the fit output and not the true output names if you're using
 the rowname_translate_function.}
 
-\item{insertEmptyRows}{Add empty rows. This can either be a
+\item{add.empty_row}{Add empty rows. This can either be a
 vector or a list.
 When you have a vector the number indicates the row number where
 the empty row should be added, the format is: c(3, 5).
@@ -41,15 +36,11 @@ that separate the different groups. Set this to true if you want to add these
 empty rows between groups.}
 
 \item{box.default.size}{The size of the boxes indicating the
-estimate in the forestplot. Default is the p-value.}
+  estimate in the forestplot. Default is the p-value.}
 
 \item{rowname.fn}{A function that takes a rowname and sees if it needs
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
-
-\item{xlab}{The label of the x-axis}
-
-\item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 
 \item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
 odds ratio}
@@ -57,16 +48,21 @@ odds ratio}
 \item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
 1 while in most other cases it's 0.}
 
-\item{...}{Passed to \code{\link{forestplot2}}()}
-}
-\value{
-Does not return anything
+\item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
+
+\item{col}{See \code{\link{fpColors}}}
+
+\item{xlab}{x-axis label}
+
+\item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 }
 \description{
-Plot survival objects with different lines for each survival object.
-This gives a very nice overview of how different outcomes compare
-but can also be used for comparing different methods as long as they
-have the same variable names.
+Plot different model fits with similar variables in order to
+compare the model's estimates and confidence intervals. Each
+model is represented by a separate line on top of eachother
+and are therefore ideal for comparing different models. This
+extra appealing when you have lots of variables included in
+the models.
 }
 \examples{
 org.par <- par("ask" = TRUE)
@@ -111,10 +107,7 @@ forestplotRegrObj (regr.obj = list(fit1, fit2),
   
 par(org.par)
 }
-\author{
-max
-}
 \seealso{
-\code{\link{forestplot2}}
+Other \code{\link[Gmisc]{forestplot2}} wrappers: \code{\link{forestplotCombineRegrObj}}
 }
 

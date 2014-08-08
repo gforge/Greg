@@ -10,22 +10,24 @@ getModelData4Forestplot(regr.obj, exp, variablesOfInterest.regexp, ref_labels,
 \item{regr.obj}{A list with all the fits that have variables that are to
 be identified through the regular expression}
 
+\item{exp}{Report in exponential form. Default true since the function was built for
+use with survival models.}
+
 \item{variablesOfInterest.regexp}{A regular expression identifying the variables
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
 
-\item{exp}{Report in exponential form. Default true since the function was built for
-use with survival models.}
+\item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
+fits.}
 
 \item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
 if exp() and the confidence interval 0.}
-
-\item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
-  fits.}
 }
 \description{
-A helper function for \code{\link{forestplotCombineRegrObj}}
+A helper function for \code{\link{forestplotCombineRegrObj}}. Extracts
+the data from the regression model fits and returns a \code{list}
+with model data gathered by the function \code{\link{prGetFpDataFromFit}}
 }
 \examples{
 org.par <- par("ask" = TRUE)
@@ -71,7 +73,5 @@ forestplotCombineRegrObj (
 
 par(org.par)
 }
-\author{
-max
-}
+\keyword{internal}
 

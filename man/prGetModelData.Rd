@@ -10,16 +10,12 @@ prGetModelData(x)
 }
 \value{
 data.frame
-
-TODO: Check if this cannot be replaced by model.frame()
 }
 \description{
-Combines the \code{\link{prExtractPredictorsFromModel}}
-with the \code{\link{prExtractOutcomeFromModel}} to generate
-a full model dataset
-}
-\author{
-max
+Returns the raw variables from the original data
+frame using the \code{\link[base]{get_all_vars}}
+but with the twist that it also performs any associated
+subsetting based on the model's \code{subset} argument.
 }
 \keyword{internal}
 

@@ -5,7 +5,8 @@
 \alias{getCrudeAndAdjustedModelData.rms}
 \title{This function helps with printing regression models}
 \usage{
-getCrudeAndAdjustedModelData(model, level, ...)
+getCrudeAndAdjustedModelData(model, level = 0.95,
+  remove_interaction_vars = TRUE, ...)
 
 \method{getCrudeAndAdjustedModelData}{default}(model, level = 0.95,
   remove_interaction_vars = TRUE, ...)
@@ -18,7 +19,8 @@ getCrudeAndAdjustedModelData(model, level, ...)
 
 \item{level}{The confidence interval level}
 
-\item{remove_interaction_vars}{Removes the interaction terms as this makes no sense in the output}
+\item{remove_interaction_vars}{Removes the interaction terms as they in
+the raw state are difficult to understand}
 
 \item{...}{Not used}
 }
@@ -79,13 +81,6 @@ fit <- cph(s ~ x1 + x2 + x3 + x4*x5, data=ds)
 data_matrix <- getCrudeAndAdjustedModelData(fit)
 
 print(data_matrix)
-}
-\author{
-max
-
-max
-
-max
 }
 \seealso{
 \code{\link{printCrudeAndAdjustedModel}}

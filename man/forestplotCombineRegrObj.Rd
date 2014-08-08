@@ -3,12 +3,10 @@
 \alias{forestplotCombineRegrObj}
 \title{Compares different scores in different regression objects.}
 \usage{
-forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp,
-  plot_title = NULL, clip = c(-Inf, Inf), col.zero = "lightgray",
-  reference.names = NULL, rowname.fn = NULL, box.default.size = 0.5,
-  xlab = NULL, xlog = FALSE, estimate.txt = NULL, zero = NULL,
-  exp = TRUE, add_first_as_ref = FALSE, ref_txt = "ref.",
-  ref_labels = c(), digits = 1, ...)
+forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp, reference.names,
+  rowname.fn, xlab, xlog, estimate.txt, zero, is.summary, exp = xlog,
+  add_first_as_ref = FALSE, ref_txt = "ref.", ref_labels = c(),
+  digits = 1, ...)
 }
 \arguments{
 \item{regr.obj}{A list with all the fits that have variables that are to
@@ -18,23 +16,11 @@ be identified through the regular expression}
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
 
-\item{plot_title}{The title of the plot.}
-
-\item{clip}{If the plot confidence bands should be clipped}
-
-\item{col.zero}{The color of the vertical zero-effect line}
-
 \item{reference.names}{Additional reference names to be added to each model}
 
 \item{rowname.fn}{A function that takes a rowname and sees if it needs
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
-
-\item{box.default.size}{Override the default box size based on precision}
-
-\item{xlab}{The label of the x-axis}
-
-\item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 
 \item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
 odds ratio}
@@ -56,10 +42,7 @@ fits.}
 
 \item{digits}{Number of digits to use for the estimate output}
 
-\item{...}{Passed to forestplot2}
-}
-\value{
-void
+\item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
 }
 \description{
 Creates a composite from different regression objects into
@@ -110,10 +93,7 @@ forestplotCombineRegrObj (
 
 par(org.par)
 }
-\author{
-max
-}
 \seealso{
-\code{\link{forestplot2}}
+Other \code{\link[Gmisc]{forestplot2}} wrappers: \code{\link{forestplotRegrObj}}
 }
 

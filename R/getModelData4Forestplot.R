@@ -1,27 +1,17 @@
 #' Get model data
 #' 
-#' A helper function for \code{\link{forestplotCombineRegrObj}}
+#' A helper function for \code{\link{forestplotCombineRegrObj}}. Extracts
+#' the data from the regression model fits and returns a \code{list}
+#' with model data gathered by the function \code{\link{prGetFpDataFromFit}}
 #' 
-#' @param regr.obj A list with all the fits that have variables that are to 
-#'   be identified through the regular expression 
-#' @param variablesOfInterest.regexp A regular expression identifying the variables
-#'   that are of interest of comparing. For instance it can be "(score|index|measure)"
-#'   that finds scores in different models that should be compared.
-#' @param exp Report in exponential form. Default true since the function was built for 
-#'   use with survival models.
-#' @param add_first_as_ref If you want that the first variable should be reference for 
-#'   that group of variables. The ref is a variable with the estimate 1 or 0 depending
-#'   if exp() and the confidence interval 0.
-#' @param ref_labels If add_first_as_ref is TRUE then this vector is used for the model
-#'   fits. 
-#' 
+#' @inheritParams forestplotCombineRegrObj
 #' @example inst/examples/forestplotCombineRegrObj_example.R
-#' @author max
+#' @keywords internal
 getModelData4Forestplot<- function(regr.obj, 
-  exp, 
-  variablesOfInterest.regexp,
-  ref_labels,
-  add_first_as_ref){
+                                   exp, 
+                                   variablesOfInterest.regexp,
+                                   ref_labels,
+                                   add_first_as_ref){
   models_fit_fp_data <- list()
   for(i in 1:length(regr.obj)){
     bound <- prGetFpDataFromFit(regr.obj[[i]],
