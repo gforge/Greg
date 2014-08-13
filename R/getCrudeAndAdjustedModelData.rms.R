@@ -5,6 +5,7 @@
 getCrudeAndAdjustedModelData.rms <- function(model, 
                                              level=.95, 
                                              remove_interaction_vars = TRUE, 
+                                             remove_strata = FALSE,
                                              ...){
   
   # The skip intercept is not an option as the summary doesn't include the intercept
@@ -78,7 +79,7 @@ getCrudeAndAdjustedModelData.rms <- function(model,
                                    remove_interaction_vars = remove_interaction_vars)
   if (length(var_names) == 0)
     stop("You have no variables that can be displayed as adjusted/unadjusted",
-      " since they all are part of an interaction, spline or strata.")
+         " since they all are part of an interaction, spline or strata.")
 
   if (grepl("intercept", coef(model)[1], ignore.case = TRUE))
     warning("The rms-funcitons allow no easy way of extracting the intercept",
@@ -93,9 +94,18 @@ getCrudeAndAdjustedModelData.rms <- function(model,
   unadjusted <- c()
   
   for(variable in var_names){
-    
+    frml_4_single_var <- 
+      paste(".~", 
+            ifelse(is.null(attr(var_names, "strata")) ||
+                     remove_strata,
+                   variable,
+                   paste(variable,
+                         paste(attr(var_names, "strata"),
+                               collapse="+"),
+                         sep="+")))
+            
     # Run the same model but with only one variable
-    model_only1 <- prEnvModelCall(model, update, paste(".~", variable))
+    model_only1 <- prEnvModelCall(model, update, frml_4_single_var)
 
     if ("boot.coef" %in% names(model)){
       # Redo bootstrap if this was a bootstrapped

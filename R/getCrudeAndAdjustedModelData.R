@@ -24,6 +24,9 @@
 #' @param level The confidence interval level
 #' @param remove_interaction_vars Removes the interaction terms as they in 
 #'  the raw state are difficult to understand
+#' @param remove_strata Strata should most likely not be removed in the crude
+#'  version. If you want to force the removal of stratas you can specify the
+#'  \code{remove_strata = TRUE}
 #' @param ... Not used
 #' @return Returns a matrix with the columns: 
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
@@ -39,15 +42,17 @@
 #' @rdname getCrudeAndAdjustedModelData
 #' @export
 getCrudeAndAdjustedModelData <- function(model, level=.95, 
-                                         remove_interaction_vars = TRUE, ...)
+                                         remove_interaction_vars = TRUE, 
+                                         remove_strata = FALSE, ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData default
 #' @export
 #' @keywords internal
-getCrudeAndAdjustedModelData.default <- 
-  function(model, level=.95, remove_interaction_vars = TRUE, ...){
+getCrudeAndAdjustedModelData.default <- function(model, level=.95, 
+                                                 remove_interaction_vars = TRUE, 
+                                                 remove_strata = FALSE, ...){
   
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
@@ -129,8 +134,21 @@ getCrudeAndAdjustedModelData.default <-
   for(variable in var_names){
     if (!grepl("intercept", variable, 
                ignore.case = TRUE)){
+      
+      # We should keep any strata information when running the models
+      # TODO: Add the nlmn | options
+      frml_4_single_var <- 
+        paste(".~", 
+              ifelse(is.null(attr(var_names, "strata")) ||
+                       remove_strata,
+                     variable,
+                     paste(variable,
+                           paste(attr(var_names, "strata"),
+                                 collapse="+"),
+                           sep="+")))
+      
       # Run the same model but with only one variable
-      model_only1 <- prEnvModelCall(model, update, paste(".~", variable))
+      model_only1 <- prEnvModelCall(model, update, frml_4_single_var)
       
       # Get the coefficients processed with some advanced
       # round part()

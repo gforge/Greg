@@ -6,13 +6,13 @@
 \title{This function helps with printing regression models}
 \usage{
 getCrudeAndAdjustedModelData(model, level = 0.95,
-  remove_interaction_vars = TRUE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
 
 \method{getCrudeAndAdjustedModelData}{default}(model, level = 0.95,
-  remove_interaction_vars = TRUE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
 
 \method{getCrudeAndAdjustedModelData}{rms}(model, level = 0.95,
-  remove_interaction_vars = TRUE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
 }
 \arguments{
 \item{model}{The regression model}
@@ -21,6 +21,10 @@ getCrudeAndAdjustedModelData(model, level = 0.95,
 
 \item{remove_interaction_vars}{Removes the interaction terms as they in
 the raw state are difficult to understand}
+
+\item{remove_strata}{Strata should most likely not be removed in the crude
+version. If you want to force the removal of stratas you can specify the
+\code{remove_strata = TRUE}}
 
 \item{...}{Not used}
 }

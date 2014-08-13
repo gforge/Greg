@@ -212,6 +212,16 @@ test_that("Strata should be still present in the crude format",{
   expect_equivalent(x["x2", "Crude"],
                     exp(coef(fit)))
   
+  fit <- coxph(Surv(time, status) ~ x1 + x2 + strata(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit, remove_strata = TRUE)
+  fit <- update(fit, . ~ x1) 
+  expect_equivalent(x["x1", "Crude"],
+                    exp(coef(fit)))
+  
+  fit <- update(fit, . ~ x2) 
+  expect_equivalent(x["x2", "Crude"],
+                    exp(coef(fit)))
+  
   ddist <<- datadist(test1)
   options(datadist="ddist")
   fit <- cph(Surv(time, status) ~ x1 + x2 + strat(sex), test1) 
@@ -222,6 +232,16 @@ test_that("Strata should be still present in the crude format",{
                     exp(coef(fit)))
   
   fit <- update(fit, . ~ x2 + strat(sex)) 
+  expect_equivalent(x["x2", "Crude"],
+                    exp(coef(fit)))
+
+  fit <- cph(Surv(time, status) ~ x1 + x2 + strat(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit, remove_strata = TRUE)
+  fit <- update(fit, . ~ x1) 
+  expect_equivalent(x["x1", "Crude"],
+                    exp(coef(fit)))
+  
+  fit <- update(fit, . ~ x2) 
   expect_equivalent(x["x2", "Crude"],
                     exp(coef(fit)))
 })
