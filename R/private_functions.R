@@ -148,6 +148,12 @@ prGetModelVariables <- function(model,
     vars <- attr(model$terms, "term.labels")
   }
   
+  strata <- NULL
+  if (any(grepl("^strat[a]{0,1}\\(", vars))){
+    strata <- vars[grep("^strat[a]{0,1}\\(", vars)]
+    vars <- vars[-grep("^strat[a]{0,1}\\(", vars)]
+  }
+  
   # Remove I() as these are not true variables
   unwanted_vars <- grep("^I\\(.*$", vars)
   if (length(unwanted_vars) > 0){
@@ -192,6 +198,9 @@ prGetModelVariables <- function(model,
   
   clean_vars <- unique(vars)
   attributes(clean_vars) <- attributes(vars)
+  if (!is.null(strata))
+    attr(clean_vars, "strata") <- strata
+  
   return(clean_vars)
 }
 
