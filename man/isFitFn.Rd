@@ -2,11 +2,7 @@
 \name{isFitCoxPH}
 \alias{isFitCoxPH}
 \alias{isFitLogit}
-\title{Functions for checking regression type
-
-The \emph{isFitCoxPH} A simple check if object inherits either
-"coxph" or "crr" class indicating
-that it is a survival function.}
+\title{Functions for checking regression type}
 \usage{
 isFitCoxPH(fit)
 
@@ -20,8 +16,6 @@ isFitLogit(fit)
  otherwise it returns \code{FALSE}.
 }
 \description{
-Functions for checking regression type
-
 The \emph{isFitCoxPH} A simple check if object inherits either
 "coxph" or "crr" class indicating
 that it is a survival function.

@@ -13,18 +13,7 @@ prCaAddReference(vn, var_order, values, add_references_pos,
 
 \item{values}{The value matrix}
 
-\item{add_references_pos}{The position where a reference should be added. Sometimes
-you don't want the reference to be at the top, for instance if you have age groups
-then you may have < 25, 25-39, 40-55, > 55 and you have the reference to be 25-39 then
-you should set the reference list for \code{age_groups} as
-\code{add_references_pos = list(age_groups = 2)}
-so that you have the second group as the position for the reference.}
-
-\item{reference_zero_effect}{The reference zero effect}
-
 \item{ds}{The data set}
-
-\item{use_labels}{If labels should be used for row names}
 }
 \value{
 \code{matrix} A matrix with rgroup and n.rgroup attributes

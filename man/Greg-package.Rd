@@ -9,7 +9,7 @@ you work with regression models. While mych of the data presented by the
 standard regression output is useful and important - there is often a
 need for further simplifaction prior to publication. The methods implemented
 in this package are inspired by some of the top journals such as NEJM, BMJ,
-and other medical journals since this is my own research field.
+and other medical journals as this is my research field.
 }
 \section{Output functions}{
 

@@ -6,18 +6,18 @@
 \title{Output crude and adjusted model data}
 \usage{
 printCrudeAndAdjustedModel(model, order = FALSE, digits = 2,
-  ci_lim = c(-Inf, Inf), sprintf_ci_str = "\%s to \%s",
-  add_references = FALSE, add_references_pos = list(),
-  reference_zero_effect, groups, rowname.fn = NULL, use_labels = TRUE,
-  desc_column = FALSE, desc_args = caDescribeOpts(digits = digits),
-  impute_args, ...)
+  ci_lim = c(-Inf, Inf), sprintf_ci_str = "\%s to \%s", add_references,
+  add_references_pos, reference_zero_effect, groups, rowname.fn,
+  use_labels = TRUE, desc_column = FALSE,
+  desc_args = caDescribeOpts(digits = digits), impute_args, ...)
 
 \method{print}{printCrudeAndAdjusted}(x, rgroupCSSstyle = "", ...)
 
 \method{latex}{printCrudeAndAdjusted}(object, ...)
 }
 \arguments{
-\item{model}{A regression model or the output from \code{\link{getCrudeAndAdjusted}}}
+\item{model}{A regression model fit, i.e. the returned object from your
+regression function, or the output from \code{\link{getCrudeAndAdjusted}}}
 
 \item{order}{A vector with regular expressions for each group, use if youe
 want to reorder the groups in another way than what you've used in your original
@@ -114,8 +114,9 @@ Prints table for a fitted object. It prints by default a latex table but can
 also be converted into a HTML table that should be more compatible with common
 word processors.
 }
-\details{
-A word of warning: if you call this function and you've changed any of the variables
+\section{Warning}{
+
+If you call this function and you've changed any of the variables
 used in the original call, i.e. the premises are changed, this function will not
 remember the original values and the statistics will be faulty!
 }

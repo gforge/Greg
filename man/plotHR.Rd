@@ -94,9 +94,12 @@ The function does not return anything
 }
 \description{
 This function is a more specialized version of the \code{\link{termplot}()} function. It
-creates a simple plot with the spline against hazard ratio.
+creates a plot with the spline against hazard ratio. The plot can additianally have
+indicator of variable density and have multiple lines.
 }
-\details{
+\section{Multiple models in one plot}{
+
+
 The function allows for plotting multiple splines in one graph. Sometimes you
 might want to show more than one spline for the same variable. This allows
 you to create that comparison.
