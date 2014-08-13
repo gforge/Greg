@@ -191,3 +191,37 @@ test_that("Correct values for rows - glm", {
   expect_true(all(abs(data_matrix[grep("^x1", rownames(data_matrix)), 2:3] -
                     confint(fit_glm_ua)[-1,]) < .Machine$double.eps))
 })
+
+test_that("Strata should be still present in the crude format",{
+  # Create the simplest test data set 
+  library(rms)
+  test1 <- data.frame(time=c(4,3,1,1,2,2,3), 
+                status=c(1,1,1,0,1,1,0), 
+                x1=c(0,2,1,1,1,0,0), 
+                x2=c(1,3,5,2,0,9,1), # Additional to the coxph example 
+                sex=c(0,0,0,0,1,1,1)) 
+  # Fit a stratified model 
+  fit <- coxph(Surv(time, status) ~ x1 + x2 + strata(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit)
+  
+  fit <- update(fit, . ~ x1 + strata(sex)) 
+  expect_equivalent(x["x1", "Crude"],
+                    exp(coef(fit)))
+
+  fit <- update(fit, . ~ x2 + strata(sex)) 
+  expect_equivalent(x["x2", "Crude"],
+                    exp(coef(fit)))
+  
+  ddist <<- datadist(test1)
+  options(datadist="ddist")
+  fit <- cph(Surv(time, status) ~ x1 + x2 + strat(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit)
+  
+  fit <- update(fit, . ~ x1 + strat(sex)) 
+  expect_equivalent(x["x1", "Crude"],
+                    exp(coef(fit)))
+  
+  fit <- update(fit, . ~ x2 + strat(sex)) 
+  expect_equivalent(x["x2", "Crude"],
+                    exp(coef(fit)))
+})
