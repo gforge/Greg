@@ -27,6 +27,9 @@
 #' @param remove_strata Strata should most likely not be removed in the crude
 #'  version. If you want to force the removal of stratas you can specify the
 #'  \code{remove_strata = TRUE}
+#' @param remove_cluster Cluster information should most likely also retain
+#'  just as the \code{remove_strata} option. Clusters are sometimes used in
+#'  cox regression models, \code{\link[survival]{cluster}}
 #' @param ... Not used
 #' @return Returns a matrix with the columns: 
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
@@ -43,7 +46,8 @@
 #' @export
 getCrudeAndAdjustedModelData <- function(model, level=.95, 
                                          remove_interaction_vars = TRUE, 
-                                         remove_strata = FALSE, ...)
+                                         remove_strata = FALSE,
+                                         remove_cluster = FALSE, ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
 #' @rdname getCrudeAndAdjustedModelData
@@ -52,7 +56,8 @@ getCrudeAndAdjustedModelData <- function(model, level=.95,
 #' @keywords internal
 getCrudeAndAdjustedModelData.default <- function(model, level=.95, 
                                                  remove_interaction_vars = TRUE, 
-                                                 remove_strata = FALSE, ...){
+                                                 remove_strata = FALSE,
+                                                 remove_cluster = FALSE, ...){
   
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
@@ -137,15 +142,17 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
       
       # We should keep any strata information when running the models
       # TODO: Add the nlmn | options
+      vars_4_frml <- variable
+      if (!is.null(attr(var_names, "strata")) &&
+            !remove_strata)
+        vars_4_frml <- c(vars_4_frml, attr(var_names, "strata"))
+
+      if (!is.null(attr(var_names, "cluster")) &&
+            !remove_cluster)
+        vars_4_frml <- c(vars_4_frml, attr(var_names, "cluster"))
+      
       frml_4_single_var <- 
-        paste(".~", 
-              ifelse(is.null(attr(var_names, "strata")) ||
-                       remove_strata,
-                     variable,
-                     paste(variable,
-                           paste(attr(var_names, "strata"),
-                                 collapse="+"),
-                           sep="+")))
+        paste(".~", paste(vars_4_frml,collapse="+"))
       
       # Run the same model but with only one variable
       model_only1 <- prEnvModelCall(model, update, frml_4_single_var)

@@ -6,13 +6,16 @@
 \title{This function helps with printing regression models}
 \usage{
 getCrudeAndAdjustedModelData(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE,
+  remove_cluster = FALSE, ...)
 
 \method{getCrudeAndAdjustedModelData}{default}(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE,
+  remove_cluster = FALSE, ...)
 
 \method{getCrudeAndAdjustedModelData}{rms}(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE,
+  remove_cluster = FALSE, ...)
 }
 \arguments{
 \item{model}{The regression model}
@@ -25,6 +28,10 @@ the raw state are difficult to understand}
 \item{remove_strata}{Strata should most likely not be removed in the crude
 version. If you want to force the removal of stratas you can specify the
 \code{remove_strata = TRUE}}
+
+\item{remove_cluster}{Cluster information should most likely also retain
+just as the \code{remove_strata} option. Clusters are sometimes used in
+cox regression models, \code{\link[survival]{cluster}}}
 
 \item{...}{Not used}
 }

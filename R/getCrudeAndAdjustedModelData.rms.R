@@ -6,6 +6,7 @@ getCrudeAndAdjustedModelData.rms <- function(model,
                                              level=.95, 
                                              remove_interaction_vars = TRUE, 
                                              remove_strata = FALSE,
+                                             remove_cluster = FALSE,
                                              ...){
   
   # The skip intercept is not an option as the summary doesn't include the intercept
@@ -94,15 +95,20 @@ getCrudeAndAdjustedModelData.rms <- function(model,
   unadjusted <- c()
   
   for(variable in var_names){
+    
+    # We should keep any strata information when running the models
+    # TODO: Add the nlmn | options
+    vars_4_frml <- variable
+    if (!is.null(attr(var_names, "strata")) &&
+          !remove_strata)
+      vars_4_frml <- c(vars_4_frml, attr(var_names, "strata"))
+    
+    if (!is.null(attr(var_names, "cluster")) &&
+          !remove_cluster)
+      vars_4_frml <- c(vars_4_frml, attr(var_names, "cluster"))
+    
     frml_4_single_var <- 
-      paste(".~", 
-            ifelse(is.null(attr(var_names, "strata")) ||
-                     remove_strata,
-                   variable,
-                   paste(variable,
-                         paste(attr(var_names, "strata"),
-                               collapse="+"),
-                         sep="+")))
+      paste(".~", paste(vars_4_frml,collapse="+"))
             
     # Run the same model but with only one variable
     model_only1 <- prEnvModelCall(model, update, frml_4_single_var)
