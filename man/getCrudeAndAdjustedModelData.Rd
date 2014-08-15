@@ -6,13 +6,16 @@
 \title{This function helps with printing regression models}
 \usage{
 getCrudeAndAdjustedModelData(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE,
+  remove_cluster = FALSE, var_select, ...)
 
 \method{getCrudeAndAdjustedModelData}{default}(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE,
+  remove_cluster = FALSE, var_select, ...)
 
 \method{getCrudeAndAdjustedModelData}{rms}(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE, ...)
+  remove_interaction_vars = TRUE, remove_strata = FALSE,
+  remove_cluster = FALSE, var_select, ...)
 }
 \arguments{
 \item{model}{The regression model}
@@ -25,6 +28,16 @@ the raw state are difficult to understand}
 \item{remove_strata}{Strata should most likely not be removed in the crude
 version. If you want to force the removal of stratas you can specify the
 \code{remove_strata = TRUE}}
+
+\item{remove_cluster}{Cluster information should most likely also retain
+just as the \code{remove_strata} option. Clusters are sometimes used in
+cox regression models, \code{\link[survival]{cluster}}}
+
+\item{var_select}{A vector with regular expressions for choosing what variables
+to return (the same format as for the \code{order} argument in
+\code{\link{printCrudeAndAdjusted}} call). It can be useful when working with
+large datasets only to report a subsection of all tested variables. This
+makes the function both run faster and the data presentation more consice.}
 
 \item{...}{Not used}
 }

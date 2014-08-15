@@ -75,7 +75,11 @@
 #'  \emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}}
 #'  is supported by this option.
 #' @param ... Passed onto the Hmisc::\code{\link{latex}} function, or to 
-#'  the \code{\link{htmlTable}} via the print call
+#'  the \code{\link{htmlTable}} via the print call. Any variables that match
+#'  the formals of \code{\link{getCrudeAndAdjustedModelData}} are identified
+#'  and passed on in case you have provided a model and not the returned element
+#'  from the \code{\link{getCrudeAndAdjustedModelData}} call.
+#'  
 #' @return \code{matrix} Returns a matrix of class printCrudeAndAdjusted that 
 #'  has a default print method associated with
 #' 
@@ -87,7 +91,7 @@
 #' @rdname printCrudeAndAdjustedModel
 #' @export
 printCrudeAndAdjustedModel <- function(model, 
-                                       order                 = FALSE,
+                                       order,
                                        digits                = 2,
                                        ci_lim                = c(-Inf, Inf),  
                                        sprintf_ci_str        = "%s to %s",
@@ -102,6 +106,8 @@ printCrudeAndAdjustedModel <- function(model,
                                        impute_args,
                                        ...)
 {
+  dot_args <- list(...)
+  
   if (missing(reference_zero_effect))
     reference_zero_effect <- ifelse(all("lm" %in% class(model)) ||
         "ols" %in% class(model) ||
@@ -124,15 +130,24 @@ printCrudeAndAdjustedModel <- function(model,
   if(!"matrix" %in% class(model)){
     # Convert the x that should be a model into a matrix that
     # originally was expected
-    x <- getCrudeAndAdjustedModelData(model = model)
+    gca_args <- list(model = model)
+    if (!missing(order))
+      gca_args$var_select <- order
     
-    ds <- prGetModelData(model)
+    for (n in names(dot_args)[names(dot_args) %in% 
+                                names(formals(getCrudeAndAdjustedModelData))]){
+      gca_args[[n]] <- dot_args[[n]]
+      dot_args[[n]] <- NULL
+    }
+    
+    x <- do.call(getCrudeAndAdjustedModelData, gca_args)
+    
   }else{
     x <- model
     model <- attr(model, "model")
     
-    ds <- prGetModelData(model)
   }
+  ds <- prGetModelData(model)
   
   if (!missing(impute_args) && 
         !inherits(model, "fit.mult.impute")){
@@ -170,8 +185,7 @@ printCrudeAndAdjustedModel <- function(model,
                                    digits = digits,
                                    sprintf_ci_str = sprintf_ci_str)
   
-  if (length(order) > 1 || 
-        is.character(order)){
+  if (!missing(order)){
     reordered_groups <- 
       prCaReorderReferenceDescribe(
         x = x,
@@ -187,8 +201,7 @@ printCrudeAndAdjustedModel <- function(model,
         use_labels = use_labels)
   }else{
     reordered_groups <- x
-    if (length(add_references) == 1 && 
-      add_references == TRUE){
+    if (!missing(add_references)){
       reordered_groups <- 
         prCaAddRefAndStat(model = model,
                           var_order = var_order, 
@@ -300,7 +313,7 @@ printCrudeAndAdjustedModel <- function(model,
                                             coef_name, colnames(reordered_groups))
   attr(reordered_groups, "rowlabel.just") <-  "l" 
   attr(reordered_groups, "rowlabel") <-  "Variable"
-  attr(reordered_groups, "other") <- list(...)
+  attr(reordered_groups, "other") <- dot_args
   return(reordered_groups)
 }
 

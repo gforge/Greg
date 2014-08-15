@@ -27,6 +27,14 @@
 #' @param remove_strata Strata should most likely not be removed in the crude
 #'  version. If you want to force the removal of stratas you can specify the
 #'  \code{remove_strata = TRUE}
+#' @param remove_cluster Cluster information should most likely also retain
+#'  just as the \code{remove_strata} option. Clusters are sometimes used in
+#'  cox regression models, \code{\link[survival]{cluster}}
+#' @param var_select A vector with regular expressions for choosing what variables
+#'  to return (the same format as for the \code{order} argument in 
+#'  \code{\link{printCrudeAndAdjusted}} call). It can be useful when working with 
+#'  large datasets only to report a subsection of all tested variables. This
+#'  makes the function both run faster and the data presentation more consice. 
 #' @param ... Not used
 #' @return Returns a matrix with the columns: 
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
@@ -43,7 +51,10 @@
 #' @export
 getCrudeAndAdjustedModelData <- function(model, level=.95, 
                                          remove_interaction_vars = TRUE, 
-                                         remove_strata = FALSE, ...)
+                                         remove_strata = FALSE,
+                                         remove_cluster = FALSE,
+                                         var_select,
+                                         ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
 #' @rdname getCrudeAndAdjustedModelData
@@ -52,54 +63,10 @@ getCrudeAndAdjustedModelData <- function(model, level=.95,
 #' @keywords internal
 getCrudeAndAdjustedModelData.default <- function(model, level=.95, 
                                                  remove_interaction_vars = TRUE, 
-                                                 remove_strata = FALSE, ...){
-  
-  # Just a prettifier for the output an alternative could be:
-  # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
-  get_coef_and_ci <- function(model, skip_intercept=FALSE){
-    # Get the coefficients
-    if (inherits(model, "lme")){
-      tmp <- intervals(model, level=level)$fixed
-      my_coefficients <- tmp[,"est."]
-      coef_names <- rownames(tmp)
-      
-      ci <- tmp[,c("lower", "upper")]
-    }else{
-      my_coefficients <- coef(model)
-      coef_names <- names(my_coefficients)
-      
-      ci <- suppressMessages(confint(model, level=level))
-    }
-    
-    if (skip_intercept){
-      intercept <- grep("intercept", coef_names, 
-                        ignore.case = TRUE)
-      if (length(intercept) > 0){
-        my_coefficients <- my_coefficients[-intercept]
-        ci <- ci[-intercept,]
-        coef_names <- coef_names[-intercept]
-      }
-    }
-    
-    # Use the exp() if logit or cox regression
-    if (inherits(model, "coxph") ||
-          (!is.null(model$family$link) &&
-             model$family$link %in% c("logit", "log"))){
-      my_coefficients <- exp(my_coefficients)
-      ci <- exp(ci)
-    }
-    
-    if (length(my_coefficients) > 1)
-      ret_val <- cbind(my_coefficients, ci)
-    else
-      ret_val <- matrix(c(my_coefficients, ci), nrow=1)
-    
-    colnames(ret_val) <- c("", 
-      sprintf("%.1f%%", 100*(1-level)/2),
-      sprintf("%.1f%%", 100*(level + (1-level)/2)))
-    rownames(ret_val) <- coef_names
-    return(ret_val)
-  }
+                                                 remove_strata = FALSE,
+                                                 remove_cluster = FALSE, 
+                                                 var_select,
+                                                 ...){
   
   var_names <- prGetModelVariables(model, 
                                    remove_interaction_vars = remove_interaction_vars,
@@ -110,17 +77,34 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
       " strata, or some other function.")
   
   # Get the adjusted variables
-  adjusted <- get_coef_and_ci(model)
+  adjusted <- prCaDefaultGetCoefAndCI(model, level = level)
   
   # Map rows to variables
   var_rows <- prMapVariable2Name(var_names = var_names, 
                                  available_names = rownames(adjusted),
                                  data = prGetModelData(model))
-  keep <- c()
-  for (vars in var_rows){
-    keep <- c(keep,
-              vars$location)
+  
+  if (!missing(var_select)){
+    greps <- 
+      prCaSelectAndOrderVars(names = names(var_rows),
+                             order = var_select, 
+                             ok2skip = TRUE)
+    if (length(greps) == 0)
+      stop("The variables that you have tried to select:",
+           " '", paste(var_select, collapse="', '"), "'",
+           " do not seem to exist - there is no match",
+           " for the names: '", paste(names(var_rows), collapse="', '"), "'")
+    
+    var_rows <- var_rows[sort(greps)]
+    var_names <- local({
+      tmp <- var_names[var_names %in% names(var_rows)]
+      copyAllNewAttributes(from = var_names, to = tmp)
+    })
   }
+  
+  keep <- unlist(lapply(var_rows,
+                        function(x) x$location), 
+                 use.names = FALSE)
   
   if (length(keep) == 0)
     stop("Error when trying to extract the variable names",
@@ -137,22 +121,26 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
       
       # We should keep any strata information when running the models
       # TODO: Add the nlmn | options
+      vars_4_frml <- variable
+      if (!is.null(attr(var_names, "strata")) &&
+            !remove_strata)
+        vars_4_frml <- c(vars_4_frml, attr(var_names, "strata"))
+
+      if (!is.null(attr(var_names, "cluster")) &&
+            !remove_cluster)
+        vars_4_frml <- c(vars_4_frml, attr(var_names, "cluster"))
+      
       frml_4_single_var <- 
-        paste(".~", 
-              ifelse(is.null(attr(var_names, "strata")) ||
-                       remove_strata,
-                     variable,
-                     paste(variable,
-                           paste(attr(var_names, "strata"),
-                                 collapse="+"),
-                           sep="+")))
+        paste(".~", paste(vars_4_frml,collapse="+"))
       
       # Run the same model but with only one variable
       model_only1 <- prEnvModelCall(model, update, frml_4_single_var)
       
       # Get the coefficients processed with some advanced
       # round part()
-      new_vars <- get_coef_and_ci(model_only1, skip_intercept = TRUE)
+      new_vars <- prCaDefaultGetCoefAndCI(model_only1, 
+                                          level = level,
+                                          skip_intercept = TRUE)
       
       # Add them to the previous
       unadjusted <- rbind(unadjusted, new_vars)
@@ -161,7 +149,9 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
       model_only1 <- prEnvModelCall(model, update, ".~1")
       
       # Get the coefficients
-      new_vars <- get_coef_and_ci(model_only1, skip_intercept = FALSE)
+      new_vars <- prCaDefaultGetCoefAndCI(model_only1, 
+                                          level = level,
+                                          skip_intercept = FALSE)
       
       # Add
       unadjusted <- rbind(new_vars, unadjusted)

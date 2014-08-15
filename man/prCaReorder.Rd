@@ -11,15 +11,15 @@ prCaReorder(mtrx2reorder, var_order, order)
 \item{var_order}{The variables representing different rows
 \code{\link{prMapVariable2Name}}}
 
-\item{order}{A vector of strings used for \code{\link{prCaGetOrderVariables}}}
+\item{order}{A vector of strings used for \code{\link{prCaSelectAndOrderVars}}}
 }
 \value{
 \code{matrix} Returns the \code{mtrx2reorder} rearranged with the
- attribute "greps" for the greps from \code{\link{prCaGetOrderVariables}}
+ attribute "greps" for the greps from \code{\link{prCaSelectAndOrderVars}}
  and the attribute "var_order" for the new var_order
 }
 \description{
-Uses the \code{\link{prCaGetOrderVariables}} for finding the
+Uses the \code{\link{prCaSelectAndOrderVars}} for finding the
 orders according to the \code{order} argument.
 }
 \seealso{
@@ -30,11 +30,11 @@ Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}}
   \code{\link{prCaAddReference}};
   \code{\link{prCaAddUserReferences}};
   \code{\link{prCaGetImputationCols}};
-  \code{\link{prCaGetOrderVariables}};
   \code{\link{prCaGetRowname}};
   \code{\link{prCaGetVnStats}};
   \code{\link{prCaPrepareCrudeAndAdjusted}};
   \code{\link{prCaReorderReferenceDescribe}};
+  \code{\link{prCaSelectAndOrderVars}};
   \code{\link{prCaSetRownames}}
 }
 \keyword{internal}
