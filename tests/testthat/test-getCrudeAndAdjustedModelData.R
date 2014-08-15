@@ -192,7 +192,7 @@ test_that("Correct values for rows - glm", {
                     confint(fit_glm_ua)[-1,]) < .Machine$double.eps))
 })
 
-test_that("Strata should be still present in the crude format",{
+test_that("Strata and clusters should be still present in the crude format",{
   # Create the simplest test data set 
   library(rms)
   test1 <- data.frame(time=c(4,3,1,1,2,2,3), 
@@ -263,11 +263,11 @@ test_that("Strata should be still present in the crude format",{
   fit <- coxph(Surv(time, status) ~ x1 + x2 + cluster(sex), test1) 
   x <- getCrudeAndAdjustedModelData(fit, remove_cluster = TRUE)
   fit <- update(fit, . ~ x1) 
-  expect_true(all(x["x1", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  expect_true(all(x["x1", 2:3] - exp(confint(fit)) < .Machine$double.eps))
   
   fit <- update(fit, . ~ x2) 
   expect_true(all(x["x2", 2:3] -exp(confint(fit)) < .Machine$double.eps))
-
+  
   fit <- cph(Surv(time, status) ~ x1 + x2 + cluster(sex), test1) 
   x <- getCrudeAndAdjustedModelData(fit, remove_cluster = FALSE)
   fit <- update(fit, . ~ x1 + cluster(sex)) 
