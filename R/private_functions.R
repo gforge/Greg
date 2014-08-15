@@ -134,6 +134,7 @@ prGetModelData <- function(x){
 #' @return vector with names 
 #' 
 #' @importFrom stringr str_split
+#' @importFrom stringr str_trim
 #' @keywords internal
 prGetModelVariables <- function(model, 
                                 remove_splines = TRUE, 
@@ -154,6 +155,20 @@ prGetModelVariables <- function(model,
     vars <- vars[-grep("^strat[a]{0,1}\\(", vars)]
   }
   
+  cluster <- NULL
+  if (any(grepl("^cluster{0,1}\\(", vars))){
+    cluster <- vars[grep("^cluster{0,1}\\(", vars)]
+    vars <- vars[-grep("^cluster{0,1}\\(", vars)]
+  }
+  # Fix for bug in cph
+  if (is.null(cluster) && 
+        inherits(model, "cph")){
+    alt_terms <- stringr::str_trim(strsplit(deparse(fit$call$formula[[3]]), "+", fixed = TRUE)[[1]])
+    if (any(grepl("^cluster{0,1}\\(", alt_terms))){
+      cluster <- alt_terms[grep("^cluster{0,1}\\(", alt_terms)]
+    }
+  }
+
   # Remove I() as these are not true variables
   unwanted_vars <- grep("^I\\(.*$", vars)
   if (length(unwanted_vars) > 0){
@@ -200,6 +215,8 @@ prGetModelVariables <- function(model,
   attributes(clean_vars) <- attributes(vars)
   if (!is.null(strata))
     attr(clean_vars, "strata") <- strata
+  if (!is.null(cluster))
+    attr(clean_vars, "cluster") <- cluster
   
   return(clean_vars)
 }
