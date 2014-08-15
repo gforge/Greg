@@ -163,7 +163,8 @@ prGetModelVariables <- function(model,
   # Fix for bug in cph
   if (is.null(cluster) && 
         inherits(model, "cph")){
-    alt_terms <- stringr::str_trim(strsplit(deparse(fit$call$formula[[3]]), "+", fixed = TRUE)[[1]])
+    alt_terms <- stringr::str_trim(strsplit(deparse(model$call$formula[[3]]), 
+                                            "+", fixed = TRUE)[[1]])
     if (any(grepl("^cluster{0,1}\\(", alt_terms))){
       cluster <- alt_terms[grep("^cluster{0,1}\\(", alt_terms)]
     }

@@ -12,7 +12,10 @@ Changes for 1.0.0
   been externalized.
 * All current unit tests now pass and several new ones have been added
 * Implemented DRY roxygen2 code
-* The getCrudeAndAdjuster now retains cluster and stratas - there are options for leaving these out to retain old behavior
+* The getCrudeAndAdjusted now retains cluster and stratas - there are options for
+  leaving these out to retain old behavior
+* The getCrudeAndAdjusted now allows for selecting variables. The printCrudeAndAdjusted
+  now passes on the order option when variable selection is of interest.
 
 Changes for 0.7.1
 -----------------

@@ -30,12 +30,12 @@ Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}}
   \code{\link{prCaAddReference}};
   \code{\link{prCaAddUserReferences}};
   \code{\link{prCaGetImputationCols}};
-  \code{\link{prCaGetOrderVariables}};
   \code{\link{prCaGetRowname}};
   \code{\link{prCaGetVnStats}};
   \code{\link{prCaPrepareCrudeAndAdjusted}};
   \code{\link{prCaReorderReferenceDescribe}};
-  \code{\link{prCaReorder}}
+  \code{\link{prCaReorder}};
+  \code{\link{prCaSelectAndOrderVars}}
 }
 \keyword{internal}
 
