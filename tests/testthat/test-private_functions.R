@@ -236,6 +236,46 @@ test_that("Check how the mapping of rows work", {
   expect_equal(out$`aa`$location, 3)
   expect_equal(out$`aaa`$location, 4:5)
   
+  ds <- data.frame(
+    x1 = factor(sample(c("a", "aa", "aaa"), size = n, replace = TRUE)),
+    x2 = rnorm(n, mean = 3, 2))
+  expect_error(prMapVariable2Name(c("x1", "x2"),
+                                  available_names = "x2",
+                                  data=ds))
+  
+  out <- prMapVariable2Name(c("x1", "x2"),
+                            available_names = "x2",
+                            data=ds, 
+                            force_match = FALSE)
+  expect_equivalent(length(out),
+                    1)
+  expect_equivalent(out$x2$location,
+                    1)
+  expect_equivalent(out$x2$no_rows,
+                    1)
+  
+  ds <- structure(list(y = c(1L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 1L, 0L), 
+                       x1 = structure(c(4L, 4L, 4L, 2L, 1L, 3L, 1L, 1L, 1L, 4L), 
+                                      .Label = c("A", 
+                                                 "B", "C", "D"), class = "factor"), 
+                       x2 = structure(c(1L, 1L, 
+                                        2L, 1L, 1L, 2L, 2L, 2L, 1L, 1L), 
+                                      .Label = c("No", "Yes"), class = "factor"), 
+                       x3 = structure(c(2L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L), 
+                                      .Label = c("No", "Yes"), 
+                                      class = "factor")), 
+                  .Names = c("y", "x1", "x2", "x3"),
+                  row.names = c(NA, 10L), class = "data.frame")
+  out <- prMapVariable2Name(var_names = c('(Intercept)', 'x1', 'x2', 'x3'),
+                            available_names = c("x1B", "x1C", "x1D", "x2Yes"),
+                            data=ds,
+                            force_match = FALSE)
+  expect_equivalent(length(out),
+                    2)
+  expect_equivalent(out$x1$location,
+                    1:3)
+  expect_equivalent(out$x2$location,
+                    4)
 })
 
 

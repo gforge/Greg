@@ -177,7 +177,8 @@ printCrudeAndAdjustedModel <- function(model,
   var_order <- 
     prMapVariable2Name(var_names = var_names,
                        available_names = rownames(x),
-                       data = ds)
+                       data = ds,
+                       force_match = FALSE)
   
   # Prettify the output
   x <- prCaPrepareCrudeAndAdjusted(x = x, 

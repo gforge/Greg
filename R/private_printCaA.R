@@ -906,7 +906,8 @@ prCaSelectAndOrderVars <- function(names, order, ok2skip = FALSE){
 #' @keywords internal
 prCaReorder <- function (mtrx2reorder, var_order, order) {
   greps <- prCaSelectAndOrderVars(names = names(var_order), 
-                                 order = order)
+                                  order = order,
+                                  ok2skip = TRUE)
   var_order <- var_order[greps]
   row_reorder <- c()
   for (i in 1:length(var_order)){
