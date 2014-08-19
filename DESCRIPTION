@@ -18,7 +18,9 @@ Imports:
     stringr,
     rms,
     sandwich,
-    stats
+    stats,
+    nlme,
+    methods
 Depends:
     Gmisc (>= 1.0.0)
 Suggests:

@@ -15,6 +15,7 @@
 #' @return \code{matrix} Returns a n x 3 matrix where the n equals the number
 #'  of variables.
 #'  
+#' @importFrom nlme intervals
 #' @keywords internal
 #' @rdname GetCoefAndCI
 prCaDefaultGetCoefAndCI <- function(model, level, skip_intercept=FALSE){

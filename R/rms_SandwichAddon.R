@@ -103,7 +103,7 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @return vector
 #' @example inst/examples/rms_SandwichAddon_example.R
 #' 
-#' @importFrom rms ols
+#' @importFrom rms ols.influence
 #' @importFrom stats hatvalues
 #' @method hatvalues ols
 #' @export

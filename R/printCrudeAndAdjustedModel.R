@@ -372,9 +372,9 @@ print.printCrudeAndAdjusted <- function(x,
 #' @importFrom Hmisc latex
 latex.printCrudeAndAdjusted <- function(object, ...){
   call_list <- 
-    list(colheads      = attr(reordered_groups, "headings"), 
-         rowlabel.just = attr(reordered_groups, "rowlabel.just"), 
-         rowlabel      = attr(reordered_groups, "rowlabel"),
+    list(colheads      = attr(object, "headings"), 
+         rowlabel.just = attr(object, "rowlabel.just"), 
+         rowlabel      = attr(object, "rowlabel"),
          rowname       = latexTranslate(rownames(object)),
          cgroup        = attr(object, "cgroup"), 
          n.cgroup      = attr(object, "n.cgroup"), 

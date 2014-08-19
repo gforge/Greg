@@ -1,6 +1,8 @@
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData rms
 #' @export
+#' @importFrom rms bootcov
+#' @importFrom rms robcov
 #' @keywords internal
 getCrudeAndAdjustedModelData.rms <- function(model, 
                                              level=.95, 

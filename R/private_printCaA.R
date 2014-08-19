@@ -453,7 +453,7 @@ prCaAddRefAndStat <- function(model,
             rn <- rows_2_add[i]
             values <- insertRowAndKeepAttr(values, 
                                            r = tail(var_order[[vn]]$location, 1) + 1, 
-                                           v = rep("-", length.out=cols), 
+                                           v = rep("-", length.out=NCOL(values)), 
                                            rName = rn)
             desc_mtrx <- insertRowAndKeepAttr(desc_mtrx, 
                                               r = tail(var_order[[vn]]$location, 1) + 1,

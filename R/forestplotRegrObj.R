@@ -47,8 +47,6 @@ forestplotRegrObj <- function(
   order.addrows,
   box.default.size,
   rowname.fn,
-  xlab,
-  xlog,
   estimate.txt     = xlab,
   zero,
   get_box_size = function(p_values, 
