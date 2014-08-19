@@ -78,7 +78,11 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
   else
     zcrit <- qt(a, object$df.residual)
   
-  pct <- stats:::format.perc(a, 3)
+  pct <- paste(format(100 * a, 
+                      trim = TRUE, 
+                      scientific = FALSE, 
+                      digits = 3), 
+               "%")
   ci <- array(NA, dim = c(length(parm), 2L), 
     dimnames = list(parm, pct))
   ses <- sqrt(diag(vcov(object)))[parm]

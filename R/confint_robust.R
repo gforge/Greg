@@ -34,7 +34,11 @@ confint_robust <- function(object, parm, level = 0.95,
     parm <- pnames[parm]
   
   a <- (1-level)/2; a <- c(a, 1-a)
-  pct <- stats:::format.perc(a, 3)
+  pct <- paste(format(100 * a, 
+                      trim = TRUE, 
+                      scientific = FALSE, 
+                      digits = 3), 
+               "%")
   if (t_distribution)
     fac <- qt(a, object$df.residual)
   else
