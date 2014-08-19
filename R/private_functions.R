@@ -134,6 +134,7 @@ prGetModelData <- function(x){
 #' @return vector with names 
 #' 
 #' @importFrom stringr str_split
+#' @importFrom stringr str_trim
 #' @keywords internal
 prGetModelVariables <- function(model, 
                                 remove_splines = TRUE, 
@@ -154,6 +155,21 @@ prGetModelVariables <- function(model,
     vars <- vars[-grep("^strat[a]{0,1}\\(", vars)]
   }
   
+  cluster <- NULL
+  if (any(grepl("^cluster{0,1}\\(", vars))){
+    cluster <- vars[grep("^cluster{0,1}\\(", vars)]
+    vars <- vars[-grep("^cluster{0,1}\\(", vars)]
+  }
+  # Fix for bug in cph
+  if (is.null(cluster) && 
+        inherits(model, "cph")){
+    alt_terms <- stringr::str_trim(strsplit(deparse(model$call$formula[[3]]), 
+                                            "+", fixed = TRUE)[[1]])
+    if (any(grepl("^cluster{0,1}\\(", alt_terms))){
+      cluster <- alt_terms[grep("^cluster{0,1}\\(", alt_terms)]
+    }
+  }
+
   # Remove I() as these are not true variables
   unwanted_vars <- grep("^I\\(.*$", vars)
   if (length(unwanted_vars) > 0){
@@ -200,6 +216,8 @@ prGetModelVariables <- function(model,
   attributes(clean_vars) <- attributes(vars)
   if (!is.null(strata))
     attr(clean_vars, "strata") <- strata
+  if (!is.null(cluster))
+    attr(clean_vars, "cluster") <- cluster
   
   return(clean_vars)
 }
@@ -460,14 +478,20 @@ prConvertShowMissing <- function(show_missing){
 #' 
 #' @param var_names The variable names that are saught after
 #' @param available_names The names that are available to search through
-#' @param data The data set that is sught after
+#' @param data The data set that is saught after
+#' @param force_match Whether all variables need to be identified or not.
+#'  E.g. you may only want to use some variables and already pruned the
+#'  \code{available_names} and therefore wont have matches. This is the
+#'  case when \code{\link{getCrudeAndAdjusted}} has been used together 
+#'  with the \code{var_select} argument.
 #' @return \code{list} Returns a list with each element has the corresponding
 #'  variable name and a subsequent list with the parameters \code{no_rows}
 #'  and \code{location} indiciting the number of rows corresponding to that
 #'  element and where those rows are located. For factors the list also contains
 #'  \code{lvls} and \code{no_lvls}.
 #' @keywords internal
-prMapVariable2Name <- function(var_names, available_names, data){
+prMapVariable2Name <- function(var_names, available_names,
+                               data, force_match = TRUE){
   if (any(duplicated(available_names)))
     stop("You have non-unique names. You probably need to adjust",
          " (1) variable names or (2) factor labels.")
@@ -523,7 +547,12 @@ prMapVariable2Name <- function(var_names, available_names, data){
   for (name in var_names[order(sapply(var_data, function(x) is.null(x$lvls)), 
                                nchar(var_names), decreasing = TRUE)]){
     matches <- which(name == substr(available_names, 1, nchar(name)))
-    if(length(matches) == 1){
+    if (length(matches) == 0){
+      if (force_match)
+        stop("Sorry but the function could not find a match for '", name , "'",
+             " among any of the available names: '", paste(org_available_names, 
+                                                           collapse="', '") ,"'")
+    }else if(length(matches) == 1){
       if (var_data[[name]]$no_rows != 1)
         stop("Expected more than one match for varible '", name, "'",
              " the only positive match was '", available_names[matches], "'")
@@ -586,14 +615,15 @@ prMapVariable2Name <- function(var_names, available_names, data){
           }
         }
       }
-      if (length(matches) == 0)
-        stop("Could not identify the rows corresponding to the variable '", name ,"'",
-             " this could possibly be to similarity between different variable names",
-             " and factor levels. Try to make sure that all variable names are unique",
-             " the variables that are currently looked for are:",
-             " '", paste(var_names, 
-                         collapse="'', '"),
-             "'.")
+      if (length(matches) == 0){
+          stop("Could not identify the rows corresponding to the variable '", name ,"'",
+               " this could possibly be to similarity between different variable names",
+               " and factor levels. Try to make sure that all variable names are unique",
+               " the variables that are currently looked for are:",
+               " '", paste(var_names, 
+                           collapse="', '"),
+               "'.")
+      }
     }
 
     # Check that multiple matches are continuous, everything else is suspicious
@@ -614,11 +644,17 @@ prMapVariable2Name <- function(var_names, available_names, data){
     true_matches <- setdiff(true_matches, matched_numbers)
     var_data[[name]][["location"]] <- true_matches
     # Update the loop vars
-    available_names <- available_names[-matches]
+    if (length(matches) > 0)
+      available_names <- available_names[-matches]
+    
     matched_names <- c(matched_names, name)
     matched_numbers <- c(matched_numbers, true_matches)
     
-    if (length(var_data[[name]][["location"]]) !=
+    if (length(var_data[[name]][["location"]]) == 0 &
+          !force_match){
+      # Remove variable as it is not available
+      var_data[[name]] <- NULL
+    }else if (length(var_data[[name]][["location"]]) !=
           var_data[[name]][["no_rows"]]){
       warning("Expected the variable '", name ,"'",
               " to contain '",var_data[[name]][["no_rows"]],"' no. rows",

@@ -862,7 +862,7 @@ prCaSetRownames <- function (reordered_groups,
 #' @keywords intrenal
 #' @family printCrudeAndAdjusted functions
 #' @keywords internal
-prCaGetOrderVariables <- function(names, order, ok2skip = FALSE){
+prCaSelectAndOrderVars <- function(names, order, ok2skip = FALSE){
   greps <- c()
   for (r_expr in order) {
     # Find the names that matches
@@ -891,22 +891,23 @@ prCaGetOrderVariables <- function(names, order, ok2skip = FALSE){
 
 #' Reorder according to the requested variables
 #' 
-#' Uses the \code{\link{prCaGetOrderVariables}} for finding the 
+#' Uses the \code{\link{prCaSelectAndOrderVars}} for finding the 
 #' orders according to the \code{order} argument.
 #' 
 #' @param mtrx2reorder The matrix to reorder
 #' @param var_order The variables representing different rows 
 #'  \code{\link{prMapVariable2Name}}
-#' @param order A vector of strings used for \code{\link{prCaGetOrderVariables}}
+#' @param order A vector of strings used for \code{\link{prCaSelectAndOrderVars}}
 #' 
 #' @return \code{matrix} Returns the \code{mtrx2reorder} rearranged with the 
-#'  attribute "greps" for the greps from \code{\link{prCaGetOrderVariables}}
+#'  attribute "greps" for the greps from \code{\link{prCaSelectAndOrderVars}}
 #'  and the attribute "var_order" for the new var_order
 #' @family printCrudeAndAdjusted functions
 #' @keywords internal
 prCaReorder <- function (mtrx2reorder, var_order, order) {
-  greps <- prCaGetOrderVariables(names = names(var_order), 
-                                 order = order)
+  greps <- prCaSelectAndOrderVars(names = names(var_order), 
+                                  order = order,
+                                  ok2skip = TRUE)
   var_order <- var_order[greps]
   row_reorder <- c()
   for (i in 1:length(var_order)){

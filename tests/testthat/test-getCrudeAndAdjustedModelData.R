@@ -106,7 +106,8 @@ test_that("A few bug tests",{
   expect_is(getCrudeAndAdjustedModelData(fit1), "matrix")
   
 })
-context("getCrudeAndAdjustedModelData - lm")
+
+context("getCrudeAndAdjustedModelData - linear regression")
 test_that("Same order of rows", {
   fit_lm <- lm(y ~ x1 + x2 + x3, data=ds) 
   
@@ -168,8 +169,6 @@ test_that("Correct values for rows - ols", {
                     confint(fit_ols_ua)[-1,])
 })
 
-
-
 test_that("Correct values for rows - glm", {
   fit_glm <- glm(y ~ x1 + x2 + x3, data=ds) 
   
@@ -192,7 +191,50 @@ test_that("Correct values for rows - glm", {
                     confint(fit_glm_ua)[-1,]) < .Machine$double.eps))
 })
 
-test_that("Strata should be still present in the crude format",{
+context("getCrudeAndAdjustedModelData - misc")
+
+
+test_that("Variable selection - default", {
+  fit_glm <- glm(y ~ x1 + x2 + x3, data=ds) 
+  
+  data_matrix <- getCrudeAndAdjustedModelData(fit_glm, var_select = c("x1"))
+  expect_equivalent(data_matrix[,"Adjusted"],
+                    coef(fit_glm)[grep("^x1", names(coef(fit_glm)))])
+  
+  fit_glm_ua <- glm(y ~ x1, data=ds)
+  expect_equivalent(data_matrix[, "Crude"],
+                    coef(fit_glm_ua)[-1])
+  
+  data_matrix <- getCrudeAndAdjustedModelData(fit_glm, var_select = c("Intercept", "x1"))
+  expect_equivalent(data_matrix[,"Adjusted"],
+                    coef(fit_glm)[grep("(^x1|ntercept)", names(coef(fit_glm)))])
+  
+  fit_glm_ua <- glm(y ~ x1, data=ds)
+  expect_equivalent(data_matrix[-1, "Crude"],
+                    coef(fit_glm_ua)[-1])
+
+  expect_error(getCrudeAndAdjustedModelData(fit_glm, var_select = c("x222222")))
+})
+
+test_that("Variable selection - rms", {
+  fit_glm <- Glm(y ~ x1 + x2 + x3, data=ds) 
+  
+  data_matrix <- getCrudeAndAdjustedModelData(fit_glm, var_select = c("x1"))
+  expect_equivalent(data_matrix[,"Adjusted"],
+                    coef(fit_glm)[grep("^x1", names(coef(fit_glm)))])
+  
+  fit_glm_ua <- update(fit_glm, . ~ x1)
+  expect_equivalent(data_matrix[, "Crude"],
+                    coef(fit_glm_ua)[-1])
+  
+  data_matrix <- getCrudeAndAdjustedModelData(fit_glm, var_select = c("x2", "x1"))
+  expect_equivalent(data_matrix[,"Adjusted"],
+                    coef(fit_glm)[grep("(^x[12])", names(coef(fit_glm)))])
+  
+  expect_error(getCrudeAndAdjustedModelData(fit_glm, var_select = c("x222222")))
+})
+
+test_that("Strata and clusters should be still present in the crude format",{
   # Create the simplest test data set 
   library(rms)
   test1 <- data.frame(time=c(4,3,1,1,2,2,3), 
@@ -234,7 +276,7 @@ test_that("Strata should be still present in the crude format",{
   fit <- update(fit, . ~ x2 + strat(sex)) 
   expect_equivalent(x["x2", "Crude"],
                     exp(coef(fit)))
-
+  
   fit <- cph(Surv(time, status) ~ x1 + x2 + strat(sex), test1) 
   x <- getCrudeAndAdjustedModelData(fit, remove_strata = TRUE)
   fit <- update(fit, . ~ x1) 
@@ -244,4 +286,44 @@ test_that("Strata should be still present in the crude format",{
   fit <- update(fit, . ~ x2) 
   expect_equivalent(x["x2", "Crude"],
                     exp(coef(fit)))
+
+  #########################
+  # Same but for clusters #
+  # - note that clusters  #
+  #   only affect confid. #
+  #   intervals           #
+  #########################
+  
+  fit <- coxph(Surv(time, status) ~ x1 + x2 + cluster(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit, remove_cluster = FALSE)
+  fit <- update(fit, . ~ x1 + cluster(sex)) 
+  expect_true(all(x["x1", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- update(fit, . ~ x2 + cluster(sex)) 
+  expect_true(all(x["x2", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- coxph(Surv(time, status) ~ x1 + x2 + cluster(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit, remove_cluster = TRUE)
+  fit <- update(fit, . ~ x1) 
+  expect_true(all(x["x1", 2:3] - exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- update(fit, . ~ x2) 
+  expect_true(all(x["x2", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- cph(Surv(time, status) ~ x1 + x2 + cluster(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit, remove_cluster = FALSE)
+  fit <- update(fit, . ~ x1 + cluster(sex)) 
+  expect_true(all(x["x1", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- update(fit, . ~ x2 + cluster(sex)) 
+  expect_true(all(x["x2", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- cph(Surv(time, status) ~ x1 + x2 + cluster(sex), test1) 
+  x <- getCrudeAndAdjustedModelData(fit, remove_cluster = TRUE)
+  fit <- update(fit, . ~ x1) 
+  expect_true(all(x["x1", 2:3] -exp(confint(fit)) < .Machine$double.eps))
+  
+  fit <- update(fit, . ~ x2) 
+  expect_true(all(x["x2", 2:3] -exp(confint(fit)) < .Machine$double.eps))
 })
+

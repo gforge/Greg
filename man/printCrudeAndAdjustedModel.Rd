@@ -5,11 +5,11 @@
 \alias{printCrudeAndAdjustedModel}
 \title{Output crude and adjusted model data}
 \usage{
-printCrudeAndAdjustedModel(model, order = FALSE, digits = 2,
-  ci_lim = c(-Inf, Inf), sprintf_ci_str = "\%s to \%s", add_references,
-  add_references_pos, reference_zero_effect, groups, rowname.fn,
-  use_labels = TRUE, desc_column = FALSE,
-  desc_args = caDescribeOpts(digits = digits), impute_args, ...)
+printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
+  sprintf_ci_str = "\%s to \%s", add_references, add_references_pos,
+  reference_zero_effect, groups, rowname.fn, use_labels = TRUE,
+  desc_column = FALSE, desc_args = caDescribeOpts(digits = digits),
+  impute_args, ...)
 
 \method{print}{printCrudeAndAdjusted}(x, rgroupCSSstyle = "", ...)
 
@@ -96,7 +96,10 @@ for how for a working example.
 is supported by this option.}
 
 \item{...}{Passed onto the Hmisc::\code{\link{latex}} function, or to
-the \code{\link{htmlTable}} via the print call}
+ the \code{\link{htmlTable}} via the print call. Any variables that match
+ the formals of \code{\link{getCrudeAndAdjustedModelData}} are identified
+ and passed on in case you have provided a model and not the returned element
+ from the \code{\link{getCrudeAndAdjustedModelData}} call.}
 
 \item{x}{The output object from the printCrudeAndAdjustedModel function}
 
@@ -242,12 +245,13 @@ Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}};
   \code{\link{prCaAddReference}};
   \code{\link{prCaAddUserReferences}};
   \code{\link{prCaGetImputationCols}};
-  \code{\link{prCaGetOrderVariables}};
   \code{\link{prCaGetRowname}};
   \code{\link{prCaGetVnStats}};
   \code{\link{prCaPrepareCrudeAndAdjusted}};
   \code{\link{prCaReorderReferenceDescribe}};
-  \code{\link{prCaReorder}}; \code{\link{prCaSetRownames}}
+  \code{\link{prCaReorder}};
+  \code{\link{prCaSelectAndOrderVars}};
+  \code{\link{prCaSetRownames}}
 }
 \keyword{internal}
 

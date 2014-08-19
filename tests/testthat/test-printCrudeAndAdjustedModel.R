@@ -55,3 +55,34 @@ test_that("Check position of reference", {
                                   add_references=TRUE, desc_column=TRUE)
   expect_equal(nrow(a), 11)
 })
+
+test_that("Variable select",{
+  set.seed(10)
+  n <- 500
+  ds <- data.frame(
+    y = sample(0:1, size = n, replace = TRUE),
+    x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+    x2 = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    x3 = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+  
+  library(rms)
+  dd <<- datadist(ds)
+  options(datadist="dd")
+  
+  fit <- Glm(y ~ x1 + x2 + x3, data=ds, family=binomial)
+  
+  a <- printCrudeAndAdjustedModel(fit, order = c("x[12]"), add_references=TRUE)
+  expect_equivalent(attr(a, "rgroup"), c("x1", "x2"))
+  
+  a <- printCrudeAndAdjustedModel(fit, order = c("x2", "x1"), add_references=TRUE)
+  expect_equivalent(attr(a, "rgroup"), c("x2", "x1"))
+  
+  fit <- glm(y ~ x1 + x2 + x3, data=ds, family=binomial)
+  
+  a <- printCrudeAndAdjustedModel(fit, order = c("x[12]"), add_references=TRUE)
+  expect_equivalent(attr(a, "rgroup"), c("x1", "x2"))
+  
+  a <- printCrudeAndAdjustedModel(fit, order = c("x2", "x1"), add_references=TRUE)
+  expect_equivalent(attr(a, "rgroup"), c("x2", "x1"))
+})

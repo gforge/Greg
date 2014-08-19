@@ -3,14 +3,20 @@
 \alias{prMapVariable2Name}
 \title{A function that tries to resolve what variable corresponds to what row}
 \usage{
-prMapVariable2Name(var_names, available_names, data)
+prMapVariable2Name(var_names, available_names, data, force_match = TRUE)
 }
 \arguments{
 \item{var_names}{The variable names that are saught after}
 
 \item{available_names}{The names that are available to search through}
 
-\item{data}{The data set that is sught after}
+\item{data}{The data set that is saught after}
+
+\item{force_match}{Whether all variables need to be identified or not.
+E.g. you may only want to use some variables and already pruned the
+\code{available_names} and therefore wont have matches. This is the
+case when \code{\link{getCrudeAndAdjusted}} has been used together
+with the \code{var_select} argument.}
 }
 \value{
 \code{list} Returns a list with each element has the corresponding
