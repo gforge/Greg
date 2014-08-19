@@ -4,9 +4,9 @@
 \title{Compares different scores in different regression objects.}
 \usage{
 forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp, reference.names,
-  rowname.fn, xlab, xlog, estimate.txt, zero, is.summary, exp = xlog,
-  add_first_as_ref = FALSE, ref_txt = "ref.", ref_labels = c(),
-  digits = 1, ...)
+  rowname.fn, estimate.txt, exp = xlog, add_first_as_ref = FALSE,
+  ref_txt = "ref.", ref_labels = c(), digits = 1, is.summary, xlab, zero,
+  xlog, ...)
 }
 \arguments{
 \item{regr.obj}{A list with all the fits that have variables that are to
@@ -43,6 +43,14 @@ fits.}
 \item{digits}{Number of digits to use for the estimate output}
 
 \item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
+
+\item{is.summary}{A vector indicating by TRUE/FALSE if
+  the value is a summary value which means that it will
+  have a different font-style.}
+
+\item{xlab}{x-axis label}
+
+\item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 }
 \description{
 Creates a composite from different regression objects into
