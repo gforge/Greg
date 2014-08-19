@@ -32,7 +32,7 @@
 #'  cox regression models, \code{\link[survival]{cluster}}
 #' @param var_select A vector with regular expressions for choosing what variables
 #'  to return (the same format as for the \code{order} argument in 
-#'  \code{\link{printCrudeAndAdjusted}} call). It can be useful when working with 
+#'  \code{\link{printCrudeAndAdjustedModel}} call). It can be useful when working with 
 #'  large datasets only to report a subsection of all tested variables. This
 #'  makes the function both run faster and the data presentation more consice. 
 #' @param ... Not used

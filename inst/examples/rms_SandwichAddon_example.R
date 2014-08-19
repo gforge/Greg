@@ -5,6 +5,7 @@ x2 <- runif(n)
 y <- x1^3 + x2 + rnorm(n)
 
 library(rms)
+library(sandwich)
 dd <- datadist(x1, x2, y)
 org.op <- options(datadist = "dd")
 

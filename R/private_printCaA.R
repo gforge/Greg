@@ -1,7 +1,7 @@
 #' Adds the ordering, references, and descriptions
 #' 
 #' This is a wrapper function around some more basic functions that
-#' \code{\link{printCrudeAndAdjusted uses}}.
+#' \code{\link{printCrudeAndAdjustedModel}} uses.
 #'
 #' @param x The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}}
 #' @param model The model
@@ -514,7 +514,7 @@ prCaAddRefAndStat <- function(model,
 #' @param ds The data set
 #' @return \code{matrix} A matrix with rgroup and n.rgroup attributes 
 #' 
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @family printCrudeAndAdjusted functions
 #' @keywords internal
 prCaAddReference <- function(vn, 
@@ -623,7 +623,7 @@ prCaAddReference <- function(vn,
 #'  \code{\link{prGetStatistics}}
 #' @importFrom Gmisc getDescriptionStatsBy
 #' @family printCrudeAndAdjusted functions
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
 prCaGetVnStats <- function(model,
                            vn, 

@@ -15,7 +15,7 @@ prMapVariable2Name(var_names, available_names, data, force_match = TRUE)
 \item{force_match}{Whether all variables need to be identified or not.
 E.g. you may only want to use some variables and already pruned the
 \code{available_names} and therefore wont have matches. This is the
-case when \code{\link{getCrudeAndAdjusted}} has been used together
+case when \code{\link{getCrudeAndAdjustedModelData}} has been used together
 with the \code{var_select} argument.}
 }
 \value{
