@@ -17,7 +17,7 @@ printCrudeAndAdjustedModel(model, order = FALSE, digits = 2,
 }
 \arguments{
 \item{model}{A regression model fit, i.e. the returned object from your
-regression function, or the output from \code{\link{getCrudeAndAdjusted}}}
+regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}}}
 
 \item{order}{A vector with regular expressions for each group, use if youe
 want to reorder the groups in another way than what you've used in your original

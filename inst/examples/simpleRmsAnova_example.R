@@ -5,6 +5,7 @@
 #spline function and a different shape of the age relationship for males 
 #and females.  
 
+library(rms)
 n <- 1000    # define sample size
 set.seed(17) # so can reproduce the results
 age            <- rnorm(n, 50, 10)

@@ -120,5 +120,5 @@ print.simpleRmsAnova <- function(x, html=TRUE, ...){
 
   if (html) call_list[["x"]] <- gsub("<", "&lt;", call_list[["x"]])
   
-  do.call(ifelse(html, "htmlTable", "latex"), call_list)
+  fastDoCall(ifelse(html, "htmlTable", "latex"), call_list)
 }

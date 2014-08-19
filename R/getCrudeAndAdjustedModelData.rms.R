@@ -49,7 +49,7 @@ getCrudeAndAdjustedModelData.rms <- function(model,
       model$family$link == "logit")
       scall["antilog"] = TRUE
     
-    s <- suppressMessages(do.call(summary, scall))
+    s <- suppressMessages(fastDoCall(summary, scall))
     
     # Use the hazard ratios, the odds ratios or the antilog if
     # the function needs to be exponentiated

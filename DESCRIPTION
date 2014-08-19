@@ -17,9 +17,10 @@ Imports:
     Hmisc,
     stringr,
     rms,
-    sandwich
+    sandwich,
+    stats
 Depends:
-    Gmisc
+    Gmisc (>= 1.0.0)
 Suggests:
     boot,
     testthat,

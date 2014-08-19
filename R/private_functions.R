@@ -75,7 +75,7 @@ prExtractOutcomeFromModel <- function(model){
 #' Get model data.frame
 #' 
 #' Returns the raw variables from the original data
-#' frame using the \code{\link[base]{get_all_vars}}
+#' frame using the \code{\link[stats]{get_all_vars}}
 #' but with the twist that it also performs any associated 
 #' subsetting based on the model's \code{subset} argument.
 #' 
@@ -455,7 +455,7 @@ prConvertShowMissing <- function(show_missing){
 #' 
 #' As both the \code{\link{getCrudeAndAdjustedModelData}} and the 
 #' \code{\link{printCrudeAndAdjustedModel}} need to now exactly
-#' what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary}}
+#' what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary.rms}}
 #' correspond to we for generalizeability this rather elaborate function.
 #' 
 #' @param var_names The variable names that are saught after
@@ -630,7 +630,7 @@ prMapVariable2Name <- function(var_names, available_names, data){
   return(var_data)
 }
 
-#' Runs an \code{do.call} within the environment of the model
+#' Runs an \code{fastDoCall} within the environment of the model
 #' 
 #' Sometimes the function can't find some of the variables that
 #' were available when running the original variable. This function
@@ -640,7 +640,7 @@ prMapVariable2Name <- function(var_names, available_names, data){
 #' 
 #' @param model The model used
 #' @param what The function or non-empty character string used for 
-#'  \code{\link[base]{do.call}}
+#'  \code{\link[Gmisc]{fastDoCall}}
 #' @param ... Additional arguments passed to the function
 #' @keywords internal
 prEnvModelCall <- function(model, what, ...){
@@ -659,6 +659,6 @@ prEnvModelCall <- function(model, what, ...){
   model_env <- new.env(parent=environment(as.formula(model)))
   model_env$what <- what
   model_env$call_lst <- call_lst
-  do.call(what, call_lst, 
-          envir = model_env)
+  fastDoCall(what, call_lst, 
+             envir = model_env)
 }

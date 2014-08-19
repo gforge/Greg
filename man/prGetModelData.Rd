@@ -13,7 +13,7 @@ data.frame
 }
 \description{
 Returns the raw variables from the original data
-frame using the \code{\link[base]{get_all_vars}}
+frame using the \code{\link[stats]{get_all_vars}}
 but with the twist that it also performs any associated
 subsetting based on the model's \code{subset} argument.
 }

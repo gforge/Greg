@@ -41,7 +41,6 @@
 #' @export
 forestplotRegrObj <- function(  
   regr.obj, 
-  col,
   skip.variables,
   add.empty_row,
   order.regexps,
@@ -344,16 +343,7 @@ forestplotRegrObj <- function(
     variable_count = variable_count,
     box.default.size = box.default.size)
   
-  # TODO: there should be a more flexible color scheme chooser, look-up RColorBrewer and colorRampPalette
-  available_colors <- rbind(
-    c("royalblue", "darkblue"), 
-    c("gold", "orange"), 
-    c(rgb(200/255, 0, 0), rgb(100/255, 0, 0)),
-    c(rgb(148/255, 0, 211/255), rgb(148/255, 0, 211/255))
-  )
-  box_clr <- available_colors[1,1]
-  line_clr <- available_colors[1,2]
-  
+
   if (length(models_fit_fp_data) > 1){
     # Create a matrix for the box etc
     for(i in 2:length(models_fit_fp_data)){
@@ -367,10 +357,6 @@ forestplotRegrObj <- function(
         get_box_size(p_values = models_fit_fp_data[[i]][, "p_val"],
           variable_count = variable_count,
           box.default.size = box.default.size))
-      
-      # Set the box and line color for this fit 
-      box_clr <- cbind(box_clr, available_colors[i,1])
-      line_clr <- cbind(line_clr, available_colors[i,2])
     }
     
     # There are only the variable names that should be displayed
@@ -391,19 +377,12 @@ forestplotRegrObj <- function(
     # The first is the names and the second the hazard rate
     rn <- list(col1, col2)
   }
-  
-  # TODO: maybe change to a different meta structure
-  t.clr <- fpColors(
-    box=box_clr, 
-    lines=line_clr, 
-    zero=col.zero)
     
   forestplot2(rn, 
               mean                 = t.coef, 
               lower                = t.low, 
               upper                = t.high,
               clip                 = clip,
-              col                  = t.clr,
               boxsize              = b_size,
               xlab                 = xlab,
               xlog                 = xlog,

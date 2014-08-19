@@ -10,7 +10,7 @@
 #' remember the original values and the statistics will be faulty! 
 #' 
 #' @param model A regression model fit, i.e. the returned object from your 
-#'  regression function, or the output from \code{\link{getCrudeAndAdjusted}}
+#'  regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}}
 #' @param order A vector with regular expressions for each group, use if youe
 #'  want to reorder the groups in another way than what you've used in your original
 #'  function. You can also use this in order to skip certain variables from the output.
@@ -343,7 +343,7 @@ print.printCrudeAndAdjusted <- function(x,
       if (nchar(option) > 0) call_list[option] <- dots[[option]]
   }
 
-  htmlTable_str <- do.call(htmlTable, call_list)
+  htmlTable_str <- fastDoCall(htmlTable, call_list)
   
   # Output the string since this is the print function
   print(htmlTable_str)
@@ -378,14 +378,14 @@ latex.printCrudeAndAdjusted <- function(object, ...){
         call_list[option] <- dots[[option]]
   }
   
-  return(do.call(latex, call_list))
+  return(fastDoCall(latex, call_list))
 }
 
 
 #' A function for gathering all the description options
 #' 
 #' Since there are so many different description options
-#' for the \code{\link{printCrudeAndAdjusted}} function they
+#' for the \code{\link{printCrudeAndAdjustedModel}} function they
 #' have been gathered into a list. This function is simply a 
 #' helper in order to generate a valid list.
 #' 

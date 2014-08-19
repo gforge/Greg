@@ -3,7 +3,7 @@
 \alias{forestplotRegrObj}
 \title{Foresplot for multiple models}
 \usage{
-forestplotRegrObj(regr.obj, col, skip.variables, add.empty_row, order.regexps,
+forestplotRegrObj(regr.obj, skip.variables, add.empty_row, order.regexps,
   order.addrows, box.default.size, rowname.fn, xlab, xlog,
   estimate.txt = xlab, zero, get_box_size = function(p_values,
   variable_count, box.default.size, significant = 0.05) {     b_size <- c(NA,
@@ -49,8 +49,6 @@ odds ratio}
 1 while in most other cases it's 0.}
 
 \item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
-
-\item{col}{See \code{\link{fpColors}}}
 
 \item{xlab}{x-axis label}
 

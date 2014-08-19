@@ -22,7 +22,7 @@ prMapVariable2Name(var_names, available_names, data)
 \description{
 As both the \code{\link{getCrudeAndAdjustedModelData}} and the
 \code{\link{printCrudeAndAdjustedModel}} need to now exactly
-what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary}}
+what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary.rms}}
 correspond to we for generalizeability this rather elaborate function.
 }
 \keyword{internal}

@@ -35,7 +35,7 @@ Total and Event.}
 }
 \description{
 Since there are so many different description options
-for the \code{\link{printCrudeAndAdjusted}} function they
+for the \code{\link{printCrudeAndAdjustedModel}} function they
 have been gathered into a list. This function is simply a
 helper in order to generate a valid list.
 }

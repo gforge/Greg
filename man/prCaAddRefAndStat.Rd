@@ -14,7 +14,7 @@ prCaAddRefAndStat(model, var_order, add_references, add_references_pos,
 \item{ds}{The dataset}
 
 \item{model}{A regression model fit, i.e. the returned object from your
-regression function, or the output from \code{\link{getCrudeAndAdjusted}}}
+regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}}}
 
 \item{add_references}{True if it should use the data set to look for
 references, otherwise supply the function with a vector with names.

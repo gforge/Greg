@@ -11,7 +11,7 @@
 #'  
 #' @return The reordered groups as a matrix
 #' @family printCrudeAndAdjusted functions
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
 prCaReorderReferenceDescribe <- function (
   x,
@@ -67,10 +67,10 @@ prCaReorderReferenceDescribe <- function (
 
 #' Function for retrieving the imputation arguments
 #' 
-#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjusted}}
+#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjustedModel}}
 #'  function call.
 #' @param output_mtrx The reordered groups matrix (a nx4 matrix)
-#'  that have been prepared in for the \code{\link{printCrudeAndAdjusted}} 
+#'  that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}} 
 #'  function. It is important that the references
 #'  if any have been added.
 #' @param model The imputation model. Currently only \code{\link[Hmisc]{fit.mult.impute}}
@@ -132,7 +132,7 @@ prCaGetImputationCols <- function(impute_args,
       }
     }
     non_imputed_fit <- 
-      do.call(as.character(model$call$fitter),
+      fastDoCall(as.character(model$call$fitter),
               raw_call_lst)
     
     diff <- coef(model) - coef(non_imputed_fit)
@@ -951,7 +951,7 @@ prCaReorder <- function (mtrx2reorder, var_order, order) {
 #' @return \code{matrix} The \code{reordered_groups} with references and the
 #'  attribute "var_order" in order to keep track of no. of variables per row.
 #' @family printCrudeAndAdjusted functions
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
 prCaAddUserReferences <- function (reordered_groups, 
                                    var_order, 
