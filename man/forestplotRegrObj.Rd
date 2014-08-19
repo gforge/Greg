@@ -4,11 +4,11 @@
 \title{Foresplot for multiple models}
 \usage{
 forestplotRegrObj(regr.obj, skip.variables, add.empty_row, order.regexps,
-  order.addrows, box.default.size, rowname.fn, xlab, xlog,
-  estimate.txt = xlab, zero, get_box_size = function(p_values,
-  variable_count, box.default.size, significant = 0.05) {     b_size <- c(NA,
-  rep(box.default.size, variable_count))     b_size[p_values < significant] <-
-  box.default.size * 1.5     return(b_size) }, ...)
+  order.addrows, box.default.size, rowname.fn, estimate.txt = xlab, zero,
+  get_box_size = function(p_values, variable_count, box.default.size,
+  significant = 0.05) {     b_size <- c(NA, rep(box.default.size,
+  variable_count))     b_size[p_values < significant] <- box.default.size * 1.5 
+     return(b_size) }, ...)
 }
 \arguments{
 \item{regr.obj}{A regression model object. It should be of coxph, crr or glm class.
@@ -49,10 +49,6 @@ odds ratio}
 1 while in most other cases it's 0.}
 
 \item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
-
-\item{xlab}{x-axis label}
-
-\item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 }
 \description{
 Plot different model fits with similar variables in order to

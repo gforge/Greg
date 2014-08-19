@@ -11,7 +11,7 @@
 #'  
 #' @return The reordered groups as a matrix
 #' @family printCrudeAndAdjusted functions
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
 prCaReorderReferenceDescribe <- function (
   x,
@@ -510,7 +510,7 @@ prCaAddRefAndStat <- function(model,
 #' @param ds The data set
 #' @return \code{matrix} A matrix with rgroup and n.rgroup attributes 
 #' 
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @family printCrudeAndAdjusted functions
 #' @keywords internal
 prCaAddReference <- function(vn, 
@@ -629,7 +629,7 @@ prCaAddReference <- function(vn,
 #'  \code{\link{prGetStatistics}}
 #' @importFrom Gmisc getDescriptionStatsBy
 #' @family printCrudeAndAdjusted functions
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
 prCaGetVnStats <- function(model,
                            vn, 
@@ -958,7 +958,7 @@ prCaReorder <- function (mtrx2reorder, var_order, order) {
 #' @return \code{matrix} The \code{reordered_groups} with references and the
 #'  attribute "var_order" in order to keep track of no. of variables per row.
 #' @family printCrudeAndAdjusted functions
-#' @inheritParams printCrudeAndAdjusted
+#' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
 prCaAddUserReferences <- function (reordered_groups, 
                                    var_order, 
