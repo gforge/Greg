@@ -23,7 +23,7 @@
 #'  F. Cribari-Neto and M. da G. A. Lima, 
 #'  "Heteroskedasticity-consistent interval estimators", 
 #'  Journal of Statistical Computation and Simulation, 
-#'  vol. 79, no. 6, pp. 787–803, 2009.}
+#'  vol. 79, no. 6, pp. 787-803, 2009.}
 #' @export
 confint_robust <- function(object, parm, level = 0.95, 
     HC_type="HC3", t_distribution = FALSE,...){
