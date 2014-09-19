@@ -16,6 +16,7 @@ Changes for 1.0.0
   leaving these out to retain old behavior
 * The getCrudeAndAdjusted now allows for selecting variables. The printCrudeAndAdjusted
   now passes on the order option when variable selection is of interest.
+* Cleaned variables for the forestplot2 functions
 
 Changes for 0.7.1
 -----------------
