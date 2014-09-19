@@ -20,7 +20,7 @@ forestplotRegrObj (regr.obj = fit1, new_page=TRUE)
 
 forestplotRegrObj (regr.obj = list(fit1, fit2),
                    legend = c("Status = 1", "Status = 2"), 
-                   legend.title="Type of regression",
+                   legend_args = fpLegend(title="Type of regression"),
                    new_page=TRUE)
   
 modifyNameFunction <- function(x){
@@ -33,9 +33,11 @@ modifyNameFunction <- function(x){
   return (x)
 }
 
-forestplotRegrObj (regr.obj = list(fit1, fit2),
+forestplotRegrObj (regr.obj = list(fit1, fit2), 
+                   col=fpColors(box=c("darkblue", "darkred")),
                    variablesOfInterest.regexp = "(x2|x3)",
-                   reference.names = c("First model", "Second model"),
+                   legend = c("First model", "Second model"),
+                   legend_args = fpLegend(title = "Models"),
                    rowname.fn = modifyNameFunction, new_page=TRUE)
   
 par(org.par)
