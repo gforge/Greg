@@ -330,7 +330,7 @@ setClass("printCrudeAndAdjusted", contains = "matrix")
 print.printCrudeAndAdjusted <- function(x,
   rgroupCSSstyle        = "", ...){
   
-  call_list <- list(x = x, 
+  call_args <- list(x = x, 
     headings      = attr(x, "headings"), 
     rowlabel.just = attr(x, "rowlabel.just"), 
     rowlabel      = attr(x, "rowlabel"),
@@ -341,23 +341,23 @@ print.printCrudeAndAdjusted <- function(x,
   
 
   if (!is.null(attr(x, "rgroup"))){
-    call_list[["rgroup"]] <- attr(x, "rgroup")
-    call_list[["n.rgroup"]] <- attr(x, "n.rgroup")
+    call_args[["rgroup"]] <- attr(x, "rgroup")
+    call_args[["n.rgroup"]] <- attr(x, "n.rgroup")
   }
   
   if (length(attr(x, "other")) > 0){
     other <- attr(x, "other")
     for (option in names(other))
-      if (nchar(option) > 0) call_list[[option]] <- other[[option]]
+      if (nchar(option) > 0) call_args[[option]] <- other[[option]]
   }
   
   dots <- list(...)
   if (length(dots) > 0){
     for (option in names(dots))
-      if (nchar(option) > 0) call_list[[option]] <- dots[[option]]
+      if (nchar(option) > 0) call_args[[option]] <- dots[[option]]
   }
 
-  htmlTable_str <- fastDoCall(htmlTable, call_list)
+  htmlTable_str <- fastDoCall(htmlTable, call_args)
   
   # Output the string since this is the print function
   print(htmlTable_str)

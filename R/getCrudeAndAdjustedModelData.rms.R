@@ -48,14 +48,14 @@ getCrudeAndAdjustedModelData.rms <- function(model,
            " for the names: '", paste(names(var_rows), collapse="', '"), "'")
     
     var_rows <- var_rows[sort(greps)]
-    var_names <-     var_names <- local({
+    var_names <- local({
       tmp <- var_names[var_names %in% names(var_rows)]
       copyAllNewAttributes(from = var_names, to = tmp)
     })
     
     adjusted <- adjusted[unlist(lapply(var_rows,
                                        function(x) x$location), 
-                                use.names = FALSE), ]
+                                use.names = FALSE), ,drop=FALSE]
   }
   
   unadjusted <- c()

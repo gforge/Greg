@@ -30,7 +30,8 @@
 #' 
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' 
-#' @inheritParams Gmisc::foresplot2
+#' @inheritParams Gmisc::forestplot2
+#' 
 #' @importFrom Gmisc forestplot2
 #' @family \code{\link[Gmisc]{forestplot2}} wrappers
 #' @export
@@ -39,16 +40,16 @@ forestplotCombineRegrObj <- function(
   variablesOfInterest.regexp,
   reference.names,
   rowname.fn,
-  xlab,
-  xlog,
   estimate.txt,
-  zero,
-  is.summary,
   exp              = xlog,
   add_first_as_ref = FALSE,
   ref_txt          = "ref.",
   ref_labels       = c(),
   digits           = 1,
+  is.summary,
+  xlab,
+  zero,
+  xlog,
   ...)
 {   
   if (length(regr.obj) < 2)

@@ -1,7 +1,7 @@
 #' Adds the ordering, references, and descriptions
 #' 
 #' This is a wrapper function around some more basic functions that
-#' \code{\link{printCrudeAndAdjustedModel}} uses.
+#' \code{\link{printCrudeAndAdjusted uses}}.
 #'
 #' @param x The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}}
 #' @param model The model
@@ -30,9 +30,10 @@ prCaReorderReferenceDescribe <- function (
   reordered_groups <- prCaReorder(mtrx2reorder = x,
                                   var_order = var_order,
                                   order = order)
-  var_order <- attr(reordered_groups, "var_order")
   
   if (!missing(add_references)){
+    var_order <- attr(reordered_groups, "var_order")
+
     if(add_references == TRUE){
       reordered_groups <- 
         prCaAddRefAndStat(model = model,
@@ -45,7 +46,6 @@ prCaReorderReferenceDescribe <- function (
                           desc_column = desc_column, 
                           desc_args = desc_args,
                           use_labels = use_labels)
-      
     }else if (length(add_references) == 
                 length(attr(reordered_groups, "greps"))){
       
@@ -67,10 +67,10 @@ prCaReorderReferenceDescribe <- function (
 
 #' Function for retrieving the imputation arguments
 #' 
-#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjustedModel}}
+#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjusted}}
 #'  function call.
 #' @param output_mtrx The reordered groups matrix (a nx4 matrix)
-#'  that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}} 
+#'  that have been prepared in for the \code{\link{printCrudeAndAdjusted}} 
 #'  function. It is important that the references
 #'  if any have been added.
 #' @param model The imputation model. Currently only \code{\link[Hmisc]{fit.mult.impute}}
@@ -132,7 +132,7 @@ prCaGetImputationCols <- function(impute_args,
       }
     }
     non_imputed_fit <- 
-      fastDoCall(as.character(model$call$fitter),
+      do.call(as.character(model$call$fitter),
               raw_call_lst)
     
     diff <- coef(model) - coef(non_imputed_fit)
@@ -373,18 +373,14 @@ prCaAddRefAndStat <- function(model,
                                  reference_zero_effect = reference_zero_effect,
                                  ds = ds,
                                  use_labels = use_labels)
-      # Add reference to no_rows, i.e. no_rows == lenght(lvls)
-      var_order[[vn]]$no_rows <- var_order[[vn]]$no_lvls
+      var_order <- attr(values, "var_order")
       
-      # Update locations after the added references or the 
-      # next reference locator will look for the reference among
-      # the wrong rows
-      for(i in which(vn == names(var_order)):(length(var_order))){
-        start_pos <- 0
-        if (i > 1){
-          start_pos <- tail(var_order[[i-1]]$location, 1)
+      # Update locations after the changed variable rows
+      current_var_no <- which(vn == names(var_order))
+      if (current_var_no < length(var_order)){
+        for(i in (current_var_no + 1):length(var_order)){
+          var_order[[i]]$location <- var_order[[i]]$location + 1
         }
-        var_order[[i]]$location <- start_pos + 1:var_order[[i]]$no_rows
       }
     }
   }
@@ -453,7 +449,7 @@ prCaAddRefAndStat <- function(model,
             rn <- rows_2_add[i]
             values <- insertRowAndKeepAttr(values, 
                                            r = tail(var_order[[vn]]$location, 1) + 1, 
-                                           v = rep("-", length.out=NCOL(values)), 
+                                           v = rep("-", length.out=cols), 
                                            rName = rn)
             desc_mtrx <- insertRowAndKeepAttr(desc_mtrx, 
                                               r = tail(var_order[[vn]]$location, 1) + 1,
@@ -608,6 +604,16 @@ prCaAddReference <- function(vn,
                                  var_order[[vn]]$location[1] + offset, 
                                  ref_value,
                                  rName=reference)
+
+  var_order[[vn]] <- 
+    within(var_order[[vn]],
+           {location <- c(location[1] + offset, 
+                         location[location <= offset], 
+                         location[location > offset] + 1)
+            no_rows <- length(location)
+            reference_pos <- offset
+            })
+  attr(values, "var_order") <- var_order
   
   return(values)
 }
@@ -1068,4 +1074,4 @@ prCaPrepareCrudeAndAdjusted <- function(x, ci_lim, digits, sprintf_ci_str){
   rownames(values) <- rownames(x)
   
   return(values)
-}
+}    

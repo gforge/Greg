@@ -50,7 +50,7 @@ The reordered groups as a matrix
 }
 \description{
 This is a wrapper function around some more basic functions that
-\code{\link{printCrudeAndAdjustedModel}} uses.
+\code{\link{printCrudeAndAdjusted uses}}.
 }
 \seealso{
 Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},

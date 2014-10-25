@@ -38,13 +38,8 @@ test_that("Check position of reference", {
   expect_match(a[2,2], "ref")
   
   # Should end up at first position if referenced outside
-  a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, add_references_pos=list(x=5))
+  expect_warning(a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, add_references_pos=list(x=5)))
   expect_match(a[1,2], "ref")
-  
-  # Should end up at first position if referenced outside
-  a <- printCrudeAndAdjustedModel(fit, add_references=TRUE, add_references_pos=list(x=-5))
-  expect_match(a[1,2], "ref")
-
   
   # Bug with the same label occurring miultiple times
   complx_fit <- update(fit, .~.+
