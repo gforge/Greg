@@ -348,13 +348,13 @@ print.printCrudeAndAdjusted <- function(x,
   if (length(attr(x, "other")) > 0){
     other <- attr(x, "other")
     for (option in names(other))
-      if (nchar(option) > 0) call_list[option] <- other[[option]]
+      if (nchar(option) > 0) call_list[[option]] <- other[[option]]
   }
   
   dots <- list(...)
   if (length(dots) > 0){
     for (option in names(dots))
-      if (nchar(option) > 0) call_list[option] <- dots[[option]]
+      if (nchar(option) > 0) call_list[[option]] <- dots[[option]]
   }
 
   htmlTable_str <- fastDoCall(htmlTable, call_list)
