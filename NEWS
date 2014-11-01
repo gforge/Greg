@@ -17,6 +17,8 @@ Changes for 1.0.0
 * The getCrudeAndAdjusted now allows for selecting variables. The printCrudeAndAdjusted
   now passes on the order option when variable selection is of interest.
 * Cleaned variables for the forestplot2 functions
+* Added the addNonlinearity2Model that adds non-linearity for a variable if it finds
+  support for it in the data.
 
 Changes for 0.7.1
 -----------------
