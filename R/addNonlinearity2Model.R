@@ -41,11 +41,12 @@ addNonlinearity2Model <-
            sig_level = .05,
            verbal = FALSE,
            workers,
-           ...)
-  UseMethod("addNonlinearity2Model")
+           ...){
+    UseMethod("addNonlinearity2Model")  
+}
 
 #' @rdname addNonlinearity2Model
-#' @method addNonlinearity2Model default
+#' @export
 #' @keywords internal
 addNonlinearity2Model.default <-
   function(model, 
@@ -90,7 +91,7 @@ addNonlinearity2Model.default <-
 }
 
 #' @rdname addNonlinearity2Model
-#' @method addNonlinearity2Model rms
+#' @export
 #' @keywords internal
 addNonlinearity2Model.rms <-
   function(model, 
