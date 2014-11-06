@@ -117,7 +117,7 @@ addNonlinearity.rms <-
       
     anova_rslt <- anova(simplest_nonlinear)
       
-    row <- which(variable == substr(rownames(anova_rslt), 1, length(variable)))
+    row <- which(variable == substr(rownames(anova_rslt), 1, nchar(variable)))
     if (!grepl("Nonlinear", rownames(anova_rslt)[row + 1]))
       stop("Expect a 'Nonlinear' row after the spline row")
     
