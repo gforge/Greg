@@ -1,6 +1,6 @@
 library(testthat)
 
-context("Check addNonlinearity2Model")
+context("Check addNonlinearity")
 test_that("Check regular glm", {
   n <- 100
   set.seed(123)
@@ -25,14 +25,14 @@ test_that("Check regular glm", {
   
   vals <- sapply(2:7, function(x) AIC(glm(sprintf("y ~ ns(x, %d) + sex",
                                                   x), data=nl_ds)))
-  expect_equivalent(AIC(addNonlinearity2Model(glm(y ~ x + sex, data = nl_ds), 
+  expect_equivalent(AIC(addNonlinearity(glm(y ~ x + sex, data = nl_ds), 
                                               min_fn = AIC,
                                               flex_param = 2:7,
                                               variable = "x", spline_fn = "ns")),
                     min(vals))
   
   
-  expect_equivalent(addNonlinearity2Model(glm(y ~ x + sex, data = l_ds), 
+  expect_equivalent(addNonlinearity(glm(y ~ x + sex, data = l_ds), 
                                           min_fn = AIC,
                                           flex_param = 2:7,
                                           variable = "x", spline_fn = "ns"),
@@ -66,20 +66,20 @@ test_that("That rms-functions work", {
   library(rms)
   vals <- sapply(3:7, function(x) AIC(ols(as.formula(sprintf("y ~ rcs(x, %d) + sex", x)), 
                                           data=nl_ds)))
-  expect_equivalent(AIC(addNonlinearity2Model(ols(y ~ x + sex, data = nl_ds), 
+  expect_equivalent(AIC(addNonlinearity(ols(y ~ x + sex, data = nl_ds), 
                                               min_fn = AIC,
                                               flex_param = 3:7,
                                               variable = "x", 
                                               spline_fn = "rcs")),
                     min(vals))
   
-  expect_error(AIC(addNonlinearity2Model(ols(y ~ x + sex, data = nl_ds), 
+  expect_error(AIC(addNonlinearity(ols(y ~ x + sex, data = nl_ds), 
                                          min_fn = AIC,
                                          flex_param = 3:7,
                                          variable = "x", 
                                          spline_fn = "ns")))  
 
-  expect_equivalent(addNonlinearity2Model(ols(y ~ x + sex, data = l_ds), 
+  expect_equivalent(addNonlinearity(ols(y ~ x + sex, data = l_ds), 
                                           min_fn = AIC,
                                           flex_param = 3:7,
                                           variable = "x", 

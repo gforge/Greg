@@ -30,9 +30,9 @@
 #'  then you can provide this parameter. If you do not want to use parallel then 
 #'  simply set workers to \code{FALSE}.
 #' 
-#' @rdname addNonlinearity2Model
+#' @rdname addNonlinearity
 #' @export
-addNonlinearity2Model <- 
+addNonlinearity <- 
   function(model, 
            variable,
            spline_fn,
@@ -42,13 +42,13 @@ addNonlinearity2Model <-
            verbal = FALSE,
            workers,
            ...){
-    UseMethod("addNonlinearity2Model")  
+    UseMethod("addNonlinearity")  
 }
 
-#' @rdname addNonlinearity2Model
+#' @rdname addNonlinearity
 #' @export
 #' @keywords internal
-addNonlinearity2Model.default <-
+addNonlinearity.default <-
   function(model, 
            variable,
            spline_fn,
@@ -90,10 +90,10 @@ addNonlinearity2Model.default <-
                         workers = workers))
 }
 
-#' @rdname addNonlinearity2Model
+#' @rdname addNonlinearity
 #' @export
 #' @keywords internal
-addNonlinearity2Model.rms <-
+addNonlinearity.rms <-
   function(model, 
            variable,
            spline_fn,
