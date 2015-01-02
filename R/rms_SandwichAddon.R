@@ -14,6 +14,7 @@
 #' 
 #' @example inst/examples/rms_SandwichAddon_example.R
 #' @importFrom sandwich vcovHC
+#' @importFrom sandwich vcovHC.default
 #' @export
 robcov_alt <- function (fit, type="HC3", ...) 
 {
