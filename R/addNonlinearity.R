@@ -62,10 +62,11 @@ addNonlinearity.default <-
       spline_fn <- deparse(spline_fn)
     
     simplest_nonlinear <-
-      update(model,
-             sprintf(".~.-%s+%s(%s, %d)",
-                     variable, spline_fn, variable, min(flex_param)),
-             x=FALSE, y=FALSE)
+      eval(update(model,
+                  sprintf(".~.-%s+%s(%s, %d)",
+                          variable, spline_fn, variable, min(flex_param)),
+                  x=FALSE, y=FALSE, evaluate = FALSE),
+           envir = environment(formula(model)))
     anova_rslt <- anova(model,
                         simplest_nonlinear,
                         test = "Chisq")
@@ -110,10 +111,11 @@ addNonlinearity.rms <-
       stop("Only works with the rcs() function of the rms-package")
 
     simplest_nonlinear <-
-      update(model,
-             sprintf(".~.-%s+%s(%s, %d)",
-                     variable, spline_fn, variable, min(flex_param)),
-             x=FALSE, y=FALSE)
+        eval(update(model,
+                    sprintf(".~.-%s+%s(%s, %d)",
+                            variable, spline_fn, variable, min(flex_param)),
+                    x=FALSE, y=FALSE, evaluate = FALSE),
+            envir = environment(formula(model)))
       
     anova_rslt <- anova(simplest_nonlinear)
       
@@ -176,10 +178,11 @@ prNlChooseDf <- function (model,
       lapply(X = flex_param[-which.min(flex_param)],
              FUN = 
                function(x, model, variable, spline_fn) {
-                 update(model,
-                        sprintf(".~.-%s+%s(%s, %d)",
-                                variable, spline_fn, variable, x),
-                        y = FALSE, x = FALSE)
+                 eval(update(model,
+                             sprintf(".~.-%s+%s(%s, %d)",
+                                     variable, spline_fn, variable, x),
+                             y = FALSE, x = FALSE, evaluate = FALSE),
+                      envir = environment(formula(model)))
                },
              model = model,
              variable = variable,
@@ -189,10 +192,11 @@ prNlChooseDf <- function (model,
       parLapply(cl = workers,
                 X = flex_param[-which.min(flex_param)],
                 function(x, model, variable, spline_fn) {
-                  update(model,
-                         sprintf(".~.-%s+%s(%s, %d)",
-                                 variable, spline_fn, variable, x),
-                         y = FALSE, x = FALSE)
+                  eval(update(model,
+                              sprintf(".~.-%s+%s(%s, %d)",
+                                      variable, spline_fn, variable, x),
+                              y = FALSE, x = FALSE, evaluate = FALSE),
+                       envir = environment(formula(model)))
                 },
                 model = model,
                 variable = variable,
