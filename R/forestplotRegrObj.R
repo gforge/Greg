@@ -47,12 +47,15 @@ forestplotRegrObj <- function(
   order.addrows,
   box.default.size,
   rowname.fn,
+  xlab,
+  xlog,
+  exp,
   estimate.txt     = xlab,
   zero,
   get_box_size = function(p_values, 
-                           variable_count, 
-                           box.default.size, 
-                           significant = .05){
+                          variable_count, 
+                          box.default.size, 
+                          significant = .05){
     b_size <- c(NA, rep(box.default.size, variable_count))
     b_size[p_values < significant] <- box.default.size*1.5
     return(b_size)
@@ -89,10 +92,14 @@ forestplotRegrObj <- function(
       xlog <- TRUE
       if (missing(zero))
         zero <- 1
+      if (missing(exp))
+        exp <- TRUE
     }else{
       xlog <- FALSE
       if (missing(zero))
         zero <- 0
+      if (missing(exp))
+        exp <- FALSE
     }
   }
   
@@ -174,8 +181,8 @@ forestplotRegrObj <- function(
   # Use the first fit to validate all the other
   # models against
   fit_data <- prGetFpDataFromFit(regr.obj[[1]],
-    conf.int = 0.95,
-    exp = exp)
+                                 conf.int = 0.95,
+                                 exp = exp)
   models_fit_fp_data <- list(fit_data)
   if (length(regr.obj) > 1){
     for(i in 2:length(regr.obj)){
@@ -276,7 +283,8 @@ forestplotRegrObj <- function(
   }
   
   geRownames <- function(fit_data, 
-                         rn_translate_fn){
+                         rn_translate_fn,
+                         skip.variables){
     if (is.matrix(fit_data) == FALSE){
       stop("You must provide a proper matrix from the getForsetplotData functions")
     }
@@ -308,7 +316,8 @@ forestplotRegrObj <- function(
   }
   
   col1 <- geRownames(models_fit_fp_data[[1]], 
-                     rn_translate_fn = rowname.fn)
+                     rn_translate_fn = rowname.fn,
+                     skip.variables = skip.variables)
   
   # The top is the header and should be bold
   is.summary <- c(TRUE, rep(FALSE, length(col1)-1))
@@ -380,7 +389,6 @@ forestplotRegrObj <- function(
               mean                 = t.coef, 
               lower                = t.low, 
               upper                = t.high,
-              clip                 = clip,
               boxsize              = b_size,
               xlab                 = xlab,
               xlog                 = xlog,
