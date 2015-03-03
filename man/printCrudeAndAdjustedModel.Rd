@@ -12,7 +12,7 @@ printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
   desc_column = FALSE, desc_args = caDescribeOpts(digits = digits),
   impute_args, ...)
 
-\method{print}{printCrudeAndAdjusted}(x, rgroupCSSstyle = "", ...)
+\method{print}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
 
 \method{latex}{printCrudeAndAdjusted}(object, ...)
 }
@@ -104,7 +104,7 @@ is supported by this option.}
 
 \item{x}{The output object from the printCrudeAndAdjustedModel function}
 
-\item{rgroupCSSstyle}{Css style for the rgorup, if different styles are wanted for each of the
+\item{css.rgroup}{Css style for the rgorup, if different styles are wanted for each of the
 rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.}
 
 \item{object}{The output object from the printCrudeAndAdjustedModel function}

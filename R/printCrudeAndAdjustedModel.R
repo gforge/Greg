@@ -310,7 +310,7 @@ printCrudeAndAdjustedModel <- function(model,
 
   class(reordered_groups) <- c("printCrudeAndAdjusted", class(reordered_groups))
 
-  attr(reordered_groups, "headings") <- sub("(Crude|Adjusted)", 
+  attr(reordered_groups, "header") <- sub("(Crude|Adjusted)", 
                                             coef_name, colnames(reordered_groups))
   attr(reordered_groups, "rowlabel.just") <-  "l" 
   attr(reordered_groups, "rowlabel") <-  "Variable"
@@ -321,23 +321,23 @@ printCrudeAndAdjustedModel <- function(model,
 setClass("printCrudeAndAdjusted", contains = "matrix")
 
 #' @param x The output object from the printCrudeAndAdjustedModel function 
-#' @param rgroupCSSstyle Css style for the rgorup, if different styles are wanted for each of the
+#' @param css.rgroup Css style for the rgorup, if different styles are wanted for each of the
 #'  rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.
 #' @rdname printCrudeAndAdjustedModel
 #' @method print printCrudeAndAdjusted
 #' @export
 #' @keywords internal
 print.printCrudeAndAdjusted <- function(x,
-  rgroupCSSstyle        = "", ...){
+  css.rgroup        = "", ...){
   
   call_args <- list(x = x, 
-    headings      = attr(x, "headings"), 
+    header      = attr(x, "header"), 
     rowlabel.just = attr(x, "rowlabel.just"), 
     rowlabel      = attr(x, "rowlabel"),
     n.cgroup      = attr(x, "n.cgroup"), 
     cgroup        = attr(x, "cgroup"), 
     align         = attr(x, "align"),
-    rgroupCSSstyle= rgroupCSSstyle)
+    css.rgroup= css.rgroup)
   
 
   if (!is.null(attr(x, "rgroup"))){
@@ -372,7 +372,7 @@ print.printCrudeAndAdjusted <- function(x,
 #' @importFrom Hmisc latex
 latex.printCrudeAndAdjusted <- function(object, ...){
   call_list <- 
-    list(colheads      = attr(object, "headings"), 
+    list(colheads      = attr(object, "header"), 
          rowlabel.just = attr(object, "rowlabel.just"), 
          rowlabel      = attr(object, "rowlabel"),
          rowname       = latexTranslate(rownames(object)),
