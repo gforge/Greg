@@ -1,4 +1,4 @@
-#' Foresplot for multiple models
+#' Forest plot for multiple models
 #' 
 #' Plot different model fits with similar variables in order to 
 #' compare the model's estimates and confidence intervals. Each
@@ -32,12 +32,12 @@
 #' @example inst/examples/forestplotRegrObj_example.R
 #' 
 #' @importFrom Gmisc insertRowAndKeepAttr
-#' @importFrom Gmisc forestplot2
+#' @importFrom forestplot forestplot
 #' 
 #' @inheritParams forestplotCombineRegrObj
-#' @inheritParams Gmisc::forestplot2
+#' @inheritParams forestplot::forestplot
 #' 
-#' @family \code{\link[Gmisc]{forestplot2}} wrappers
+#' @family \code{\link[forestplot]{forestplot}} wrappers
 #' @export
 forestplotRegrObj <- function(  
   regr.obj, 
@@ -96,6 +96,18 @@ forestplotRegrObj <- function(
         exp <- TRUE
     }else{
       xlog <- FALSE
+      if (missing(zero))
+        zero <- 0
+      if (missing(exp))
+        exp <- FALSE
+    }
+  }else{
+    if (xlog){
+      if (missing(zero))
+        zero <- 1
+      if (missing(exp))
+        exp <- TRUE
+    }else{
       if (missing(zero))
         zero <- 0
       if (missing(exp))
@@ -385,7 +397,7 @@ forestplotRegrObj <- function(
     rn <- list(col1, col2)
   }
     
-  forestplot2(rn, 
+  forestplot(rn, 
               mean                 = t.coef, 
               lower                = t.low, 
               upper                = t.high,

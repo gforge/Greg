@@ -20,7 +20,9 @@ Imports:
     sandwich,
     stats,
     nlme,
-    methods
+    methods,
+    forestplot,
+    htmlTable
 Depends:
     Gmisc (>= 1.0.0)
 Suggests:

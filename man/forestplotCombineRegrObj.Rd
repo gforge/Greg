@@ -40,10 +40,25 @@ fits.}
 
 \item{digits}{Number of digits to use for the estimate output}
 
+\item{is.summary}{A vector indicating by
+  \code{TRUE}/\code{FALSE} if the value is a summary value
+  which means that it will have a different font-style}
+
+\item{xlab}{x-axis label}
+
 \item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
 1 while in most other cases it's 0.}
 
-\item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
+\item{xlog}{If TRUE, x-axis tick marks are to follow a
+  logarithmic scale, e.g. for logistic regressoin (OR),
+  survival estimates (HR), poisson regression etc.
+  \emph{Note:} This is an intentional break with the
+  original \code{\link[rmeta]{forestplot}} function as I've
+  found that exponentiated ticks/clips/zero effect are more
+  difficult to for non-statisticians and there are
+  sometimes issues with rounding the tick marks properly.}
+
+\item{...}{Passed to \code{\link[forestplot]{forestplot}}}
 }
 \description{
 Creates a composite from different regression objects into
@@ -95,6 +110,6 @@ forestplotCombineRegrObj (
 par(org.par)
 }
 \seealso{
-Other \code{\link[Gmisc]{forestplot2}} wrappers: \code{\link{forestplotRegrObj}}
+Other \code{\link[forestplot]{forestplot}} wrappers: \code{\link{forestplotRegrObj}}
 }
 

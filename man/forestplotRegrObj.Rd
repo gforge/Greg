@@ -2,7 +2,7 @@
 % Please edit documentation in R/forestplotRegrObj.R
 \name{forestplotRegrObj}
 \alias{forestplotRegrObj}
-\title{Foresplot for multiple models}
+\title{Forest plot for multiple models}
 \usage{
 forestplotRegrObj(regr.obj, skip.variables, add.empty_row, order.regexps,
   order.addrows, box.default.size, rowname.fn, xlab, xlog, exp,
@@ -43,6 +43,17 @@ empty rows between groups.}
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
 
+\item{xlab}{x-axis label}
+
+\item{xlog}{If TRUE, x-axis tick marks are to follow a
+  logarithmic scale, e.g. for logistic regressoin (OR),
+  survival estimates (HR), poisson regression etc.
+  \emph{Note:} This is an intentional break with the
+  original \code{\link[rmeta]{forestplot}} function as I've
+  found that exponentiated ticks/clips/zero effect are more
+  difficult to for non-statisticians and there are
+  sometimes issues with rounding the tick marks properly.}
+
 \item{exp}{Report in exponential form. Default true since the function was built for
 use with survival models.}
 
@@ -52,7 +63,7 @@ odds ratio}
 \item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
 1 while in most other cases it's 0.}
 
-\item{...}{Passed to \code{\link[Gmisc]{forestplot2}}}
+\item{...}{Passed to \code{\link[forestplot]{forestplot}}}
 }
 \description{
 Plot different model fits with similar variables in order to
@@ -108,6 +119,6 @@ forestplotRegrObj (regr.obj = list(fit1, fit2),
 par(org.par)
 }
 \seealso{
-Other \code{\link[Gmisc]{forestplot2}} wrappers: \code{\link{forestplotCombineRegrObj}}
+Other \code{\link[forestplot]{forestplot}} wrappers: \code{\link{forestplotCombineRegrObj}}
 }
 

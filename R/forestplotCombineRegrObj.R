@@ -26,14 +26,14 @@
 #'   fits. 
 #' @param ref_txt Text instead of estimate number
 #' @param digits Number of digits to use for the estimate output
-#' @param ... Passed to \code{\link[Gmisc]{forestplot2}}
+#' @param ... Passed to \code{\link[forestplot]{forestplot}}
 #' 
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' 
-#' @inheritParams Gmisc::forestplot2
+#' @inheritParams forestplot::forestplot
 #' 
-#' @importFrom Gmisc forestplot2
-#' @family \code{\link[Gmisc]{forestplot2}} wrappers
+#' @importFrom forestplot forestplot
+#' @family \code{\link[forestplot]{forestplot}} wrappers
 #' @export
 forestplotCombineRegrObj <- function( 
   regr.obj,
@@ -158,7 +158,7 @@ forestplotCombineRegrObj <- function(
   if (missing(is.summary))
     is.summary <- c(TRUE, rep(FALSE, length(t.coef)-1))
   
-  forestplot2(rn, 
+  forestplot(rn, 
     xlim       = c(0,10),
     mean       = t.coef, 
     lower      = t.low, 
