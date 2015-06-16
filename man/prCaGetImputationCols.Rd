@@ -7,11 +7,11 @@
 prCaGetImputationCols(impute_args, output_mtrx, model, data)
 }
 \arguments{
-\item{impute_args}{The imputation arguments from \code{\link{printCrudeAndAdjusted}}
+\item{impute_args}{The imputation arguments from \code{\link{printCrudeAndAdjustedModel}}
 function call.}
 
 \item{output_mtrx}{The reordered groups matrix (a nx4 matrix)
-that have been prepared in for the \code{\link{printCrudeAndAdjusted}}
+that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}}
 function. It is important that the references
 if any have been added.}
 

@@ -1,7 +1,7 @@
 #' Adds the ordering, references, and descriptions
 #' 
 #' This is a wrapper function around some more basic functions that
-#' \code{\link{printCrudeAndAdjusted uses}}.
+#' \code{\link{printCrudeAndAdjustedModel}} uses.
 #'
 #' @param x The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}}
 #' @param model The model
@@ -67,10 +67,10 @@ prCaReorderReferenceDescribe <- function (
 
 #' Function for retrieving the imputation arguments
 #' 
-#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjusted}}
+#' @param impute_args The imputation arguments from \code{\link{printCrudeAndAdjustedModel}}
 #'  function call.
 #' @param output_mtrx The reordered groups matrix (a nx4 matrix)
-#'  that have been prepared in for the \code{\link{printCrudeAndAdjusted}} 
+#'  that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}} 
 #'  function. It is important that the references
 #'  if any have been added.
 #' @param model The imputation model. Currently only \code{\link[Hmisc]{fit.mult.impute}}
@@ -449,7 +449,7 @@ prCaAddRefAndStat <- function(model,
             rn <- rows_2_add[i]
             values <- insertRowAndKeepAttr(values, 
                                            r = tail(var_order[[vn]]$location, 1) + 1, 
-                                           v = rep("-", length.out=cols), 
+                                           v = rep("-", length.out=NCOL(desc_mtrx)), 
                                            rName = rn)
             desc_mtrx <- insertRowAndKeepAttr(desc_mtrx, 
                                               r = tail(var_order[[vn]]$location, 1) + 1,

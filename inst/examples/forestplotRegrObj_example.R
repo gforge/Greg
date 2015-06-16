@@ -18,6 +18,7 @@ fit2 <- cph(Surv(ftime, fstatus == 2) ~ x1 + x2 + x3, data=cov)
 
 forestplotRegrObj (regr.obj = fit1, new_page=TRUE)
 
+library(forestplot)
 forestplotRegrObj (regr.obj = list(fit1, fit2),
                    legend = c("Status = 1", "Status = 2"), 
                    legend_args = fpLegend(title="Type of regression"),

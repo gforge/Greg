@@ -26,8 +26,7 @@
 #' @param order.addrows If there are ordered groups then often you want empty rows
 #'   that separate the different groups. Set this to true if you want to add these
 #'   empty rows between groups.
-#' @param box.default.size The size of the boxes indicating the 
-#'   estimate in the forestplot. Default is the p-value.
+#' @param get_box_size A function for extracting the box sizes
 #' 
 #' @example inst/examples/forestplotRegrObj_example.R
 #' 
@@ -38,6 +37,7 @@
 #' @inheritParams forestplot::forestplot
 #' 
 #' @family \code{\link[forestplot]{forestplot}} wrappers
+#' @rdname forestplotRegrObj
 #' @export
 forestplotRegrObj <- function(  
   regr.obj, 
@@ -52,14 +52,7 @@ forestplotRegrObj <- function(
   exp,
   estimate.txt     = xlab,
   zero,
-  get_box_size = function(p_values, 
-                          variable_count, 
-                          box.default.size, 
-                          significant = .05){
-    b_size <- c(NA, rep(box.default.size, variable_count))
-    b_size[p_values < significant] <- box.default.size*1.5
-    return(b_size)
-  },
+  get_box_size = fpBoxSize,
   ...)
 {
   # Treat always as multiple regression object fits
@@ -408,4 +401,19 @@ forestplotRegrObj <- function(
               zero                 = zero,
               ...)
   
+}
+
+#' @param p_values The p-values that will work as the foundation for the box size
+#' @param variable_count The number of variables
+#' @param box.default.size The default box size
+#' @param significant Level of significance .05
+#' @rdname forestplotRegrObj
+#' @export
+fpBoxSize <- function(p_values, 
+         variable_count, 
+         box.default.size, 
+         significant = .05){
+  b_size <- c(NA, rep(box.default.size, variable_count))
+  b_size[p_values < significant] <- box.default.size*1.5
+  return(b_size)
 }

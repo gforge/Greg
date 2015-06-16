@@ -465,7 +465,7 @@ prConvertShowMissing <- function(useNA){
   else if (useNA == TRUE)
     useNA <- "ifany"
   
-  if (useNA %nin% c("no", "ifany", "always"))
+  if (!useNA %in% c("no", "ifany", "always"))
     stop(sprintf("You have set an invalid option for useNA variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", useNA))
   
   return(useNA)

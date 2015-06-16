@@ -85,6 +85,7 @@
 #' 
 #' @importFrom Gmisc insertRowAndKeepAttr
 #' @importFrom Gmisc fastDoCall
+#' @importFrom methods setClass
 #' 
 #' @example inst/examples/printCrudeAndAdjustedModel_example.R
 #' 

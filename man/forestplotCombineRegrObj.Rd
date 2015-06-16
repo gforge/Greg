@@ -110,6 +110,7 @@ forestplotCombineRegrObj (
 par(org.par)
 }
 \seealso{
-Other \code{\link[forestplot]{forestplot}} wrappers: \code{\link{forestplotRegrObj}}
+Other \code{\link[forestplot]{forestplot}} wrappers: \code{\link{forestplotRegrObj}},
+  \code{\link{fpBoxSize}}
 }
 

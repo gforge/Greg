@@ -1,7 +1,7 @@
 Package: Greg
 Version: 1.0.1
 Date: 2015-06-16
-Title: A package for regression handling
+Title: Regression Juggling - Display and Modify Models
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
 Description: This R-package provides functions that primarily aimed at helping
@@ -21,7 +21,8 @@ Imports:
     stats,
     nlme,
     forestplot,
-    htmlTable
+    htmlTable,
+    methods
 Depends:
     Gmisc (>= 1.0.0)
 Suggests:

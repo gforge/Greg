@@ -154,6 +154,7 @@ ds <- data.frame(
   smoking=smoking,
   sex=sex)
 
+library(splines)
 Srv <- Surv(dt,e)
 fit.coxph <- coxph(Srv ~ bs(age, 3) + sex + smoking, data=ds)
 
