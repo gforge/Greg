@@ -82,6 +82,8 @@ simpleRmsAnova <- function(anova_output, subregexps = NA, digits=4, pval_thresho
 #' @param html If HTML output through the htmlTable should be used 
 #'   instead of traditional latex() function
 #' @export
+#' @import htmlTable
+#' @importFrom Gmisc fastDoCall
 #' @keywords internal
 print.simpleRmsAnova <- function(x, html=TRUE, ...){
   dots <- list(...)

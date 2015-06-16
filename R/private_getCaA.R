@@ -74,6 +74,7 @@ prCaDefaultGetCoefAndCI <- function(model, level, skip_intercept=FALSE){
 #' @param vn The variable names
 #' @param data The data set
 #' 
+#' @importFrom Gmisc fastDoCall
 #' @rdname GetCoefAndCI
 prCaRmsGetCoefAndCI <- function(model, level, vn, data){
   # We need to standardize the summary call so that it

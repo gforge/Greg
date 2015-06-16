@@ -84,6 +84,7 @@
 #'  has a default print method associated with
 #' 
 #' @importFrom Gmisc insertRowAndKeepAttr
+#' @importFrom Gmisc fastDoCall
 #' 
 #' @example inst/examples/printCrudeAndAdjustedModel_example.R
 #' 
@@ -370,6 +371,7 @@ print.printCrudeAndAdjusted <- function(x,
 #' @export
 #' @keywords internal
 #' @importFrom Hmisc latex
+#' @importFrom Hmisc latexTranslate
 latex.printCrudeAndAdjusted <- function(object, ...){
   call_list <- 
     list(colheads      = attr(object, "header"), 
@@ -411,7 +413,7 @@ latex.printCrudeAndAdjusted <- function(object, ...){
 #'  defaults to \code{\link{describeProp}}
 #' @param factor_fn Stat function used for the descriptive statistics, 
 #'  defaults to \code{\link{describeFactors}}
-#' @param show_missing Show missing variables in the descriptive columns
+#' @param useNA Show missing variables in the descriptive columns
 #' @param digits Number of digits to use in the descriptive columns. 
 #'  Defaults to the general digits if not specified.
 #' @param colnames The names of the two descriptive columns. By default
@@ -423,13 +425,13 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
                            continuous_fn    = describeMean,
                            prop_fn          = describeProp,
                            factor_fn        = describeFactors,
-                           show_missing     = FALSE,
+                           useNA     = "no",
                            digits           = 1,
                            colnames         = c("Total", "Event")){
   desc_list <- 
     list(show_tot_perc = show_tot_perc,
          numb_first = numb_first,
-         show_missing = show_missing,
+         useNA = useNA,
          digits = digits,
          colnames = colnames)
   
