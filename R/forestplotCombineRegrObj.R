@@ -163,7 +163,6 @@ forestplotCombineRegrObj <- function(
     mean       = t.coef, 
     lower      = t.low, 
     upper      = t.high,
-    clip       = clip,
     is.summary = is.summary,
     zero       = zero,
     xlab       = xlab,
