@@ -324,22 +324,37 @@ setClass("printCrudeAndAdjusted", contains = "matrix")
 #' @param css.rgroup Css style for the rgorup, if different styles are wanted for each of the
 #'  rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.
 #' @rdname printCrudeAndAdjustedModel
-#' @method print printCrudeAndAdjusted
 #' @export
+#' @import magrittr
 #' @keywords internal
 print.printCrudeAndAdjusted <- function(x,
-  css.rgroup        = "", ...){
+                                        css.rgroup= "", 
+                                        ...){
   
-  call_args <- list(x = x, 
-    header      = attr(x, "header"), 
-    rowlabel.just = attr(x, "rowlabel.just"), 
-    rowlabel      = attr(x, "rowlabel"),
-    n.cgroup      = attr(x, "n.cgroup"), 
-    cgroup        = attr(x, "cgroup"), 
-    align         = attr(x, "align"),
-    css.rgroup= css.rgroup)
-  
+  prPrintCAstring(x, css.rgroup, ...) %>%
+    print
+}
 
+#' Prep for printing
+#' 
+#' Since we have both the \code{\link[base]{print}} and the
+#' \code{\link[knitr]{knit_print}} that we need to call it is
+#' useful to have a common string preparer.
+#' \emph{Note:} Currently knit_print doesn't work as expected...
+#' 
+#' @inheritParams print.printCrudeAndAdjusted
+#' @keywords internal
+prPrintCAstring <- function (x, css.rgroup, ...) {
+  call_args <- list(x = x, 
+                    header      = attr(x, "header"), 
+                    rowlabel.just = attr(x, "rowlabel.just"), 
+                    rowlabel      = attr(x, "rowlabel"),
+                    n.cgroup      = attr(x, "n.cgroup"), 
+                    cgroup        = attr(x, "cgroup"), 
+                    align         = attr(x, "align"),
+                    css.rgroup= css.rgroup)
+  
+  
   if (!is.null(attr(x, "rgroup"))){
     call_args[["rgroup"]] <- attr(x, "rgroup")
     call_args[["n.rgroup"]] <- attr(x, "n.rgroup")
@@ -356,11 +371,8 @@ print.printCrudeAndAdjusted <- function(x,
     for (option in names(dots))
       if (nchar(option) > 0) call_args[[option]] <- dots[[option]]
   }
-
-  htmlTable_str <- fastDoCall(htmlTable, call_args)
   
-  # Output the string since this is the print function
-  print(htmlTable_str)
+  fastDoCall(htmlTable, call_args)
 }
 
 #' @param object The output object from the printCrudeAndAdjustedModel function 

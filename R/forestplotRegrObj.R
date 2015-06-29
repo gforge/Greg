@@ -32,7 +32,6 @@
 #' @example inst/examples/forestplotRegrObj_example.R
 #' 
 #' @importFrom Gmisc insertRowAndKeepAttr
-#' @importFrom forestplot forestplot
 #' 
 #' @inheritParams forestplotCombineRegrObj
 #' @inheritParams forestplot::forestplot

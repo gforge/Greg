@@ -21,10 +21,11 @@ Imports:
     stats,
     nlme,
     methods,
-    forestplot,
-    htmlTable
+    htmlTable,
+    magrittr
 Depends:
-    Gmisc (>= 1.0.0)
+    forestplot,
+    Gmisc (>= 1.0.3)
 Suggests:
     boot,
     testthat,
