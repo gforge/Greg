@@ -98,6 +98,7 @@
 #' 
 #' @example inst/examples/plotHR_example.R
 #' 
+#' @importFrom Gmisc fastDoCall
 #' @author Reinhard Seifert, Max Gordon
 #' @export
 plotHR <- function (models, 

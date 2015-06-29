@@ -234,7 +234,7 @@ prGetModelVariables <- function(model,
 #' @param html If the output should be in html or LaTeX formatting
 #' @param digits Number of decimal digits
 #' @param numbers_first If number is to be prior to the percentage
-#' @param show_missing If missing should be included 
+#' @param useNA If missing should be included 
 #' @param show_all_values This is by default false as for instance if there is
 #'  no missing and there is only one variable then it is most sane to only show 
 #'  one option as the other one will just be a complement to the first. For instance
@@ -253,20 +253,22 @@ prGetModelVariables <- function(model,
 #' 
 #' TODO: Use the Gmisc function instead of this copy
 #' 
+#' @importFrom Gmisc describeMean
+#' @importFrom Gmisc describeFactors
 #' @keywords internal
 prGetStatistics <- function(x, 
   show_perc = FALSE, 
   html = TRUE, 
   digits = 1, 
   numbers_first = TRUE, 
-  show_missing = TRUE, 
+  useNA = "no", 
   show_all_values = FALSE,
   continuous_fn = describeMean, 
   factor_fn = describeFactors,
   prop_fn = factor_fn,
   percentage_sign = percentage_sign)
 {
-  show_missing <- prConvertShowMissing(show_missing)
+  useNA <- prConvertShowMissing(useNA)
   if (is.factor(x) || 
         is.logical(x) ||
         is.character(x)){
@@ -276,10 +278,10 @@ prGetStatistics <- function(x,
             html=html, 
             digits=digits,
             number_first=numbers_first, 
-            show_missing = show_missing,
+            useNA = useNA,
             percentage_sign = percentage_sign)
       }else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
         if (show_all_values == FALSE)
@@ -292,10 +294,10 @@ prGetStatistics <- function(x,
             html=html, 
             digits=digits,
             number_first=numbers_first, 
-            show_missing = show_missing,
+            useNA = useNA,
             percentage_sign = percentage_sign)
       else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
     }
@@ -303,7 +305,7 @@ prGetStatistics <- function(x,
     total_table <- continuous_fn(x, 
       html=html, digits=digits, 
       number_first=numbers_first, 
-      show_missing = show_missing)
+      useNA = useNA)
     
     # If a continuous variable has two rows then it's assumed that the second is the missing
     if (length(total_table) == 2 &&
@@ -447,26 +449,26 @@ prGetFpDataFromFit <- function(model_fit,
   return(sd)
 }
 
-#' A functuon for converting a show_missing variable
+#' A functuon for converting a useNA variable
 #' 
 #' The variable is suppose to be directly compatible with
-#' table(..., useNA=show_missing). It throughs an error
+#' table(..., useNA=useNA). It throughs an error
 #' if not compatible
 #' 
-#' @param show_missing Boolean or "no", "ifany", "always" 
+#' @param useNA Boolean or "no", "ifany", "always" 
 #' @return string 
 #' 
 #' @keywords internal
-prConvertShowMissing <- function(show_missing){
-  if (show_missing == FALSE || show_missing == "no")
-    show_missing <- "no"
-  else if (show_missing == TRUE)
-    show_missing <- "ifany"
+prConvertShowMissing <- function(useNA){
+  if (useNA == FALSE || useNA == "no")
+    useNA <- "no"
+  else if (useNA == TRUE)
+    useNA <- "ifany"
   
-  if (show_missing %nin% c("no", "ifany", "always"))
-    stop(sprintf("You have set an invalid option for show_missing variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", show_missing))
+  if (!useNA %in% c("no", "ifany", "always"))
+    stop(sprintf("You have set an invalid option for useNA variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", useNA))
   
-  return(show_missing)
+  return(useNA)
 }
 
 #' A function that tries to resolve what variable corresponds to what row

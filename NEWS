@@ -1,5 +1,10 @@
 NEWS for the Greg package
 
+Changes for 1.0.1
+-----------------
+* All show_missing are now useNA to comply with main package standards
+* A few bug fixes
+
 Changes for 1.0.0
 -----------------
 * Changed the desc_ arguments into a list using the caDescribeOpts
