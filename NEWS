@@ -1,5 +1,11 @@
 NEWS for the Greg package
 
+Changes fro 1.0.2
+-----------------
+* Added handling of missing variable for the outcome estimator
+* Fixed simpleRmsAnova
+* Fixed getModelData with subsetting arguments not being constants
+
 Changes for 1.0.1
 -----------------
 * All show_missing are now useNA to comply with main package standards
