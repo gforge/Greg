@@ -54,13 +54,21 @@ prFindRownameMatches <- function(rnames, vn, vars){
 #' Uses the model to extract the outcome variable. Throws
 #' error if unable to find the outcome.
 #'
-#' @param model The fitted model.1
+#' @param model The fitted model
+#' @param mf The dataset that the model is fitted to - if missing it
+#'  uses the \code{\link[stats]{model.frame}} dataset. This can cause
+#'  length issues as there may be variables that are excluded from the
+#'  model for different reasons.
 #' @return vector
 #'
 #' @keywords internal
-prExtractOutcomeFromModel <- function(model){
-  mf <- model.frame(model)
-  outcome <- mf[,names(mf) == deparse(as.formula(model)[[2]])]
+prExtractOutcomeFromModel <- function(model, mf){
+  if (missing(mf)){
+    mf <- model.frame(model)
+    outcome <- mf[,names(mf) == deparse(as.formula(model)[[2]])]
+  }else{
+    outcome <- eval(as.formula(model)[[2]], envir = mf)
+  }
   if (is.null(outcome))
     stop("Could not identify the outcome: ", deparse(as.formula(model)[[2]]),
          " among the model.frame variables: '", paste(names(mf), collapse="', '"),"'")

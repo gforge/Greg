@@ -361,7 +361,7 @@ test_that("Handling simple linear regression outcomes", {
                     ds$y_fact == "B")
 })
 
-test_that("Subsetting", {
+test_that("Subsetting and missing data", {
   set.seed(10)
   n <- 500
   ds <- data.frame(
@@ -375,7 +375,23 @@ test_that("Subsetting", {
   
   expect_equivalent(prExtractOutcomeFromModel(fit), 
                     subset(ds, subsetting == TRUE)$y)
+
+  # Add missing
+  ds$x1[sample(1:nrow(ds), size = 50)] <- NA
+  fit <- lm(y ~ x1 + x2 + x3, data=ds)
   
+  expect_equivalent(prExtractOutcomeFromModel(fit, mf = ds), 
+                    subset(ds)$y)
+  
+  expect_equivalent(length(prExtractOutcomeFromModel(fit)), 
+                    nrow(ds) - 50)
+
+  # Advanced test with missing and varible not in the original dataset
+  # in the subsetting argument
+  local_var <- TRUE
+  fit <- lm(y > 0 ~ x1 + x2 + x3, data=ds, subset = subsetting == local_var)
+  expect_equivalent(prExtractOutcomeFromModel(fit, mf = ds), 
+                    subset(ds)$y > 0)
 })
 
 

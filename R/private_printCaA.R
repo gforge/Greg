@@ -342,7 +342,7 @@ prCaAddRefAndStat <- function(model,
     stats <- list()
     
     # Get the original data
-    outcome <- prExtractOutcomeFromModel(model)
+    outcome <- prExtractOutcomeFromModel(model, ds)
     if (is.matrix(outcome) && 
           "coxph" %in% class(model)){
       # Get the left part of the formula
