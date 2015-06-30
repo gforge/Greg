@@ -5,8 +5,8 @@
 \alias{simpleRmsAnova}
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
-simpleRmsAnova(anova_output, subregexps = NA, digits = 4,
-  pval_threshold = 10^-4, rowlabel = "Variable", ...)
+simpleRmsAnova(anova_output, subregexps, digits = 4, pval_lim.sig = 10^-4,
+  rowlabel = "", ...)
 
 \method{print}{simpleRmsAnova}(x, html = TRUE, ...)
 }
@@ -20,7 +20,7 @@ should be located in column 1 and the substitution in column
 
 \item{digits}{Number of digits in using the round}
 
-\item{pval_threshold}{The threshold before setting "<", default is < 0.0001}
+\item{pval_lim.sig}{The threshold before setting "<", default is < 0.0001}
 
 \item{rowlabel}{The label of the rows}
 
@@ -87,11 +87,7 @@ simpleRmsAnova(a_out,
                subregexps = rbind(c("age", "Age"),
                                   c("cholesterol", "Cholesterol"),
                                   c("sex", "Sex")),
-               file="",
-               where="!htbp",
-               label="tab:Anova4lrm",
-               caption="Anova output for a logistic regression model",
-               ctable=FALSE)
+               caption="Anova output for a logistic regression model")
 }
 \keyword{internal}
 

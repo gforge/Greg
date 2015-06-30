@@ -13,15 +13,17 @@
 #'   2.
 #' @param digits Number of digits in using the round
 #' @param rowlabel The label of the rows
-#' @param pval_threshold The threshold before setting "<", default is < 0.0001 
+#' @param pval_lim.sig The threshold before setting "<", default is < 0.0001 
 #' @param ... Passed on to latex() or htmlTable
 #' @return void See the latex() function 
 #' 
 #' @example inst/examples/simpleRmsAnova_example.R
 #' 
+#' @import htmlTable
 #' @rdname SimpleRmsAnova
 #' @export
-simpleRmsAnova <- function(anova_output, subregexps = NA, digits=4, pval_threshold = 10^-4, rowlabel="Variable", ...){
+simpleRmsAnova <- function(anova_output, subregexps, digits=4, 
+                           pval_lim.sig = 10^-4, rowlabel="", ...){
   
   if (!inherits(anova_output, "anova.rms"))
     if (inherits(anova_output, "rms")){
@@ -30,15 +32,22 @@ simpleRmsAnova <- function(anova_output, subregexps = NA, digits=4, pval_thresho
       stop("You must provide either an rms-regression object or an anova rms output for this to work")
     }
   
-  rownames <- names(attr(anova_output, "which"))
-  if (is.matrix(subregexps) && NCOL(subregexps) == 2){
-    for (i in 1:NROW(subregexps))
-      rownames <- sub(subregexps[i, 1], subregexps[i, 1], rownames)
+  rnames <- names(attr(anova_output, "which"))
+  if (!missing(subregexps)){
+    if (is.matrix(subregexps) && NCOL(subregexps) == 2){
+      for (i in 1:NROW(subregexps))
+        rnames <- sub(subregexps[i, 1], subregexps[i, 2], rnames)
+    }else if (length(subregexps) == 2){
+      rnames <- sub(subregexps[1], subregexps[2], rnames)
+    }else{
+      stop("Regression substitution through the subregexps should be in",
+           " matrix format with two columns or in vector format with length of 2")
+    }
   }
-  rownames <- sub("TOTAL", "Total", rownames)
-  rownames <- sub("INTERACTION", "interaction", rownames)
-  rownames <- sub("NONLINEAR", "nonlinear", rownames)
-  rownames <- sub("\\(Factor\\+Higher Order Factors\\)", "", rownames)
+  rnames <- sub("TOTAL", "Total", rnames)
+  rnames <- sub("INTERACTION", "interaction", rnames)
+  rnames <- sub("NONLINEAR", "nonlinear", rnames)
+  rnames <- sub("\\(Factor\\+Higher Order Factors\\)", "", rnames)
   
   mtrx <- as.matrix(anova_output)
   pvals <- mtrx[,ncol(mtrx)]
@@ -62,12 +71,10 @@ simpleRmsAnova <- function(anova_output, subregexps = NA, digits=4, pval_thresho
       return(ret)
     },
     digits=digits)
-  pvals <- ifelse(pvals < pval_threshold,  
-    sprintf("< %s", format(pval_threshold, scientific=FALSE)),
-    formatC(pvals, digits=2))
+  pvals <- txtPval(pvals, lim.sig = pval_lim.sig)
   mtrx <- cbind(mtrx, pvals)
+  rownames(mtrx) <- rnames
   number_of_total_rows <- length(grep("TOTAL", names(attr(anova_output, "which"))))
-  attr(mtrx, "title") <- rownames
   attr(mtrx, "n.rgroup") <- c(NROW(mtrx)-number_of_total_rows, number_of_total_rows)
   attr(mtrx, "rgroup") <- c("Variables", "Total")
   attr(mtrx, "rowlabel") <- rowlabel
@@ -75,6 +82,8 @@ simpleRmsAnova <- function(anova_output, subregexps = NA, digits=4, pval_thresho
   class(mtrx) <- c("simpleRmsAnova", class(mtrx))
   return(mtrx)
 }
+
+setClass("simpleRmsAnova", contains = "matrix")
 
 #' @param x The output object from the SimpleRmsAnova function 
 #' @rdname SimpleRmsAnova
@@ -97,17 +106,17 @@ print.simpleRmsAnova <- function(x, html=TRUE, ...){
     attr(x, "html") <- NULL
   }
   
-  if (html){
-    rownames <- sub("^ ", "&nbsp;&nbsp;", rownames(x))
-  }else{
-    rownames <- sub("^ ", "\\\\hspace{3 mm}", rownames(x))
-  }
-  
   call_list <- list(x = x, 
-    rowname=rownames, 
     n.rgroup=attr(x, "n.rgroup"), 
     rgroup=attr(x, "rgroup"),
     rowlabel=attr(x, "rowlabel"))
+  
+  if (html){
+    call_list[["rnames"]] <- sub("^ ", "&nbsp;&nbsp;", rownames(x))
+    call_list[["x"]] <- gsub("<", "&lt;", call_list[["x"]])
+  }else{
+    call_list[["rowname"]] <- sub("^ ", "\\\\hspace{3 mm}", rownames(x))
+  }
   
   if (length(attr(x, "other")) > 0){
     other <- attr(x, "other")
@@ -119,8 +128,7 @@ print.simpleRmsAnova <- function(x, html=TRUE, ...){
     for (option in names(dots))
       if (nchar(option) > 0) call_list[option] <- dots[[option]]
   }
-
-  if (html) call_list[["x"]] <- gsub("<", "&lt;", call_list[["x"]])
   
-  fastDoCall(ifelse(html, "htmlTable", "latex"), call_list)
+  fastDoCall(ifelse(html, "htmlTable", "latex"), call_list) %>%
+    print
 }
