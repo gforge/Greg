@@ -4,6 +4,7 @@
 \alias{latex.printCrudeAndAdjusted}
 \alias{print.printCrudeAndAdjusted}
 \alias{printCrudeAndAdjustedModel}
+\alias{rbind.printCrudeAndAdjusted}
 \title{Output crude and adjusted model data}
 \usage{
 printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
@@ -11,6 +12,8 @@ printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
   reference_zero_effect, groups, rowname.fn, use_labels = TRUE,
   desc_column = FALSE, desc_args = caDescribeOpts(digits = digits),
   impute_args, ...)
+
+rbind.printCrudeAndAdjusted(..., alt.names, deparse.level = 1)
 
 \method{print}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
 
@@ -102,12 +105,19 @@ is supported by this option.}
  and passed on in case you have provided a model and not the returned element
  from the \code{\link{getCrudeAndAdjustedModelData}} call.}
 
+\item{alt.names}{If you don't want to use named arguments for the tspanner attribute
+but a vector with names then use this argument.}
+
+\item{deparse.level}{backward compatibility}
+
 \item{x}{The output object from the printCrudeAndAdjustedModel function}
 
 \item{css.rgroup}{Css style for the rgorup, if different styles are wanted for each of the
 rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.}
 
 \item{object}{The output object from the printCrudeAndAdjustedModel function}
+
+\item{...}{outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame}
 }
 \value{
 \code{matrix} Returns a matrix of class printCrudeAndAdjusted that

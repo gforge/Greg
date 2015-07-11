@@ -23,7 +23,8 @@ contains the name of the column.
 \seealso{
 Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
-  \code{\link{printCrudeAndAdjustedModel}};
+  \code{\link{printCrudeAndAdjustedModel}},
+  \code{\link{rbind.printCrudeAndAdjusted}};
   \code{\link{prCaAddRefAndStat}};
   \code{\link{prCaAddReference}};
   \code{\link{prCaAddUserReferences}};

@@ -56,7 +56,8 @@ This is a wrapper function around some more basic functions that
 \seealso{
 Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
-  \code{\link{printCrudeAndAdjustedModel}};
+  \code{\link{printCrudeAndAdjustedModel}},
+  \code{\link{rbind.printCrudeAndAdjusted}};
   \code{\link{prCaAddRefAndStat}};
   \code{\link{prCaAddReference}};
   \code{\link{prCaAddUserReferences}};

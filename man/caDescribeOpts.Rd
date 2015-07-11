@@ -6,8 +6,7 @@
 \usage{
 caDescribeOpts(show_tot_perc = FALSE, numb_first = TRUE,
   continuous_fn = describeMean, prop_fn = describeProp,
-  factor_fn = describeFactors, useNA = "no", digits = 1,
-  colnames = c("Total", "Event"))
+  factor_fn = describeFactors, digits = 1, colnames = c("Total", "Event"))
 }
 \arguments{
 \item{show_tot_perc}{Show percentages for the total column}
@@ -22,8 +21,6 @@ defaults to \code{\link{describeProp}}}
 
 \item{factor_fn}{Stat function used for the descriptive statistics,
 defaults to \code{\link{describeFactors}}}
-
-\item{useNA}{Show missing variables in the descriptive columns}
 
 \item{digits}{Number of digits to use in the descriptive columns.
 Defaults to the general digits if not specified.}

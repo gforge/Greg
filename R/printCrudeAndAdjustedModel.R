@@ -325,22 +325,15 @@ printCrudeAndAdjustedModel <- function(model,
 
 setClass("printCrudeAndAdjusted", contains = "matrix")
 
-
 #' @param ... outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame
 #' @param alt.names If you don't want to use named arguments for the tspanner attribute
 #'  but a vector with names then use this argument.
-#' @param deparse.level  integer controlling the construction of labels in the case of 
-#'  non-matrix-like arguments (for the default method): deparse.level = 0 constructs no labels; 
-#'  the default, deparse.level = 1 or 2 constructs labels from the argument names, 
-#'  see the ‘Value’ section below.
-#' @param make.row.names  (only for data frame method:) logical indicating if unique and 
-#'  valid row.names should be constructed from the arguments.
+#' @param deparse.level  backward compatibility
 #' 
 #' @rdname printCrudeAndAdjustedModel
 #' @export
 #' @import magrittr
 #' @keywords internal
-#' @importFrom base rbind.data.frame
 rbind.printCrudeAndAdjusted <- 
   function(..., alt.names, deparse.level = 1){
   pca <- list(...)
