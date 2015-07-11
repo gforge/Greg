@@ -661,7 +661,7 @@ prCaGetVnStats <- function(model,
                               prop_fn = desc_args$prop_fn,
                               factor_fn = desc_args$factor_fn,
                               show_all_values = !missing(add_references),
-                              useNa = desc_args$useNA,
+                              useNA = desc_args$useNA,
                               add_total_col = TRUE,
                               total_col_show_perc = desc_args$show_tot_perc, 
                               html = TRUE)

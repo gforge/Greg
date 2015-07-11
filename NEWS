@@ -1,6 +1,12 @@
 NEWS for the Greg package
 
-Changes fro 1.0.2
+Changes for 1.0.3
+-----------------
+* Fixed tspanner handling for printCrudeAndAdjustedModel
+* Bug when with descriptive stats due to missing misspelled (useNa instead of useNA)
+* Added a rbind for printCrudeAndAdjusted
+
+Changes for 1.0.2
 -----------------
 * Added handling of missing variable for the outcome estimator
 * Fixed simpleRmsAnova

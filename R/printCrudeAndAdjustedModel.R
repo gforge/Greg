@@ -128,6 +128,9 @@ printCrudeAndAdjustedModel <- function(model,
     add_references_pos <- list()
   }
   
+  if (!inherits(desc_args, "desc_list")){
+    stop("You need to use the caDescribeOpts() for the desc_args argument!")
+  }
   
   if(!"matrix" %in% class(model)){
     # Convert the x that should be a model into a matrix that
@@ -322,6 +325,68 @@ printCrudeAndAdjustedModel <- function(model,
 
 setClass("printCrudeAndAdjusted", contains = "matrix")
 
+
+#' @param ... outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame
+#' @param alt.names If you don't want to use named arguments for the tspanner attribute
+#'  but a vector with names then use this argument.
+#' @param deparse.level  integer controlling the construction of labels in the case of 
+#'  non-matrix-like arguments (for the default method): deparse.level = 0 constructs no labels; 
+#'  the default, deparse.level = 1 or 2 constructs labels from the argument names, 
+#'  see the ‘Value’ section below.
+#' @param make.row.names  (only for data frame method:) logical indicating if unique and 
+#'  valid row.names should be constructed from the arguments.
+#' 
+#' @rdname printCrudeAndAdjustedModel
+#' @export
+#' @import magrittr
+#' @keywords internal
+#' @importFrom base rbind.data.frame
+rbind.printCrudeAndAdjusted <- 
+  function(..., alt.names, deparse.level = 1){
+  pca <- list(...)
+  first_elmnt <- pca[[1]]
+  
+  all_non_pca <- all(sapply(pca, function(elmnt) inherits(elmnt, "printCrudeAndAdjusted")))
+  for (i in 1:length(pca)){
+    class(pca[[i]]) <- 
+      class(pca[[i]])[class(pca[[i]]) != "printCrudeAndAdjusted"]
+  }
+  
+  pca_args <- c(pca,
+                list(deparse.level = deparse.level))
+  ret <- do.call(rbind, pca_args)
+  if (!all_non_pca){
+    # Keep the attributes that don't relate to the row counts
+    ret <- copyAllNewAttributes(from = first_elmnt,
+                                to = ret,
+                                attr2skip = c("rgroup", "n.rgroup", "tspanner", "n.tspanner"))
+    return(ret)
+  }
+  
+  ret <- copyAllNewAttributes(from = first_elmnt,
+                              to = ret)
+  for (n in sprintf("%srgroup", c("", "n.")))
+    attr(ret, n) <-
+      lapply(pca, function(x) attr(x, n)) %>%
+      unlist
+  
+  if (missing(alt.names)){
+    if (is.null(names(pca)))
+      return(ret)
+    
+    alt.names <- names(pca)
+  }else if (length(alt.names) != length(pca)){
+    stop("If you are going to use alt.names for the tspanner",
+         " you must supply the same length of arguments.",
+         " alt.names is currently '", length(alt.names), "'",
+         " and not '", length(pca), "' as expected")
+  }
+  
+  attr(ret, "tspanner") <- alt.names
+  attr(ret, "n.tspanner") <- sapply(pca, nrow, USE.NAMES = FALSE)
+  return(ret)
+}
+
 #' @param x The output object from the printCrudeAndAdjustedModel function 
 #' @param css.rgroup Css style for the rgorup, if different styles are wanted for each of the
 #'  rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.
@@ -360,6 +425,12 @@ prPrintCAstring <- function (x, css.rgroup, ...) {
   if (!is.null(attr(x, "rgroup"))){
     call_args[["rgroup"]] <- attr(x, "rgroup")
     call_args[["n.rgroup"]] <- attr(x, "n.rgroup")
+  }
+
+  
+  if (!is.null(attr(x, "tspanner"))){
+    call_args[["tspanner"]] <- attr(x, "tspanner")
+    call_args[["n.tspanner"]] <- attr(x, "n.tspanner")
   }
   
   if (length(attr(x, "other")) > 0){
@@ -426,7 +497,6 @@ latex.printCrudeAndAdjusted <- function(object, ...){
 #'  defaults to \code{\link{describeProp}}
 #' @param factor_fn Stat function used for the descriptive statistics, 
 #'  defaults to \code{\link{describeFactors}}
-#' @param useNA Show missing variables in the descriptive columns
 #' @param digits Number of digits to use in the descriptive columns. 
 #'  Defaults to the general digits if not specified.
 #' @param colnames The names of the two descriptive columns. By default
@@ -438,13 +508,12 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
                            continuous_fn    = describeMean,
                            prop_fn          = describeProp,
                            factor_fn        = describeFactors,
-                           useNA     = "no",
                            digits           = 1,
                            colnames         = c("Total", "Event")){
   desc_list <- 
     list(show_tot_perc = show_tot_perc,
          numb_first = numb_first,
-         useNA = useNA,
+         useNA = "no", # Can't have missing in regr. output
          digits = digits,
          colnames = colnames)
   
@@ -461,5 +530,7 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
   desc_list$prop_fn <- describeProp
   desc_list$factor_fn <- describeFactors
   
+  class(desc_list) <- c("desc_list", class(desc_list))
   return(desc_list)
 }
+
