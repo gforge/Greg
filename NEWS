@@ -1,5 +1,9 @@
 NEWS for the Greg package
 
+Changes for 1.0.4
+-----------------
+* Fixed issue #5
+
 Changes for 1.0.3
 -----------------
 * Fixed tspanner handling for printCrudeAndAdjustedModel

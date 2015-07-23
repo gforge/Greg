@@ -487,7 +487,8 @@ latex.printCrudeAndAdjusted <- function(object, ...){
 #' @param continuous_fn Stat function used for the descriptive statistics, 
 #'  defaults to \code{\link{describeMean}}
 #' @param prop_fn Stat function used for the descriptive statistics, 
-#'  defaults to \code{\link{describeProp}}
+#'  defaults to \code{\link{describeFactors}} since there has to be a reference
+#'  in the current setup.
 #' @param factor_fn Stat function used for the descriptive statistics, 
 #'  defaults to \code{\link{describeFactors}}
 #' @param digits Number of digits to use in the descriptive columns. 
@@ -499,7 +500,7 @@ latex.printCrudeAndAdjusted <- function(object, ...){
 caDescribeOpts <- function(show_tot_perc    = FALSE,
                             numb_first       = TRUE,
                            continuous_fn    = describeMean,
-                           prop_fn          = describeProp,
+                           prop_fn          = describeFactors,
                            factor_fn        = describeFactors,
                            digits           = 1,
                            colnames         = c("Total", "Event")){

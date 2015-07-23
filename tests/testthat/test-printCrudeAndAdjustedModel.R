@@ -110,3 +110,23 @@ test_that("Check statistics",{
   expect_equivalent(out["A","Total"], as.character(sum(ds$x1 == "A", na.rm=TRUE)))
   expect_match(out["x2","Total"], sprintf("%.2f", mean(ds$x2, na.rm=TRUE)))
 }
+
+test_that("Issue #5", {
+  set.seed(1)
+  data <- data.frame(outcome=rnorm(100),
+                     sex=sample(c("Male","Female"),100,TRUE),
+                     country=sample(c("USA","UK","AUS"),100,TRUE))
+  
+  fit <- lm(outcome ~ sex + country, data=data)
+  out <- printCrudeAndAdjustedModel(fit,desc_column=TRUE)
+  expect_equal(as.integer(out["Female","Total"]), 
+               sum(data$sex == "Female"))
+  expect_equal(as.integer(out["Male","Total"]), 
+               sum(data$sex == "Male"))
+  data$sex[1] <- NA
+  out <- printCrudeAndAdjustedModel(fit,desc_column=TRUE)
+  expect_equal(as.integer(out["Female","Total"]), 
+               sum(data$sex == "Female", na.rm=TRUE))
+  expect_equal(as.integer(out["Male","Total"]), 
+               sum(data$sex == "Male", na.rm=TRUE))
+})
