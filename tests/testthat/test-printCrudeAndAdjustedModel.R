@@ -109,7 +109,7 @@ test_that("Check statistics",{
                                     desc_args = caDescribeOpts(digits = 2))
   expect_equivalent(out["A","Total"], as.character(sum(ds$x1 == "A", na.rm=TRUE)))
   expect_match(out["x2","Total"], sprintf("%.2f", mean(ds$x2, na.rm=TRUE)))
-}
+})
 
 test_that("Issue #5", {
   set.seed(1)

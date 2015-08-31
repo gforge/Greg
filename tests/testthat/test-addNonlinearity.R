@@ -1,4 +1,5 @@
 library(testthat)
+library(splines)
 
 context("Check addNonlinearity")
 test_that("Check regular glm", {

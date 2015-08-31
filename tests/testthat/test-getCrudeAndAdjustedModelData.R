@@ -26,12 +26,12 @@ test_that("Correct number of rows and columns", {
   fit2 <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + ns(x2, 4) + strata(x3), data=ds)
   
   data_matrix <- getCrudeAndAdjustedModelData(fit1)
-  expect_that(NROW(data_matrix), equals(3 + 1 + 2))
-  expect_that(NCOL(data_matrix), equals(6))
+  expect_equivalent(NROW(data_matrix), 3 + 1 + 2)
+  expect_equivalent(NCOL(data_matrix), 6)
   
   data_matrix <- getCrudeAndAdjustedModelData(fit2)
-  expect_that(NROW(data_matrix), equals(3 + 0 + 0))
-  expect_that(NCOL(data_matrix), equals(6))
+  expect_equivalent(NROW(data_matrix), 3 + 0 + 0)
+  expect_equivalent(NCOL(data_matrix), 6)
 })
 
 test_that("Same order of rows and matching results", {
