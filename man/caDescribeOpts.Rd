@@ -5,7 +5,7 @@
 \title{A function for gathering all the description options}
 \usage{
 caDescribeOpts(show_tot_perc = FALSE, numb_first = TRUE,
-  continuous_fn = describeMean, prop_fn = describeProp,
+  continuous_fn = describeMean, prop_fn = describeFactors,
   factor_fn = describeFactors, digits = 1, colnames = c("Total", "Event"))
 }
 \arguments{
@@ -17,7 +17,8 @@ caDescribeOpts(show_tot_perc = FALSE, numb_first = TRUE,
 defaults to \code{\link{describeMean}}}
 
 \item{prop_fn}{Stat function used for the descriptive statistics,
-defaults to \code{\link{describeProp}}}
+defaults to \code{\link{describeFactors}} since there has to be a reference
+in the current setup.}
 
 \item{factor_fn}{Stat function used for the descriptive statistics,
 defaults to \code{\link{describeFactors}}}

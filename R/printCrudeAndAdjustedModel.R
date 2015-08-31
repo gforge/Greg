@@ -17,11 +17,12 @@
 #' @param digits The number of digits to round to
 #' @param ci_lim A limit vector number that specifies if any values should be 
 #'  abbreviated above or below this value, for instance a value of 1000 
-#'  would give a value of \deqn{> -1000}{> -1000} for a value of 1001. This gives
+#'  would give a value of \code{> -1000} for a value of 1001. This gives
 #'  a prettier table when you have very wide confidence intervals. 
 #' @param sprintf_ci_str A string according to \code{\link{sprintf}} to 
 #'  write the confidence interval where the first \%s is the lower and 
-#'  the second the upper. 
+#'  the second the upper. You can choose to set this through setting the option 
+#'  \code{sprintf_ci_str}, e.g. \code{options(sprintf_ci_str = "\%s - \%s")}.
 #' @param add_references True if it should use the data set to look for 
 #'  references, otherwise supply the function with a vector with names. 
 #'  Sometimes you want to indicate the reference row for each group. 
@@ -96,7 +97,7 @@ printCrudeAndAdjustedModel <- function(model,
                                        order,
                                        digits                = 2,
                                        ci_lim                = c(-Inf, Inf),  
-                                       sprintf_ci_str        = "%s to %s",
+                                       sprintf_ci_str        = getOption("sprintf_ci_str", "%s to %s"),
                                        add_references, 
                                        add_references_pos,
                                        reference_zero_effect,

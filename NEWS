@@ -1,5 +1,10 @@
 NEWS for the Greg package
 
+Changes for 1.0.5
+-----------------
+* Fixed non-linearity
+* Added options-alternative to tailor printCrudeAdj output
+
 Changes for 1.0.4
 -----------------
 * Fixed issue #5
