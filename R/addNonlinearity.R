@@ -160,7 +160,9 @@ prNlChooseDf <- function (model,
     workers <- makeCluster(max(detectCores()-1, 1))
     
     if (!is.null(model$call$data))
-      clusterExport(workers, deparse(model$call$data))
+      clusterExport(workers, deparse(model$call$data),
+                    envir = environment(formula(model)))
+    
     
     tmp <- clusterEvalQ(workers, library(splines))
     
