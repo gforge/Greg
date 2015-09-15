@@ -37,7 +37,8 @@ i.e. \code{0 = 0} (can be set to any value)}
 Adds references
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+Other printCrudeAndAdjusted functions: \code{\link{knit_print.printCrudeAndAdjusted}},
+  \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
   \code{\link{printCrudeAndAdjustedModel}},
   \code{\link{rbind.printCrudeAndAdjusted}};

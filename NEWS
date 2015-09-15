@@ -1,28 +1,18 @@
 NEWS for the Greg package
 
-Changes for 1.0.5
+Chagnes for 1.1.0
 -----------------
+* The printCrudeAndAdjusted calls now the correct print version
+* Added vignette for basic use cases
 * Fixed non-linearity
 * Added options-alternative to tailor printCrudeAdj output
-
-Changes for 1.0.4
------------------
 * Fixed issue #5
-
-Changes for 1.0.3
------------------
 * Fixed tspanner handling for printCrudeAndAdjustedModel
 * Bug when with descriptive stats due to missing misspelled (useNa instead of useNA)
 * Added a rbind for printCrudeAndAdjusted
-
-Changes for 1.0.2
------------------
 * Added handling of missing variable for the outcome estimator
 * Fixed simpleRmsAnova
 * Fixed getModelData with subsetting arguments not being constants
-
-Changes for 1.0.1
------------------
 * All show_missing are now useNA to comply with main package standards
 * A few bug fixes
 

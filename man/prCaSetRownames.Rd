@@ -24,7 +24,8 @@ prCaSetRownames(reordered_groups, var_order, rowname.fn, use_labels, ds)
 Sets the rownames of the reordered_groups
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+Other printCrudeAndAdjusted functions: \code{\link{knit_print.printCrudeAndAdjusted}},
+  \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
   \code{\link{printCrudeAndAdjustedModel}},
   \code{\link{rbind.printCrudeAndAdjusted}};

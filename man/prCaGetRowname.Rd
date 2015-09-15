@@ -21,7 +21,8 @@ Looks for matches inside factors if rowname
 contains the name of the column.
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+Other printCrudeAndAdjusted functions: \code{\link{knit_print.printCrudeAndAdjusted}},
+  \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
   \code{\link{printCrudeAndAdjustedModel}},
   \code{\link{rbind.printCrudeAndAdjusted}};

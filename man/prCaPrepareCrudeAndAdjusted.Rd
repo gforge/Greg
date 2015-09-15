@@ -24,7 +24,8 @@ changes the number of cols into 4 where the upper and lower CI
 meet in one string column
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+Other printCrudeAndAdjusted functions: \code{\link{knit_print.printCrudeAndAdjusted}},
+  \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
   \code{\link{printCrudeAndAdjustedModel}},
   \code{\link{rbind.printCrudeAndAdjusted}};

@@ -22,7 +22,8 @@ prCaSelectAndOrderVars(names, order, ok2skip = FALSE)
 Re-order variables
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{latex.printCrudeAndAdjusted}},
+Other printCrudeAndAdjusted functions: \code{\link{knit_print.printCrudeAndAdjusted}},
+  \code{\link{latex.printCrudeAndAdjusted}},
   \code{\link{print.printCrudeAndAdjusted}},
   \code{\link{printCrudeAndAdjustedModel}},
   \code{\link{rbind.printCrudeAndAdjusted}};

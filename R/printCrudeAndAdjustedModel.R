@@ -291,8 +291,11 @@ printCrudeAndAdjustedModel <- function(model,
             n.rgroup[length(rgroup)] + 1
         }
       }else{
+        rname <- prCaGetRowname(vn = vn, use_labels = use_labels, dataset = ds)
+        if (!missing(rowname.fn))
+          rname <- rowname.fn(rname)
         rgroup <- c(rgroup,
-                    prCaGetRowname(vn = vn, use_labels = use_labels, dataset = ds))
+                    rname)
         n.rgroup <- c(n.rgroup,
                       var_order[[vn]]$no_rows)
       }
@@ -394,6 +397,20 @@ print.printCrudeAndAdjusted <- function(x,
   
   prPrintCAstring(x, css.rgroup, ...) %>%
     print
+}
+
+#' @rdname printCrudeAndAdjustedModel
+#' @export
+#' @import magrittr
+#' @importFrom knitr knit_print
+#' @importFrom knitr asis_output
+#' 
+#' @keywords internal
+knit_print.printCrudeAndAdjusted <- function(x,
+                                        css.rgroup= "", 
+                                        ...){
+  prPrintCAstring(x, css.rgroup, ...) %>%
+    asis_output
 }
 
 #' Prep for printing
