@@ -1030,6 +1030,11 @@ prCaPrepareCrudeAndAdjusted <- function(x, ci_lim, digits, sprintf_ci_str){
     if (is.wholenumber(x) && x > 100)
       return(as.character(x))
     
+    # Remove -0.0 effect
+    x <- 
+      round(x, digits) %>%
+      as.character %>%
+      as.numeric
     return(sprintf(sprintf("%%0.%df", digits), x))
   }
   
