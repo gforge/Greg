@@ -12,11 +12,8 @@ test_that("Check position of reference", {
     boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
     subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
   
-  library(rms)
-  dd <<- datadist(ds)
-  options(datadist="dd")
-
-  fit <- cph(Surv(ftime, fstatus == 1) ~ x + boolean, data=ds)
+  library(survival)
+  fit <- coxph(Surv(ftime, fstatus == 1) ~ x + boolean, data=ds)
   
   a <- printCrudeAndAdjustedModel(fit, add_references=TRUE)
   expect_match(a[1,2], "ref")
