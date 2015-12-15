@@ -37,6 +37,7 @@
 #' 
 #' @family \code{\link[forestplot]{forestplot}} wrappers
 #' @rdname forestplotRegrObj
+#' @import forestplot
 #' @export
 forestplotRegrObj <- function(  
   regr.obj, 

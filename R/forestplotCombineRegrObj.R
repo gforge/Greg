@@ -31,7 +31,7 @@
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' 
 #' @inheritParams forestplot::forestplot
-#' 
+#' @import forestplot
 #' @family \code{\link[forestplot]{forestplot}} wrappers
 #' @export
 forestplotCombineRegrObj <- function( 
