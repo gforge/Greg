@@ -15,7 +15,6 @@ options(datadist="dd")
 fit <- cph(Surv(ftime, fstatus) ~ Variable1 + Variable3 + Variable2 +  Variable4,
            data=ds, x=TRUE, y=TRUE)
 printCrudeAndAdjustedModel(fit, order = c("Variable[12]", "Variable3"))
-
 printCrudeAndAdjustedModel(fit, 
                            order=c("Variable3", "Variable4"),
                            add_references = TRUE, 
@@ -111,3 +110,22 @@ printCrudeAndAdjustedModel(fit_mtcar,
                            add_references=c("Black", NA),
                            ctable=TRUE)
 
+# Now we can also combine models into one table using rbind()
+mpg_model <- printCrudeAndAdjustedModel(lm(mpg ~ wt + gear + col, data=mtcars), 
+                                    add_references=TRUE,
+                                    ctable=TRUE, 
+                                    desc_column = TRUE,
+                                    digits=1,
+                                    desc_args = caDescribeOpts(digits = 1,
+                                                               colnames = c("Avg.")))
+wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data=mtcars), 
+                                    add_references=TRUE,
+                                    ctable=TRUE, 
+                                    desc_column = TRUE,
+                                    digits=1,
+                                    desc_args = caDescribeOpts(digits = 1,
+                                                               colnames = c("Avg.")))
+
+library(magrittr)
+rbind(Miles = mpg_model, Weight = wt_model) %>% 
+  htmlTable(caption="Combining models together with a table spanner element separating each model")
