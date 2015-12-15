@@ -111,10 +111,14 @@ printCrudeAndAdjustedModel <- function(model,
 {
   dot_args <- list(...)
   
-  if (missing(reference_zero_effect))
+  if (missing(reference_zero_effect)){
     reference_zero_effect <- ifelse(all("lm" %in% class(model)) ||
-        "ols" %in% class(model) ||
-        (inherits(model, "glm") && model$family$link == "identity"), 0, 1)
+                                      "ols" %in% class(model) ||
+                                      (inherits(model, "glm") && model$family$link == "identity"), 0, 1)
+  }
+  if (is.numeric(reference_zero_effect)){
+    reference_zero_effect <- txtRound(reference_zero_effect, digits = digits)
+  }
   
   # You need references if you're going to have a descriptive column
   if (missing(add_references) &&
@@ -399,6 +403,14 @@ print.printCrudeAndAdjusted <- function(x,
     print
 }
 
+#' @export
+#' @keywords internal
+#' @rdname printCrudeAndAdjustedModel
+htmlTable.printCrudeAndAdjusted <- function(x, css.rgroup="", ...){
+  prPrintCAstring(x, css.rgroup, ...) %>%
+    print
+}
+
 #' @rdname printCrudeAndAdjustedModel
 #' @export
 #' @import magrittr
@@ -423,6 +435,9 @@ knit_print.printCrudeAndAdjusted <- function(x,
 #' @inheritParams print.printCrudeAndAdjusted
 #' @keywords internal
 prPrintCAstring <- function (x, css.rgroup, ...) {
+  # Since we have the htmlTable.printCrudeAndAdjusted we need to remove
+  # the class in order to avoid infinite loop
+  class(x) <- class(x)[!class(x) %in% "printCrudeAndAdjusted"]
   call_args <- list(x = x, 
                     header      = attr(x, "header"), 
                     rowlabel.just = attr(x, "rowlabel.just"), 
