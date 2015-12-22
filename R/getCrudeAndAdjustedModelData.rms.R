@@ -141,5 +141,6 @@ getCrudeAndAdjustedModelData.rms <- function(model,
                       "Adjusted", levels_str)
   
   attr(both, "model") <- model
+  class(both) <- c("getCrudeAndAdjustedModelData", class(both))
   return(both)
 }

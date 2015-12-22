@@ -181,6 +181,17 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
                       "Adjusted", levels_str)
   
   attr(both, "model") <- model
+  class(both) <- c("getCrudeAndAdjustedModelData", class(both))
   return(both)
 }
 
+#' @rdname getCrudeAndAdjustedModelData
+#' @export
+#' @importFrom Gmisc copyAllNewAttributes
+#' 
+#' @keywords internal
+`[.getCrudeAndAdjustedModelData` <- function(x, i, j, ...){
+  ret <- NextMethod()
+  attr2skip <- c("dimnames", "dim")
+  copyAllNewAttributes(x, ret, attr2skip = attr2skip)
+}

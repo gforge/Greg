@@ -418,6 +418,24 @@ htmlTable.printCrudeAndAdjusted <- function(x, css.rgroup="", ...){
 
 #' @rdname printCrudeAndAdjustedModel
 #' @export
+#' @importFrom Gmisc copyAllNewAttributes
+#' 
+#' @keywords internal
+`[.printCrudeAndAdjusted` <- function(x, i, j, ...){
+  ret <- NextMethod()
+  attr2skip <- c("dimnames", "dim")
+  if (!missing(i)){
+    attr2skip <- c(attr2skip, "rgroup", "n.rgroup")
+  }
+  if (!missing(j)){
+    attr2skip <- c(attr2skip, "cgroup", "n.cgroup")
+  }
+  
+  copyAllNewAttributes(x, ret, attr2skip = attr2skip)
+}
+
+#' @rdname printCrudeAndAdjustedModel
+#' @export
 #' @import magrittr
 #' @importFrom knitr knit_print
 #' @importFrom knitr asis_output
