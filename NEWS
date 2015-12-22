@@ -1,11 +1,15 @@
 NEWS for the Greg package
 
-Chagnes for 1.1.0
+Changes fro 1.1.2
+-----------------
+* Added a check for null as input parameter to printCrudeAndAdjusted
+
+Changes for 1.1.1
 -----------------
 * The reference now has the same number of digits as the rest of the coefficients
 * Added htmlTable.printCrudeAndAdjusted for more flexible handling
 
-Chagnes for 1.1.0
+Changes for 1.1.0
 -----------------
 * The printCrudeAndAdjusted calls now the correct print version
 * Added vignette for basic use cases

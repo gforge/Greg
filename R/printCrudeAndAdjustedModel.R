@@ -137,8 +137,13 @@ printCrudeAndAdjustedModel <- function(model,
     stop("You need to use the caDescribeOpts() for the desc_args argument!")
   }
   
+  if (is.null(model)){
+    stop("The model argument that you've provided is null. Expecting output from
+         getCrudeAndAdjustedModelData or a plain regression model")
+  }
+  
   if(!"matrix" %in% class(model)){
-    # Convert the x that should be a model into a matrix that
+    # Convert the model that should be a model into a matrix that
     # originally was expected
     gca_args <- list(model = model)
     if (!missing(order))
