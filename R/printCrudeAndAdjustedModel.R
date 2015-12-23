@@ -353,11 +353,7 @@ rbind.printCrudeAndAdjusted <-
   first_elmnt <- pca[[1]]
   
   all_non_pca <- all(sapply(pca, function(elmnt) inherits(elmnt, "printCrudeAndAdjusted")))
-  for (i in 1:length(pca)){
-    class(pca[[i]]) <- 
-      class(pca[[i]])[class(pca[[i]]) != "printCrudeAndAdjusted"]
-  }
-  
+  pca <- prClearPCAclass(pca)
   pca_args <- c(pca,
                 list(deparse.level = deparse.level))
   ret <- do.call(rbind, pca_args)
@@ -423,15 +419,63 @@ htmlTable.printCrudeAndAdjusted <- function(x, css.rgroup="", ...){
 #' @keywords internal
 `[.printCrudeAndAdjusted` <- function(x, i, j, ...){
   ret <- NextMethod()
+  # Unfortunately I can't get around this hack :-(
+  # Since a drop = FALSE argument is ignored
+  if (is.null(dim(ret))){
+    tmp <- x
+    class(tmp) <- class(tmp)[class(tmp) != "printCrudeAndAdjusted"]
+    ret <- tmp[i, j, drop = FALSE]
+    rm(tmp)
+  }
   attr2skip <- c("dimnames", "dim")
   if (!missing(i)){
     attr2skip <- c(attr2skip, "rgroup", "n.rgroup")
   }
   if (!missing(j)){
     attr2skip <- c(attr2skip, "cgroup", "n.cgroup")
+    attr(x, "header") <- attr(x, "header")[j]
+    align <- attr(x, "align")
+    if (length(align) < ncol(x)){
+      align <- c(align, 
+                 rep(tail(align, 1), 
+                     times = ncol(x) - length(align)))
+    }
+    attr(x, "align") <- align[j]
   }
   
   copyAllNewAttributes(x, ret, attr2skip = attr2skip)
+}
+
+#' @rdname printCrudeAndAdjustedModel
+#' @export
+#' @importFrom Gmisc copyAllNewAttributes
+#' 
+#' @keywords internal
+cbind.printCrudeAndAdjusted <- function(..., deparse.level = 1){
+  # cbind is an internal generics and thus doesn't
+  # work with the NextMethod()
+  pca <- list(...)
+  pca_args <- c(prClearPCAclass(pca),
+                list(deparse.level = deparse.level))
+  ret <- do.call(cbind, pca_args)
+  attr2skip <- c("dimnames", "dim")
+  attr2skip <- c(attr2skip, "cgroup", "n.cgroup", "header")
+
+  copyAllNewAttributes(pca[[1]], ret, attr2skip = attr2skip)
+}
+
+#' Removes the printCrudeAndAdjusted class from arguments
+#' 
+#' @param ... The parameters to the cbind/rbind functions
+#' @return list
+#' @keywords internal
+prClearPCAclass <- function(pca){
+  all_non_pca <- all(sapply(pca, function(elmnt) inherits(elmnt, "printCrudeAndAdjusted")))
+  for (i in 1:length(pca)){
+    class(pca[[i]]) <- 
+      class(pca[[i]])[class(pca[[i]]) != "printCrudeAndAdjusted"]
+  }
+  return(pca)
 }
 
 #' @rdname printCrudeAndAdjustedModel
@@ -462,21 +506,23 @@ prPrintCAstring <- function (x, css.rgroup, ...) {
   # the class in order to avoid infinite loop
   class(x) <- class(x)[!class(x) %in% "printCrudeAndAdjusted"]
   call_args <- list(x = x, 
-                    header      = attr(x, "header"), 
                     rowlabel.just = attr(x, "rowlabel.just"), 
                     rowlabel      = attr(x, "rowlabel"),
-                    n.cgroup      = attr(x, "n.cgroup"), 
-                    cgroup        = attr(x, "cgroup"), 
                     align         = attr(x, "align"),
                     css.rgroup= css.rgroup)
-  
+  if (!is.null(attr(x, "header"))){
+    call_args$header <- attr(x, "header")
+  }
+  if (!is.null(attr(x, "cgroup"))){
+    call_args$cgroup <- attr(x, "cgroup") 
+    call_args$n.cgroup <- attr(x, "n.cgroup")
+  }
   
   if (!is.null(attr(x, "rgroup"))){
     call_args[["rgroup"]] <- attr(x, "rgroup")
     call_args[["n.rgroup"]] <- attr(x, "n.rgroup")
   }
 
-  
   if (!is.null(attr(x, "tspanner"))){
     call_args[["tspanner"]] <- attr(x, "tspanner")
     call_args[["n.tspanner"]] <- attr(x, "n.tspanner")

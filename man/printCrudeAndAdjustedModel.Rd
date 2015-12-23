@@ -2,6 +2,7 @@
 % Please edit documentation in R/printCrudeAndAdjustedModel.R
 \name{printCrudeAndAdjustedModel}
 \alias{[.printCrudeAndAdjusted}
+\alias{cbind.printCrudeAndAdjusted}
 \alias{htmlTable.printCrudeAndAdjusted}
 \alias{knit_print.printCrudeAndAdjusted}
 \alias{latex.printCrudeAndAdjusted}
@@ -23,6 +24,8 @@ rbind.printCrudeAndAdjusted(..., alt.names, deparse.level = 1)
 \method{htmlTable}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
 
 \method{[}{printCrudeAndAdjusted}(x, i, j, ...)
+
+cbind.printCrudeAndAdjusted(..., deparse.level = 1)
 
 \method{knit_print}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
 
