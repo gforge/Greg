@@ -61,7 +61,7 @@ test_that("Check regular linear regression with getC&A",{
   
   a <- getCrudeAndAdjustedModelData(fmult)
   sink()
-  expect_equivalent(a[,"Adjusted"], coef(fmult))
+  expect_true(sum(a[,"Adjusted"] - coef(fmult)) < .Machine$double.eps)
   
   sink(file=ifelse(Sys.info()["sysname"] == "Windows",
                    "NUL",
@@ -72,7 +72,7 @@ test_that("Check regular linear regression with getC&A",{
   a <- getCrudeAndAdjustedModelData(fmult)
   sink()
   # Remove the intercept as the fitter was ols
-  expect_equivalent(a[,"Adjusted"], coef(fmult)[-1])
+  expect_true(sum(a[,"Adjusted"] - coef(fmult)[-1]) < .Machine$double.eps)
   
   sink(file=ifelse(Sys.info()["sysname"] == "Windows",
                    "NUL",
@@ -80,8 +80,10 @@ test_that("Check regular linear regression with getC&A",{
   single_fit <- fit.mult.impute(y ~ missing_var_1, 
                                 fitter = ols, xtrans = imp_ds, data = ds)
   sink()
-  expect_equivalent(a[grep("missing_var_1", rownames(a)),"Crude"],
-                    coef(single_fit)[grep("missing_var_1", names(coef(single_fit)))])
+  expect_true(sum(a[grep("missing_var_1", rownames(a)),"Crude"] - 
+                    coef(single_fit)[grep("missing_var_1", 
+                                          names(coef(single_fit)))]) < 
+                .Machine$double.eps)
   
 })
 

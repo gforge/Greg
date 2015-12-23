@@ -4,6 +4,7 @@ Changes fro 1.1.2
 -----------------
 * Added a check for null as input parameter to printCrudeAndAdjusted
 * Added a subset function for get/printCrudeAndAdjusted
+* Updated the test cases
 
 Changes for 1.1.1
 -----------------

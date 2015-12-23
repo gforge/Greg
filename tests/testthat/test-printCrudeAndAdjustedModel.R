@@ -93,7 +93,7 @@ test_that("Check statistics",{
   fit <- glm(y~x1 + x2, data = ds)
   out <- printCrudeAndAdjustedModel(fit, desc_column = TRUE, 
                                     desc_args = caDescribeOpts(digits = 2))
-  expect_equivalent(out["A","Total"], as.character(sum(ds$x1 == "A", na.rm=TRUE)))
+  expect_true(out["A","Total"] == as.character(sum(ds$x1 == "A", na.rm=TRUE)))
   expect_match(out["x2","Total"], sprintf("%.2f", mean(ds$x2, na.rm=TRUE)))
   #TODO
 
@@ -104,7 +104,7 @@ test_that("Check statistics",{
   fit <- lrm(y~x1 + x2, data = ds)
   out <- printCrudeAndAdjustedModel(fit, desc_column = TRUE, 
                                     desc_args = caDescribeOpts(digits = 2))
-  expect_equivalent(out["A","Total"], as.character(sum(ds$x1 == "A", na.rm=TRUE)))
+  expect_true(out["A","Total"] == as.character(sum(ds$x1 == "A", na.rm=TRUE)))
   expect_match(out["x2","Total"], sprintf("%.2f", mean(ds$x2, na.rm=TRUE)))
 })
 
@@ -126,4 +126,31 @@ test_that("Issue #5", {
                sum(data$sex == "Female", na.rm=TRUE))
   expect_equal(as.integer(out["Male","Total"]), 
                sum(data$sex == "Male", na.rm=TRUE))
+})
+
+test_that("Subsetting and bindings",{
+  set.seed(10)
+  n <- 500
+  ds <- data.frame(
+    y = sample(0:1, size = n, replace = TRUE),
+    x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+    x2 = rnorm(n),
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+  ds$x1[sample(1:nrow(ds), size = 100)] <- NA
+  ds$x2[sample(1:nrow(ds), size = 100)] <- NA
+  
+  fit <- glm(y~x1 + x2, data = ds)
+  out <- printCrudeAndAdjustedModel(fit, desc_column = TRUE, 
+                                    desc_args = caDescribeOpts(digits = 2))
+  expect_equivalent(dim(out[1,1:2]),
+                    c(1,2))
+
+  expect_equivalent(dim(out[,4:5]),
+                    c(nrow(out),2))
+  
+  expect_equivalent(dim(out[3:4,]),
+                    c(2, ncol(out)))
+
+  ret <- cbind(out[,2:5], out[,1])  
+  expect_equal(ncol(ret), 5)
 })
