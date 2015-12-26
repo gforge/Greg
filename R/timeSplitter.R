@@ -41,6 +41,7 @@ timeSplitter <- function (data, by, time_var, event_var,
     for (i in 1:ncol(data)){
       if (inherits(data[[i]], "labelled")){
         class(data[[i]]) <- class(data[[i]])[class(data[[i]]) != "labelled"]
+        attr(data[[i]], "label") <- NULL
       }
     }
   }
