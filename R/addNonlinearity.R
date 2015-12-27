@@ -48,19 +48,101 @@ addNonlinearity <-
 #' @rdname addNonlinearity
 #' @export
 #' @keywords internal
-addNonlinearity.default <-
-  function(model, 
-           variable,
-           spline_fn,
-           flex_param = 2:7,
-           min_fn = AIC, 
-           sig_level = .05,
-           verbal = FALSE,
-           workers,
-           ...){
-    if (is.function(spline_fn))
-      spline_fn <- deparse(spline_fn)
-    
+addNonlinearity.default <- function(model, 
+                                    variable,
+                                    spline_fn,
+                                    flex_param = 2:7,
+                                    min_fn = AIC, 
+                                    sig_level = .05,
+                                    verbal = FALSE,
+                                    workers,
+                                    ...){
+  stop("Model of class '", paste(class(model),
+                                 collapse = ">"), "'",
+       " not yeat implemented. Feel free to check and send me a suggestion.")
+}
+
+#' @rdname addNonlinearity
+#' @export
+#' @keywords internal
+addNonlinearity.lm <- function(model, 
+                               ...){
+  # Works fine with the glm method
+  addNonlinearity.glm(model, ...)
+}
+
+#' @rdname addNonlinearity
+#' @export
+#' @keywords internal
+addNonlinearity.glm <- function(model, 
+                                variable,
+                                spline_fn,
+                                flex_param = 2:7,
+                                min_fn = AIC, 
+                                sig_level = .05,
+                                verbal = FALSE,
+                                workers,
+                                ...)
+{
+  if (is.function(spline_fn))
+    spline_fn <- deparse(spline_fn)
+  
+  simplest_nonlinear <-
+    eval(update(model,
+                sprintf(".~.-%s+%s(%s, %d)",
+                        variable, spline_fn, variable, min(flex_param)),
+                x=FALSE, y=FALSE, evaluate = FALSE),
+         envir = environment(formula(model)))
+  anova_rslt <- anova(model,
+                      simplest_nonlinear,
+                      test = "Chisq")
+  
+  if  (verbal){
+    cat("\n * Non-linearity for", variable, "*\n")
+    print(anova_rslt)
+  }
+  
+  # No evidence for non-linearity
+  if (tail(anova_rslt[grep("Pr(", names(anova_rslt), fixed=TRUE)], 1) > sig_level){
+    return(model)
+  }
+  
+  return(prNlChooseDf(model = model, 
+                      flex_param = flex_param, 
+                      variable = variable, 
+                      spline_fn = spline_fn, 
+                      min_fn = min_fn, 
+                      simplest_nonlinear = simplest_nonlinear, 
+                      verbal = verbal,
+                      workers = workers))
+}
+
+#' @rdname addNonlinearity
+#' @export
+#' @keywords internal
+addNonlinearity.coxph <- function(model, 
+                                  variable,
+                                  spline_fn,
+                                  flex_param = 2:7,
+                                  min_fn = AIC, 
+                                  sig_level = .05,
+                                  verbal = FALSE,
+                                  workers,
+                                  ...){
+  if (is.function(spline_fn))
+    spline_fn <- deparse(spline_fn)
+  
+  if (spline_fn == "pspline"){
+    nonlinear <-
+      eval(update(model,
+                  sprintf(".~.-%s+%s(%s)",
+                          variable, spline_fn, variable),
+                  x=FALSE, y=FALSE, evaluate = FALSE),
+           envir = environment(formula(model)))
+    anova_rslt <- anova(model,
+                        nonlinear,
+                        test = "Chisq")
+  }else{
     simplest_nonlinear <-
       eval(update(model,
                   sprintf(".~.-%s+%s(%s, %d)",
@@ -70,25 +152,28 @@ addNonlinearity.default <-
     anova_rslt <- anova(model,
                         simplest_nonlinear,
                         test = "Chisq")
-    
-    if  (verbal){
-      cat("\n * Non-linearity for", variable, "*\n")
-      print(anova_rslt)
-    }
-    
-    # No evidence for non-linearity
-    if (tail(anova_rslt[grep("Pr(", names(anova_rslt), fixed=TRUE)], 1) > sig_level){
-      return(model)
-    }
-      
-    return(prNlChooseDf(model = model, 
-                        flex_param = flex_param, 
-                        variable = variable, 
-                        spline_fn = spline_fn, 
-                        min_fn = min_fn, 
-                        simplest_nonlinear = simplest_nonlinear, 
-                        verbal = verbal,
-                        workers = workers))
+  }
+  if  (verbal){
+    cat("\n * Non-linearity for", variable, "*\n")
+    print(anova_rslt)
+  }
+  
+  # No evidence for non-linearity
+  if (tail(anova_rslt[grep("P(", names(anova_rslt), fixed=TRUE)], 1) > sig_level){
+    return(model)
+  }
+  
+  if (spline_fn == "pspline")
+    return(nonlinear)
+  
+  return(prNlChooseDf(model = model, 
+                      flex_param = flex_param, 
+                      variable = variable, 
+                      spline_fn = spline_fn, 
+                      min_fn = min_fn, 
+                      simplest_nonlinear = simplest_nonlinear, 
+                      verbal = verbal,
+                      workers = workers))
 }
 
 #' @rdname addNonlinearity

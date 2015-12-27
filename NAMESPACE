@@ -2,7 +2,10 @@
 
 S3method("[",getCrudeAndAdjustedModelData)
 S3method("[",printCrudeAndAdjusted)
+S3method(addNonlinearity,coxph)
 S3method(addNonlinearity,default)
+S3method(addNonlinearity,glm)
+S3method(addNonlinearity,lm)
 S3method(addNonlinearity,rms)
 S3method(bread,ols)
 S3method(confint,ols)

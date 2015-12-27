@@ -2,7 +2,10 @@
 % Please edit documentation in R/addNonlinearity.R
 \name{addNonlinearity}
 \alias{addNonlinearity}
+\alias{addNonlinearity.coxph}
 \alias{addNonlinearity.default}
+\alias{addNonlinearity.glm}
+\alias{addNonlinearity.lm}
 \alias{addNonlinearity.rms}
 \title{Add a nonlinear function to the model}
 \usage{
@@ -12,6 +15,14 @@ addNonlinearity(model, variable, spline_fn, flex_param = 2:7, min_fn = AIC,
 \method{addNonlinearity}{default}(model, variable, spline_fn,
   flex_param = 2:7, min_fn = AIC, sig_level = 0.05, verbal = FALSE,
   workers, ...)
+
+\method{addNonlinearity}{lm}(model, ...)
+
+\method{addNonlinearity}{glm}(model, variable, spline_fn, flex_param = 2:7,
+  min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
+
+\method{addNonlinearity}{coxph}(model, variable, spline_fn, flex_param = 2:7,
+  min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
 
 \method{addNonlinearity}{rms}(model, variable, spline_fn, flex_param = 2:7,
   min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
