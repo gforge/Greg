@@ -33,6 +33,7 @@ Suggests:
     testthat,
     cmprsk,
     survival,
-    dplyr
+    dplyr,
+    ggplot2
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
