@@ -1,7 +1,11 @@
 #' A function for splitting a time according to time periods
 #' 
 #' If we have a violation of the cox proprtional hazards assumption we need to
-#' split an individual's followup time into several.
+#' split an individual's followup time into several.See vignette("timeSplitter", package="Greg")
+#' for a detailed description.
+#' 
+#' \emph{Important note:} The time variables must have the same time unit. I.e. function can not dedu
+#' if all variables are in years or if one happens to be in days.
 #' 
 #' @section The time_offset - details:
 #' 
@@ -54,6 +58,8 @@ timeSplitter <- function (data, by, time_var, event_var,
       stop("You need to provide the main time variable name.",
            " If not provided the variable may be named 'time' in the dataset")
     }
+  } else if (length(time_var) > 1) {
+    stop("You can only have one time variable in the dataset")
   } else if (!time_var %in% names(data)) {
     stop("Could not find the time variable among the variables in the dataset",
          ", i.e. '", time_var, "' not in '", paste(names(data), 
@@ -90,6 +96,9 @@ timeSplitter <- function (data, by, time_var, event_var,
            "'")
     
     for (var in time_related_vars){
+      if (max(data[[var]])*10 < max(data[[time_var]]))
+        warning("Your time variable seems much larger than the time related variable '", var, "'",
+                " - Are you sure that they are both the same time unit, i.e. both are days/years?")
       data[[sprintf("u__temp_time__%s", var)]] <- data[[var]]
       data[[var]] <- NULL
     }
@@ -184,7 +193,7 @@ timeSplitter <- function (data, by, time_var, event_var,
   spl$Stop_time <- spl$u___timeband__ + spl$lex.dur
 
   # Remove all extra Lexis variables since these will only be confusing
-  spl$event <- spl$lex.Xst
+  spl[[event_var]] <- spl$lex.Xst
   spl$lex.Cst <- NULL
   spl$lex.Xst <- NULL
   spl$lex.id <- NULL

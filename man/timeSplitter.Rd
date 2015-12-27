@@ -30,7 +30,12 @@ entire dataset by setting this variable. See detailed description below.}
 }
 \description{
 If we have a violation of the cox proprtional hazards assumption we need to
-split an individual's followup time into several.
+split an individual's followup time into several.See vignette("timeSplitter", package="Greg")
+for a detailed description.
+}
+\details{
+\emph{Important note:} The time variables must have the same time unit. I.e. function can not dedu
+if all variables are in years or if one happens to be in days.
 }
 \section{The time_offset - details}{
 
