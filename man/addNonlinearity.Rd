@@ -6,6 +6,7 @@
 \alias{addNonlinearity.default}
 \alias{addNonlinearity.glm}
 \alias{addNonlinearity.lm}
+\alias{addNonlinearity.negbin}
 \alias{addNonlinearity.rms}
 \title{Add a nonlinear function to the model}
 \usage{
@@ -17,6 +18,8 @@ addNonlinearity(model, variable, spline_fn, flex_param = 2:7, min_fn = AIC,
   workers, ...)
 
 \method{addNonlinearity}{lm}(model, ...)
+
+\method{addNonlinearity}{negbin}(model, ...)
 
 \method{addNonlinearity}{glm}(model, variable, spline_fn, flex_param = 2:7,
   min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)

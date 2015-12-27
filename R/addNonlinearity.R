@@ -74,6 +74,15 @@ addNonlinearity.lm <- function(model,
 #' @rdname addNonlinearity
 #' @export
 #' @keywords internal
+addNonlinearity.negbin <- function(model, 
+                               ...){
+  # Works fine with the glm method
+  addNonlinearity.glm(model, ..., libraries = "MASS")
+}
+
+#' @rdname addNonlinearity
+#' @export
+#' @keywords internal
 addNonlinearity.glm <- function(model, 
                                 variable,
                                 spline_fn,
@@ -114,7 +123,8 @@ addNonlinearity.glm <- function(model,
                       min_fn = min_fn, 
                       simplest_nonlinear = simplest_nonlinear, 
                       verbal = verbal,
-                      workers = workers))
+                      workers = workers,
+                      ...))
 }
 
 #' @rdname addNonlinearity
@@ -173,7 +183,8 @@ addNonlinearity.coxph <- function(model,
                       min_fn = min_fn, 
                       simplest_nonlinear = simplest_nonlinear, 
                       verbal = verbal,
-                      workers = workers))
+                      workers = workers,
+                      libraries = "survival"))
 }
 
 #' @rdname addNonlinearity
@@ -224,7 +235,8 @@ addNonlinearity.rms <-
                         min_fn = min_fn, 
                         simplest_nonlinear = simplest_nonlinear, 
                         verbal = verbal,
-                        workers = workers))
+                        workers = workers,
+                        libraries = "rms"))
 }
 
 #' @import parallel
@@ -236,7 +248,8 @@ prNlChooseDf <- function (model,
                         min_fn, 
                         simplest_nonlinear, 
                         verbal,
-                        workers) {
+                        workers,
+                        libraries) {
   local_workers <- FALSE
   if (missing(workers)){
     local_workers <- TRUE
@@ -252,11 +265,13 @@ prNlChooseDf <- function (model,
     tmp <- clusterEvalQ(workers, library(splines))
     
     # Load libraries necessary into the workers
-    if (inherits(model, "rms"))
-      tmp <- clusterEvalQ(workers, library(rms))
-    if (inherits(model, "negbin"))
-      tmp <- clusterEvalQ(workers, library(MASS))
-    
+    if (!missing(libraries)){
+      for (l in libraries){
+        tmp <- sprintf("clusterEvalQ(workers, library(%s))", l) %>% 
+          parse(text = .) %>% 
+          eval()
+      }
+    }
   }
   
   if (is.logical(workers) && 
