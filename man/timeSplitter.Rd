@@ -17,6 +17,10 @@ must be in proportion to the the \code{time_var}.}
 \item{time_var}{The name of the main time variable in the dataset. This variable
 must be a numeric variable.}
 
+\item{event_var}{The event variable}
+
+\item{event_start_status}{The start status of the event status, e.g. "Alive"}
+
 \item{time_related_vars}{A dataset often contains other variabels that you want
 to update during the split, most commonly these are age or calendar time.}
 

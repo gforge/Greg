@@ -20,6 +20,8 @@
 #'  option.
 #' @param by The time period that you want to split the dataset by. The size of the variable
 #'  must be in proportion to the the \code{time_var}.
+#' @param event_var The event variable
+#' @param event_start_status The start status of the event status, e.g. "Alive"
 #' @param time_var The name of the main time variable in the dataset. This variable
 #'  must be a numeric variable.
 #' @param time_offset If you want to skip the initial years you can offset the 
@@ -33,7 +35,8 @@
 #' @example inst/examples/timeSplitter_example.R
 #' @export
 #' @importFrom Epi cal.yr Lexis splitLexis
-timeSplitter <- function (data, by, time_var, event_var, 
+timeSplitter <- function (data, by, time_var, 
+                          event_var, 
                           event_start_status, 
                           time_related_vars, time_offset) {
   # Save the original order of the names for restoring at the end
@@ -85,7 +88,7 @@ timeSplitter <- function (data, by, time_var, event_var,
         data[[var]] <- data[[var]] - time_offset
     }
   }
-  
+
   # Change name to temporary names so that we can revert after
   if (!missing(time_related_vars)){
 
@@ -96,7 +99,8 @@ timeSplitter <- function (data, by, time_var, event_var,
            "'")
     
     for (var in time_related_vars){
-      if (max(data[[var]])*10 < max(data[[time_var]]))
+      if (is.numeric(data[[var]]) &&
+          max(data[[var]])*10 < max(data[[time_var]]))
         warning("Your time variable seems much larger than the time related variable '", var, "'",
                 " - Are you sure that they are both the same time unit, i.e. both are days/years?")
       data[[sprintf("u__temp_time__%s", var)]] <- data[[var]]
@@ -122,7 +126,6 @@ timeSplitter <- function (data, by, time_var, event_var,
     for (i in which(rmv_class))
       class(data[[i]]) <- class(data[[i]])[!class(data[[i]]) %in% "cal.yr"]
   }
-  
   if (missing(event_start_status)){
     if (is.factor(data[[event_var]])){
       event_start_status <- levels(data[[event_var]])[1]
@@ -231,3 +234,5 @@ timeSplitter <- function (data, by, time_var, event_var,
   
   return(spl[,order(re_order)])
 }
+
+globalVariables(c(".", "label<-"))
