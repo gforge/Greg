@@ -618,7 +618,7 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
       describeMean <- get(describeMean)
     }
   } else {
-    describeFactors <- Gmisc::describeMean
+    describeMean <- Gmisc::describeMean
   }
   
   if(exists("describeProp")){
@@ -626,7 +626,7 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
       describeProp <- get(describeProp)
     }
   } else {
-    describeFactors <- Gmisc::describeProp
+    describeProp <- Gmisc::describeProp
   }
   
   if(exists("describeFactors")){
