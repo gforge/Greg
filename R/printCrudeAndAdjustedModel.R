@@ -616,25 +616,25 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
   if(exists("describeMean")){
     if (is.character(describeMean)){
       describeMean <- get(describeMean)
-    } else {
-      describeMean <- Gmisc::describeMean
     }
+  } else {
+    describeFactors <- Gmisc::describeMean
   }
   
   if(exists("describeProp")){
     if (is.character(describeProp)){
       describeProp <- get(describeProp)
-    } else {
-      describeProp <- Gmisc::describeProp
     }
+  } else {
+    describeFactors <- Gmisc::describeProp
   }
   
   if(exists("describeFactors")){
     if (is.character(describeFactors)){
       describeFactors <- get(describeFactors)
-    } else {
-      describeFactors <- Gmisc::describeFactors
     }
+  } else {
+    describeFactors <- Gmisc::describeFactors
   }
 
   desc_list$continuous_fn <- describeMean
