@@ -613,7 +613,7 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
          digits = digits,
          colnames = colnames)
   
-  if(exists(describeMean)){
+  if(exists("describeMean")){
     if (is.character(describeMean)){
       describeMean <- get(describeMean)
     } else {
@@ -621,7 +621,7 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
     }
   }
   
-  if(exists(describeProp)){
+  if(exists("describeProp")){
     if (is.character(describeProp)){
       describeProp <- get(describeProp)
     } else {
@@ -629,7 +629,7 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
     }
   }
   
-  if(exists(describeFactors)){
+  if(exists("describeFactors")){
     if (is.character(describeFactors)){
       describeFactors <- get(describeFactors)
     } else {
