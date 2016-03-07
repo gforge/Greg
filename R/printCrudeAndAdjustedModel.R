@@ -601,9 +601,9 @@ latex.printCrudeAndAdjusted <- function(object, ...){
 #' @export
 caDescribeOpts <- function(show_tot_perc    = FALSE,
                             numb_first       = TRUE,
-                           continuous_fn    = describeMean,
-                           prop_fn          = describeFactors,
-                           factor_fn        = describeFactors,
+                           continuous_fn    = Gmisc::describeMean,
+                           prop_fn          = Gmisc::describeFactors,
+                           factor_fn        = Gmisc::describeFactors,
                            digits           = 1,
                            colnames         = c("Total", "Event")){
   desc_list <- 
@@ -613,14 +613,29 @@ caDescribeOpts <- function(show_tot_perc    = FALSE,
          digits = digits,
          colnames = colnames)
   
-  if (is.character(describeMean))
-    describeMean <- get(describeMean)
+  if(exists(describeMean)){
+    if (is.character(describeMean)){
+      describeMean <- get(describeMean)
+    } else {
+      describeMean <- Gmisc::describeMean
+    }
+  }
   
-  if (is.character(describeProp))
-    describeProp <- get(describeProp)
+  if(exists(describeProp)){
+    if (is.character(describeProp)){
+      describeProp <- get(describeProp)
+    } else {
+      describeProp <- Gmisc::describeProp
+    }
+  }
   
-  if (is.character(describeFactors))
-    describeFactors <- get(describeFactors)
+  if(exists(describeFactors)){
+    if (is.character(describeFactors)){
+      describeFactors <- get(describeFactors)
+    } else {
+      describeFactors <- Gmisc::describeFactors
+    }
+  }
 
   desc_list$continuous_fn <- describeMean
   desc_list$prop_fn <- describeProp
