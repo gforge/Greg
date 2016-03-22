@@ -496,7 +496,7 @@ new_data %<>%
 ```
 
 
-```{r}
+```{r fig.width=8, fig.height=6}
 library(ggplot2)
 new_data %>% 
   mutate(adapted_risk = sapply(risk, function(x) min(max(2^-4, x), 2^5)),
@@ -516,6 +516,7 @@ new_data %>%
   scale_y_log10(breaks = 2^(-4:5), 
                 labels = txtRound(2^(-4:5), 2),
                 expand= c(0,0)) +
+  scale_color_brewer(type = "qual", guide = guide_legend(title = "Thickness (mm)")) + 
   ylab("Hazard ratio") +
   xlab("Time (years)") +
   theme_bw()
