@@ -411,7 +411,7 @@ cox.zph(regular_model) %>%
   knitr::kable(align = "r")
 ```
 
-The two variable that give a hint of time varyation are age and thickness. It seems reasonable that melanoma thickness is less important as time increases, either the tumor was adequately removed or there was some remaining piece that caused the patient to die within a few years. We will therefore add a time interaction using the `:` variant (**note** using the `*` for interactions gives a separate variable for the time and that is not of interest in this case):
+The two variable that give a hint of time variation are age and thickness. It seems reasonable that melanoma thickness is less important as time increases, either the tumor was adequately removed or there was some remaining piece that caused the patient to die within a few years. We will therefore add a time interaction using the `:` variant (**note** using the `*` for interactions gives a separate variable for the time and that is not of interest in this case):
 
 ```{r}
 time_int_model <- 
