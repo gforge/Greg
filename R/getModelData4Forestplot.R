@@ -8,7 +8,7 @@
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' @keywords internal
 getModelData4Forestplot<- function(regr.obj, 
-                                   exp, 
+                                   exp = TRUE, 
                                    variablesOfInterest.regexp,
                                    ref_labels,
                                    add_first_as_ref){

@@ -56,20 +56,20 @@ test_that("Check regular linear regression with getC&A",{
                    "/dev/null"))
   imp_ds <- aregImpute(impute_formula, data = ds, n.impute = 10)
   
-  fmult <- fit.mult.impute(formula(fit_ols), 
-                            fitter = lm, xtrans = imp_ds, data = ds)
-  
-  a <- getCrudeAndAdjustedModelData(fmult)
+  fmult <- suppressWarnings(fit.mult.impute(formula(fit_ols), 
+                                            fitter = lm, xtrans = imp_ds, data = ds))
+    
+  a <- suppressWarnings(getCrudeAndAdjustedModelData(fmult))
   sink()
   expect_true(sum(a[,"Adjusted"] - coef(fmult)) < .Machine$double.eps)
   
   sink(file=ifelse(Sys.info()["sysname"] == "Windows",
                    "NUL",
                    "/dev/null"))
-  fmult <- fit.mult.impute(formula(fmult), 
-                            fitter = ols, xtrans = imp_ds, data = ds)
+  fmult <- suppressWarnings(fit.mult.impute(formula(fmult), 
+                            fitter = ols, xtrans = imp_ds, data = ds))
   
-  a <- getCrudeAndAdjustedModelData(fmult)
+  a <- suppressWarnings(getCrudeAndAdjustedModelData(fmult))
   sink()
   # Remove the intercept as the fitter was ols
   expect_true(sum(a[,"Adjusted"] - coef(fmult)[-1]) < .Machine$double.eps)
@@ -77,8 +77,8 @@ test_that("Check regular linear regression with getC&A",{
   sink(file=ifelse(Sys.info()["sysname"] == "Windows",
                    "NUL",
                    "/dev/null"))
-  single_fit <- fit.mult.impute(y ~ missing_var_1, 
-                                fitter = ols, xtrans = imp_ds, data = ds)
+  single_fit <- suppressWarnings(fit.mult.impute(y ~ missing_var_1, 
+                                                 fitter = ols, xtrans = imp_ds, data = ds))
   sink()
   expect_true(sum(a[grep("missing_var_1", rownames(a)),"Crude"] - 
                     coef(single_fit)[grep("missing_var_1", 
@@ -134,10 +134,10 @@ test_that("Check regular linear regression with printC&A",{
                    "/dev/null"))
   imp_ds <- aregImpute(impute_formula, data = ds, n.impute = 10)
   
-  fmult <- fit.mult.impute(formula(fit_ols), 
-                           lm, imp_ds, data = ds)
+  fmult <- suppressWarnings(fit.mult.impute(formula(fit_ols), 
+                                            lm, imp_ds, data = ds))
   
-  a <- printCrudeAndAdjustedModel(fmult)
+  a <- suppressWarnings(printCrudeAndAdjustedModel(fmult))
   sink()
   expect_equivalent(tail(attr(a, "rgroup"), 1), "missing_var_2")
   
@@ -152,7 +152,7 @@ test_that("Check regular linear regression with printC&A",{
   sink(file=ifelse(Sys.info()["sysname"] == "Windows",
                    "NUL",
                    "/dev/null"))
-  a <- printCrudeAndAdjustedModel(fmult, add_references = TRUE)
+  a <- suppressWarnings(printCrudeAndAdjustedModel(fmult, add_references = TRUE))
   sink()
   expect_equivalent(tail(rownames(a), 5),
                     c(tail(levels(ds$missing_var_1), 1), 
@@ -165,17 +165,17 @@ test_that("Check regular linear regression with printC&A",{
                    "NUL",
                    "/dev/null"))
   coef_change_tst <- 
-    printCrudeAndAdjustedModel(fmult, 
-                               add_references = TRUE, 
-                               impute_args = list(coef_change=TRUE))
+    suppressWarnings(printCrudeAndAdjustedModel(fmult, 
+                                                add_references = TRUE, 
+                                                impute_args = list(coef_change=TRUE)))
   coef_change_tst_name <- 
-    printCrudeAndAdjustedModel(fmult, 
-                               add_references = TRUE, 
-                               impute_args = list(coef_change=list(name="cc test")))
+    suppressWarnings(printCrudeAndAdjustedModel(fmult, 
+                                                add_references = TRUE, 
+                                                impute_args = list(coef_change=list(name="cc test"))))
   vi_infl_tst_name <- 
-    printCrudeAndAdjustedModel(fmult, 
-                               add_references = TRUE, 
-                               impute_args = list(variance.inflation=list(name="vi test")))
+    suppressWarnings(printCrudeAndAdjustedModel(fmult, 
+                                                add_references = TRUE, 
+                                                impute_args = list(variance.inflation=list(name="vi test"))))
   sink()
   expect_equivalent(ncol(coef_change_tst), 5, 
                     info = "When using fit.mult.impute additional columns should be added")
@@ -235,13 +235,13 @@ test_that("Check logistic, survival, and poissong for antilog and more",{
                                               collapse="+"))),
                        data = ds, n.impute = 10)
   
-  fit <- fit.mult.impute(s ~ x1 + x2 + strat(x3) + 
-                           missing_var_1 + missing_var_2, 
-                         fitter = cph, data=ds, xtrans = imp_ds)
+  fit <- suppressWarnings(fit.mult.impute(s ~ x1 + x2 + strat(x3) + 
+                                            missing_var_1 + missing_var_2, 
+                                          fitter = cph, data=ds, xtrans = imp_ds))
   
   fit <- coxph(s ~ x1 + x2 + strata(x3) + 
                  missing_var_1 + missing_var_2, data=ds)
-  printCrudeAndAdjustedModel(fit)
+  suppressWarnings(printCrudeAndAdjustedModel(fit))
   sink()
   
   fit <- glm(fstatus ~ offset(log(ftime)) + x1 + x2 + x3, data=ds, family = binomial)  
