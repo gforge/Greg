@@ -15,7 +15,7 @@ How to output crude and adjusted models
 Background
 ----------
 
-It is a common practice in epidemiological papers to present regression estimates in both adjusted and unadjusted format. The unadjusted format is just that particular variable without any of the covariates and is often referred to as the **crude** estimate. The advantage with the two is that you provide the reader with a better understanding of how much the variables affect eachother and also a sense of how much confounding is present in the model.
+It is a common practice in epidemiological papers to present regression estimates in both adjusted and unadjusted format. The unadjusted format is just that particular variable without any of the covariates and is often referred to as the **crude** estimate. The advantage with the two is that you provide the reader with a better understanding of how much the variables affect each other and also a sense of how much confounding is present in the model.
 
 The `printCrudeAndAdjusted` function
 ------------------------------------
@@ -31,7 +31,7 @@ library(Greg)
 printCrudeAndAdjustedModel(fit)
 ```
 
-As the variable names often aren't that pretty you can use the `rowname.fn` in order to get the rownames desired. Here's a simple substitution example together with some limits to the digits, and a reference group:
+As the variable names often aren't that pretty you can use the `rowname.fn` in order to get the row names desired. Here's a simple substitution example together with some limits to the digits, and a reference group:
 
 ```{r}
 printCrudeAndAdjustedModel(fit, 

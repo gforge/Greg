@@ -336,7 +336,7 @@ upViewport(2)
 A real example
 ==============
 
-I haven't found any good datasets with non-proportional hazards but the melanom dataset is largeish and allows some exploration.
+I haven't found any good datasets with non-proportional hazards but the melanoma dataset is largish and allows some exploration.
 
 ```{r}
 # First we start with loading the dataset
@@ -391,7 +391,7 @@ interval_model <-
 summary(interval_model)
 ```
 
-As you can see the difference between the models is negligable:
+As you can see the difference between the models is negligible:
 
 ```{r}
 library(htmlTable)
@@ -420,7 +420,7 @@ time_int_model <-
 summary(time_int_model)
 ```
 
-As suspected the thickness effect is reduced with time. A linear model is hard to explain from a biological stanpoint, we may want to see if we can detect if the interaction follows a non-linear trajectory by adding a quadratic variable:
+As suspected the thickness effect is reduced with time. A linear model is hard to explain from a biological standpoint, we may want to see if we can detect if the interaction follows a non-linear trajectory by adding a quadratic variable:
 
 ```{r}
 # First we need to manually add an interaction term
@@ -436,7 +436,7 @@ As you can see this doesn't support that the variable is non-linear. An alternat
 update(time_int_model, .~.-thickness:Start_time+pspline(thickness_start))
 ```
 
-If you are only investigating confounders that you want to adjust for we are done. If you actually want to convey the results to your readers then we need to think about how to display the interaction, especially if they turn out to follow a non-linear pattern. If you have two continuous variables I you have basically two options, go with a 3-dimensional graph that where confidendence interval are hard to illustrate or categorize one of the variables and use a regular 2-dimensional graph. I usually go for the latter:
+If you are only investigating confounders that you want to adjust for we are done. If you actually want to convey the results to your readers then we need to think about how to display the interaction, especially if they turn out to follow a non-linear pattern. If you have two continuous variables I you have basically two options, go with a 3-dimensional graph that where confidence interval are hard to illustrate or categorize one of the variables and use a regular 2-dimensional graph. I usually go for the latter:
 
 ```{r}
 # Lets create an evenly distributed categorical thickness variable
