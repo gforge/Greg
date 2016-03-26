@@ -385,8 +385,6 @@ prGetFpDataFromSurvivalFit <- function (fit,
 prGetFpDataFromGlmFit <- function(glm.fit,
   conf.int = 0.95,
   exp      = TRUE){
-  warning("The GLM part has not been properly tested. Please check that it seems right")
-
   summary_glm <- summary.glm(glm.fit)
 
   # Extract the summary values of interest
