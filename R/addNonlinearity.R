@@ -7,7 +7,7 @@
 #' that is automatically evaluated for non-linearity).
 #' 
 #' @param model The model that is to be evaluated and adatpted for non-linearity
-#' @param param The name of the parameter that is to be tested for non-linearity.
+#' @param variable The name of the parameter that is to be tested for non-linearity.
 #'  \emph{Note} that the variable should be included plain (i.e. as a linear variable)
 #'  form in the model.
 #' @param spline_fn Either a string or a function that is to be used
@@ -28,8 +28,11 @@
 #'  circumstances you may want to restrict the number of parallel threads to less
 #'  than the defaul \code{dectectCores() - 1}, e.g. you may run out of memory
 #'  then you can provide this parameter. If you do not want to use parallel then 
-#'  simply set workers to \code{FALSE}.
+#'  simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}} 
+#'  function.
+#' @param ... Passed onto internal \code{\link{prNlChooseDf}} function.
 #' 
+#' @example inst/examples/addNonlinearity_example.R
 #' @rdname addNonlinearity
 #' @export
 addNonlinearity <- 
@@ -43,11 +46,9 @@ addNonlinearity <-
            workers,
            ...){
     UseMethod("addNonlinearity")  
-}
+  }
 
-#' @rdname addNonlinearity
 #' @export
-#' @keywords internal
 addNonlinearity.default <- function(model, 
                                     variable,
                                     spline_fn,
@@ -62,9 +63,7 @@ addNonlinearity.default <- function(model,
        " not yeat implemented. Feel free to check and send me a suggestion.")
 }
 
-#' @rdname addNonlinearity
 #' @export
-#' @keywords internal
 addNonlinearity.lm <- function(model, 
                                ...){
   # Works fine with the glm method
@@ -73,16 +72,13 @@ addNonlinearity.lm <- function(model,
 
 #' @rdname addNonlinearity
 #' @export
-#' @keywords internal
 addNonlinearity.negbin <- function(model, 
-                               ...){
+                                   ...){
   # Works fine with the glm method
   addNonlinearity.glm(model, ..., libraries = "MASS")
 }
 
-#' @rdname addNonlinearity
 #' @export
-#' @keywords internal
 addNonlinearity.glm <- function(model, 
                                 variable,
                                 spline_fn,
@@ -127,9 +123,7 @@ addNonlinearity.glm <- function(model,
                       ...))
 }
 
-#' @rdname addNonlinearity
 #' @export
-#' @keywords internal
 addNonlinearity.coxph <- function(model, 
                                   variable,
                                   spline_fn,
@@ -170,6 +164,10 @@ addNonlinearity.coxph <- function(model,
   
   # No evidence for non-linearity
   if (tail(anova_rslt[grep("P(", names(anova_rslt), fixed=TRUE)], 1) > sig_level){
+    if  (verbal){
+      cat("\nNo support for nonlinearity for variable: '", variable, "' as defined by the criteria",
+          sep = "")
+    }
     return(model)
   }
   
@@ -187,9 +185,7 @@ addNonlinearity.coxph <- function(model,
                       libraries = "survival"))
 }
 
-#' @rdname addNonlinearity
 #' @export
-#' @keywords internal
 addNonlinearity.rms <-
   function(model, 
            variable,
@@ -205,16 +201,16 @@ addNonlinearity.rms <-
     
     if (spline_fn != "rcs")
       stop("Only works with the rcs() function of the rms-package")
-
+    
     simplest_nonlinear <-
-        eval(update(model,
-                    sprintf(".~.-%s+%s(%s, %d)",
-                            variable, spline_fn, variable, min(flex_param)),
-                    x=FALSE, y=FALSE, evaluate = FALSE),
-            envir = environment(formula(model)))
-      
+      eval(update(model,
+                  sprintf(".~.-%s+%s(%s, %d)",
+                          variable, spline_fn, variable, min(flex_param)),
+                  x=FALSE, y=FALSE, evaluate = FALSE),
+           envir = environment(formula(model)))
+    
     anova_rslt <- anova(simplest_nonlinear)
-      
+    
     row <- which(variable == substr(rownames(anova_rslt), 1, nchar(variable)))
     if (!grepl("Nonlinear", rownames(anova_rslt)[row + 1]))
       stop("Expect a 'Nonlinear' row after the spline row")
@@ -223,7 +219,7 @@ addNonlinearity.rms <-
       cat("\n * Non-linearity for", variable, "*\n")
       print(anova_rslt[0:1 + row, ])
     }
-      
+    
     if (anova_rslt[row+1,"P"] > sig_level){
       return(model)
     }
@@ -237,19 +233,27 @@ addNonlinearity.rms <-
                         verbal = verbal,
                         workers = workers,
                         libraries = "rms"))
-}
+  }
 
+#' Chooses the degrees of freedom for the non-linearity
+#' 
+#' Looks for the model with the minimal \code{min_fn} within the flex_param span.
+#' 
+#' @param libraries If we use the parallel approach we need to make sure that the 
+#'  right libraries are available in the threads
+#' @param simplest_nonlinear The simplest non-linear form that the ANOVA has been tested against
 #' @import parallel
+#' @inheritParams addNonlinearity
 #' @keywords internal
 prNlChooseDf <- function (model, 
-                        flex_param, 
-                        variable, 
-                        spline_fn, 
-                        min_fn, 
-                        simplest_nonlinear, 
-                        verbal,
-                        workers,
-                        libraries) {
+                          flex_param, 
+                          variable, 
+                          spline_fn, 
+                          min_fn, 
+                          simplest_nonlinear, 
+                          verbal,
+                          workers,
+                          libraries) {
   local_workers <- FALSE
   if (missing(workers)){
     local_workers <- TRUE
@@ -275,7 +279,7 @@ prNlChooseDf <- function (model,
   }
   
   if (is.logical(workers) && 
-        workers == FALSE){
+      workers == FALSE){
     fits <-
       lapply(X = flex_param[-which.min(flex_param)],
              FUN = 

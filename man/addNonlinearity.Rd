@@ -2,36 +2,20 @@
 % Please edit documentation in R/addNonlinearity.R
 \name{addNonlinearity}
 \alias{addNonlinearity}
-\alias{addNonlinearity.coxph}
-\alias{addNonlinearity.default}
-\alias{addNonlinearity.glm}
-\alias{addNonlinearity.lm}
 \alias{addNonlinearity.negbin}
-\alias{addNonlinearity.rms}
 \title{Add a nonlinear function to the model}
 \usage{
 addNonlinearity(model, variable, spline_fn, flex_param = 2:7, min_fn = AIC,
   sig_level = 0.05, verbal = FALSE, workers, ...)
 
-\method{addNonlinearity}{default}(model, variable, spline_fn,
-  flex_param = 2:7, min_fn = AIC, sig_level = 0.05, verbal = FALSE,
-  workers, ...)
-
-\method{addNonlinearity}{lm}(model, ...)
-
 \method{addNonlinearity}{negbin}(model, ...)
-
-\method{addNonlinearity}{glm}(model, variable, spline_fn, flex_param = 2:7,
-  min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
-
-\method{addNonlinearity}{coxph}(model, variable, spline_fn, flex_param = 2:7,
-  min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
-
-\method{addNonlinearity}{rms}(model, variable, spline_fn, flex_param = 2:7,
-  min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
 }
 \arguments{
 \item{model}{The model that is to be evaluated and adatpted for non-linearity}
+
+\item{variable}{The name of the parameter that is to be tested for non-linearity.
+\emph{Note} that the variable should be included plain (i.e. as a linear variable)
+form in the model.}
 
 \item{spline_fn}{Either a string or a function that is to be used
 for testing alternative non-linearity models}
@@ -56,11 +40,10 @@ anova test and the chosen knots.}
 circumstances you may want to restrict the number of parallel threads to less
 than the defaul \code{dectectCores() - 1}, e.g. you may run out of memory
 then you can provide this parameter. If you do not want to use parallel then 
-simply set workers to \code{FALSE}.}
+simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}} 
+function.}
 
-\item{param}{The name of the parameter that is to be tested for non-linearity.
-\emph{Note} that the variable should be included plain (i.e. as a linear variable)
-form in the model.}
+\item{...}{Passed onto internal \code{\link{prNlChooseDf}} function.}
 }
 \description{
 This function takes a model and adds a non-linear function if
@@ -69,5 +52,35 @@ the likelihood-ratio supports this (via the
 while for \pkg{rms} you need to use the \code{rcs} spline
 that is automatically evaluated for non-linearity).
 }
-\keyword{internal}
+\examples{
+library(Greg)
+library(magrittr)
+data("melanoma", package = "boot", envir = environment())
+
+library(dplyr)
+library(magrittr)
+melanoma \%<>\% 
+  mutate(status = factor(status,
+                         levels = 1:3,
+                         labels = c("Died from melanoma", 
+                                    "Alive", 
+                                    "Died from other causes")),
+         ulcer = factor(ulcer,
+                        levels = 0:1,
+                        labels = c("Absent", "Present")),
+         time = time/365.25, # All variables should be in the same time unit
+         sex = factor(sex,
+                      levels = 0:1,
+                      labels = c("Female", "Male")))
+
+library(survival)
+model <- coxph(Surv(time, status == "Died from melanoma") ~ sex + age,
+               data = melanoma)
+
+nl_model <- addNonlinearity(model, "age", 
+                            spline_fn = "pspline", 
+                            verbal = TRUE,
+                            workers = FALSE)
+# Note that there is no support for nonlinearity in this case
+}
 
