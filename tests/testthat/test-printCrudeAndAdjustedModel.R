@@ -39,13 +39,56 @@ test_that("Check position of reference", {
   expect_match(a[1,2], "ref")
   
   # Bug with the same label occurring miultiple times
-  complx_fit <- update(fit, .~.+
+  complx_fit <- update(fit, .~x + boolean +
                          same_label +
                          same_labell +
                          same_labelll)
   a <- printCrudeAndAdjustedModel(complx_fit, 
                                   add_references=TRUE, desc_column=TRUE)
   expect_equal(nrow(a), 11)
+
+  a2 <- printCrudeAndAdjustedModel(complx_fit)
+  expect_lt(nrow(a2), nrow(a))
+  
+  a3 <- printCrudeAndAdjustedModel(complx_fit, desc_column = TRUE)
+  expect_equivalent(nrow(a3), nrow(a), info = "When descriptive column is used then references should be added by default")
+  
+  a2 <- printCrudeAndAdjustedModel(complx_fit, desc_column = TRUE, order = c("same_label+","x", "boolean"))
+  expect_equivalent(nrow(a2), nrow(a))
+  expect_equivalent(tail(rownames(a2), 1), "boolean")
+})
+
+test_that("Test rbind", {
+  set.seed(10)
+  n <- 500
+  ds <- data.frame(
+    ftime = rexp(n),
+    fstatus = sample(0:1, size = n, replace = TRUE),
+    x = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+    same_label = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    same_labell = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    same_labelll = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
+    boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+  
+  library(survival)
+  fit1 <- coxph(Surv(ftime, fstatus == 1) ~ x + boolean, data=ds)
+  fit2 <- coxph(Surv(ftime, fstatus == 1) ~ x + same_label, data=ds)
+  
+  a1 <- printCrudeAndAdjustedModel(fit1, add_references=TRUE)
+  a2 <- printCrudeAndAdjustedModel(fit2, add_references=TRUE)
+  a3 <- rbind(a1, a2)
+  expect_equivalent(nrow(a3), nrow(a1) + nrow(a2))
+  expect_true(is.null(attr(a3, "tspanner")))
+  
+  a3 <- rbind(a1 = a1, a2 = a2)
+  expect_equivalent(nrow(a3), nrow(a1) + nrow(a2))
+  expect_equivalent(attr(a3, "tspanner"), c("a1", "a2"))
+  sink(file=ifelse(Sys.info()["sysname"] == "Windows",
+                   "NUL",
+                   "/dev/null"))
+  expect_true(inherits(print(a3), "htmlTable"))
+  sink()
 })
 
 test_that("Variable select",{
@@ -154,3 +197,24 @@ test_that("Subsetting and bindings",{
   ret <- cbind(out[,2:5], out[,1])  
   expect_equal(ncol(ret), 5)
 })
+
+
+test_that("Errors for printCrudeAndJust",{
+  set.seed(10)
+  n <- 500
+  ds <- data.frame(
+    y = sample(0:1, size = n, replace = TRUE),
+    x1 = factor(sample(LETTERS[1:4], size = n, replace = TRUE)),
+    x2 = rnorm(n),
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+  ds$x1[sample(1:nrow(ds), size = 100)] <- NA
+  ds$x2[sample(1:nrow(ds), size = 100)] <- NA
+  
+  fit <- glm(y~x1 + x2, data = ds)
+  expect_error(printCrudeAndAdjustedModel(NULL, desc_column = TRUE, 
+                                          desc_args = caDescribeOpts(digits = 2)))
+  expect_error(printCrudeAndAdjustedModel(NULL, desc_column = TRUE, 
+                                          desc_args = "wrong argument"))
+  
+})
+  

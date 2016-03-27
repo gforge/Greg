@@ -28,7 +28,17 @@ nl_model <- addNonlinearity(model, "age", "ns", flex_param = 2:7,
 if(!all.equal(model, nl_model))
   stop("Failed check coxph with ns")
 
+nl_model <- addNonlinearity(model, "age", "ns", flex_param = 2:7, sig_level = .7,
+                            workers = FALSE)  
+if(length(all.equal(model, nl_model)) == 1)
+  stop("Failed check coxph with ns with sensitivity increased")
+
 nl_model <- addNonlinearity(model, "age", "pspline", flex_param = "Asdasdsadasda",
                             workers = FALSE)  
 if(!all.equal(model, nl_model))
   stop("Failed check coxph with pspline")
+
+nl_model <- addNonlinearity(model, "age", "pspline", flex_param = "Asdasdsadasda",sig_level = .7,
+                            workers = FALSE)  
+if(length(all.equal(model, nl_model)) == 1)
+  stop("Failed check coxph with pspline with sensitivity increased")

@@ -34,7 +34,7 @@ test_that("Check hatvalues for ols", {
   
   fit <- ols(y~x)
   expect_equivalent(hatvalues(fit),
-                    ols.influence(model)$hat)
+                    ols.influence(fit)$hat)
 })
 
 test_that("Check bread for ols", {
@@ -43,7 +43,7 @@ test_that("Check bread for ols", {
   x <- runif(n)
   y <- x + rnorm(n)
   
-  fit <- ols(y~x)
+  fit <- ols(y~x, x = TRUE)
   expect_equal(dim(bread(fit)), c(2,2))
 })
 
@@ -53,7 +53,7 @@ test_that("Check estfun for ols", {
   x <- runif(n)
   y <- x + rnorm(n)
   
-  fit <- ols(y~x)
+  fit <- ols(y~x, x = TRUE)
   expect_equal(nrow(estfun(fit)), 50)
 })
 
@@ -67,4 +67,7 @@ test_that("Check model.matrix for ols", {
   expect_equivalent(model.matrix(fit), 
                     cbind(rep(1, n),
                           x))
+
+  fit <- ols(y~x)
+  expect_warning(model.matrix(fit))
 })

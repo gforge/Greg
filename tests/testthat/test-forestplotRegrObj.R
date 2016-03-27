@@ -45,4 +45,11 @@ test_that("Basic test for coverage for forestplotRegrObj", {
                      legend_args = fpLegend(title = "Models"),
                      rowname.fn = modifyNameFunction, new_page=TRUE)
   
+  forestplotRegrObj (regr.obj = list(fit1, fit2), 
+                     col=fpColors(box=c("darkblue", "darkred")),
+                     variablesOfInterest.regexp = "(x2|x3)",
+                     order.regexps = c("x3", "x2"),
+                     legend = c("First model", "Second model"),
+                     legend_args = fpLegend(title = "Models"),
+                     rowname.fn = modifyNameFunction, new_page=TRUE)
 })

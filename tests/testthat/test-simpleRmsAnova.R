@@ -40,9 +40,22 @@ test_that("Basic test for coverage for simpleRmsAnova", {
                  ss    = FALSE)
   
   a <- simpleRmsAnova(a_out, 
-                 subregexps = rbind(c("age", "Age"),
-                                    c("cholesterol", "Cholesterol"),
-                                    c("sex", "Sex")),
-                 caption="Anova output for a logistic regression model")
+                      subregexps = rbind(c("blood.pressure", "Blood pressure"),
+                                         c("age", "Age"),
+                                         c("cholesterol", "Cholesterol"),
+                                         c("sex", "Sex")),
+                      caption="Anova output for a logistic regression model")
   expect_equivalent(dim(a), dim(a_out))
+  expect_equivalent(sum(grepl("Blood pressure", dimnames(a)[[1]], fixed = TRUE)), 1)
+
+  sink(file=ifelse(Sys.info()["sysname"] == "Windows",
+                   "NUL",
+                   "/dev/null"))
+  p_out <- print(a)
+  sink()
+  expect_true(inherits(p_out, "htmlTable"))
+  
+  a <- simpleRmsAnova(a_out, 
+                      caption="Anova output for a logistic regression model")
+  expect_equivalent(sum(grepl("Blood pressure", dimnames(a)[[1]], fixed = TRUE)), 0)
 })
