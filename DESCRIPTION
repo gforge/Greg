@@ -3,7 +3,7 @@ Version: 1.2
 Date: 2016-03-27
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
-Authors@R: c(person(  "Max", "Gordon", email = "max@gforge.se", role = "cre"),
+Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
              person("Reinhard", "Seifert", role = "aut", comment = "Author of original plotHR"))
 Description: This R-package provides functions that primarily aimed at helping
     work with regression models in both conveying and modeling. While mych of 

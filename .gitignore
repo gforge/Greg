@@ -3,3 +3,5 @@
 .RData
 inst/doc
 tests/testthat/*.pdf
+cran-comments.md
+vignettes/.build.timestamp
