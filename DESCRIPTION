@@ -1,13 +1,14 @@
 Package: Greg
 Version: 1.2
-Date: 2016-03-26
-Title: Regression helper functions
-Author: Max Gordon <max@gforge.se>
+Date: 2016-03-27
+Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
+Authors@R: c(person(  "Max", "Gordon", email = "max@gforge.se", role = "cre"),
+             person("Reinhard", "Seifert", role = "aut", comment = "Author of original plotHR"))
 Description: This R-package provides functions that primarily aimed at helping
-    you work with regression models. While mych of the data presented by the
-    standard regression output is useful and important - there is often a need
-    for further simplifaction prior to publication. The methods implemented in
+    work with regression models in both conveying and modeling. While mych of 
+    the data presented by the standard regression output is useful and important 
+    - there is often a need for further simplifaction prior to publication. The methods implemented in
     this package are inspired by some of the top journals such as NEJM, BMJ,
     and other medical journals as this is my research field.
 License: GPL (>= 3)
@@ -24,7 +25,8 @@ Imports:
     htmlTable,
     magrittr,
     knitr,
-    Epi
+    Epi,
+    utils
 Depends:
     forestplot,
     Gmisc (>= 1.0.3)
