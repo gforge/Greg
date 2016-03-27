@@ -52,7 +52,7 @@ printCrudeAndAdjustedModel(fit,
 
 You can achieve the same effect with the `label` function in the `Hmisc` package:
 
-```{r}
+```{r, message=FALSE}
 library(Hmisc)
 label(mtcars$disp) <- "Displacement (cu.in)"
 label(mtcars$cyl) <- "No. cylinders"
@@ -62,6 +62,35 @@ label(mtcars$am) <- "Transmission"
 printCrudeAndAdjustedModel(fit, 
                            digits = 1, 
                            add_references = TRUE)
+```
+
+Binding columns/rows
+--------------------
+
+The returned variable from `printCrudeAndAdjustedModel` works just like any matrix, i.e. you can bind it both on rows and on columns:
+
+```{r}
+fit_mpg <- lm(mpg ~ cyl + disp + hp + am, data = mtcars)
+fit_weight <- lm(wt ~ cyl + disp + hp + am, data = mtcars)
+p_mpg <- printCrudeAndAdjustedModel(fit_mpg, digits = 1, add_references = TRUE)
+p_weight <- printCrudeAndAdjustedModel(fit_weight, digits = 1, add_references = TRUE)
+rbind("Miles per gallon" = p_mpg, 
+      "Weight (1000 lbs)" = p_weight)
+
+cbind("Miles per gallon" = p_mpg, 
+      "Weight (1000 lbs)" = p_weight)
+
+```
+
+Selecting column/rows using `[`
+-------------------------------
+
+It is also possible to select individual rows/columns if so desired using the `[` operator:
+
+```{r}
+p_mpg[,1:2]
+
+p_mpg[1:2,]
 ```
 
 More advanced models
