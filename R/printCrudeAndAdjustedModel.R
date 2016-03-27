@@ -339,8 +339,8 @@ printCrudeAndAdjustedModel <- function(model,
 setClass("printCrudeAndAdjusted", contains = "matrix")
 
 #' @param ... outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame
-#' @param alt.names If you don't want to use named arguments for the tspanner attribute
-#'  but a vector with names then use this argument.
+#' @param alt.names If you don't want to use named arguments for the tspanner attribute in the rbind
+#'  or the cgroup in the cbind but a vector with names then use this argument.
 #' @param deparse.level  backward compatibility
 #' 
 #' @rdname printCrudeAndAdjustedModel
@@ -451,17 +451,35 @@ htmlTable.printCrudeAndAdjusted <- function(x, css.rgroup="", ...){
 #' @importFrom Gmisc copyAllNewAttributes
 #' 
 #' @keywords internal
-cbind.printCrudeAndAdjusted <- function(..., deparse.level = 1){
+cbind.printCrudeAndAdjusted <- function(..., alt.names, deparse.level = 1){
   # cbind is an internal generics and thus doesn't
   # work with the NextMethod()
   pca <- list(...)
   pca_args <- c(prClearPCAclass(pca),
                 list(deparse.level = deparse.level))
+  # Check that names are the same in all models
+  org_names <- rownames(pca_args[[1]])
+  for (i in 2:length(pca_args)){
+    if (!all(org_names == rownames(pca_args[[i]])))
+        stop("Rownames don't match up between the models")
+  }
   ret <- do.call(cbind, pca_args)
   attr2skip <- c("dimnames", "dim")
   attr2skip <- c(attr2skip, "cgroup", "n.cgroup", "header")
 
-  copyAllNewAttributes(pca[[1]], ret, attr2skip = attr2skip)
+  ret <- copyAllNewAttributes(pca[[1]], ret, attr2skip = attr2skip)
+  if (missing(alt.names)){
+    if (!is.null(names(pca)))
+      alt.names <- names(pca)
+  }else if(length(alt.names) != length(pca)){
+    stop("The alt.names have to have the same length as the number of arguments")
+  }
+  if (missing(alt.names))
+    return(ret)
+  
+  attr(ret, "cgroup") <- alt.names
+  attr(ret, "n.cgroup") <- sapply(pca, ncol, USE.NAMES = FALSE)
+  return(ret)
 }
 
 #' Removes the printCrudeAndAdjusted class from arguments
