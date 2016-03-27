@@ -25,7 +25,7 @@ prFindRownameMatches <- function(rnames, vn, vars){
   # Find the beginning of the string that matches exactly to the var. name
   name_stub <- substr(rnames, 1, nchar(vn))
   matches <- which(name_stub == vn)
-
+  
   # Since the beginning of the name may not be unique we need to
   # check for other "competing matches"
   # TODO: make this fix more elegant
@@ -33,7 +33,7 @@ prFindRownameMatches <- function(rnames, vn, vars){
   if (sum(vars_name_stub == vn) > 1){
     competing_vars <- vars[vars != vn &
                              vars_name_stub == vn]
-
+    
     competing_matches <- NULL
     for(comp_vn in competing_vars){
       competing_name_stub <- substr(rnames, 1, nchar(comp_vn))
@@ -41,11 +41,11 @@ prFindRownameMatches <- function(rnames, vn, vars){
         c(competing_matches,
           which(competing_name_stub == comp_vn))
     }
-
+    
     # Clean out competing matches
     matches <- matches[!matches %in% competing_matches]
   }
-
+  
   return(matches)
 }
 
@@ -72,11 +72,11 @@ prExtractOutcomeFromModel <- function(model, mf){
   if (is.null(outcome))
     stop("Could not identify the outcome: ", deparse(as.formula(model)[[2]]),
          " among the model.frame variables: '", paste(names(mf), collapse="', '"),"'")
-
+  
   # Only use the status when used for survival::Surv objects
   if (inherits(outcome, "Surv"))
     return(outcome[,"status"])
-
+  
   return(outcome)
 }
 
@@ -94,24 +94,24 @@ prExtractOutcomeFromModel <- function(model, mf){
 prGetModelData <- function(x){
   # Extract the variable names
   true_vars <- all.vars(as.formula(x))
-
+  
   # Get the environment of the formula
   env <- environment(as.formula(x))
   data <- eval(x$call$data,
                envir = env)
-
+  
   # The data frame without the
   mf <- get_all_vars(as.formula(x),
                      data=data)
-
+  
   if (!is.null(x$call$subset)){
     if (!is.null(data)){
       # As we don't know if the subsetting argument
       # contained data from the data frame or the environment
       # we need this additional check
       mf <- tryCatch(mf[eval(x$call$subset,
-                        envir = data,
-                        enclos = env), ],
+                             envir = data,
+                             enclos = env), ],
                      error = function(e){
                        stop("Could not deduce the correct subset argument when extracting the data. ", e)
                      })
@@ -120,7 +120,7 @@ prGetModelData <- function(x){
                     envir=env), ]
     }
   }
-
+  
   return(mf)
 }
 
@@ -156,13 +156,13 @@ prGetModelVariables <- function(model,
   }else{
     vars <- attr(model$terms, "term.labels")
   }
-
+  
   strata <- NULL
   if (any(grepl("^strat[a]{0,1}\\(", vars))){
     strata <- vars[grep("^strat[a]{0,1}\\(", vars)]
     vars <- vars[-grep("^strat[a]{0,1}\\(", vars)]
   }
-
+  
   cluster <- NULL
   if (any(grepl("^cluster{0,1}\\(", vars))){
     cluster <- vars[grep("^cluster{0,1}\\(", vars)]
@@ -170,21 +170,21 @@ prGetModelVariables <- function(model,
   }
   # Fix for bug in cph
   if (is.null(cluster) &&
-        inherits(model, "cph")){
+      inherits(model, "cph")){
     alt_terms <- stringr::str_trim(strsplit(deparse(model$call$formula[[3]]),
                                             "+", fixed = TRUE)[[1]])
     if (any(grepl("^cluster{0,1}\\(", alt_terms))){
       cluster <- alt_terms[grep("^cluster{0,1}\\(", alt_terms)]
     }
   }
-
+  
   # Remove I() as these are not true variables
   unwanted_vars <- grep("^I\\(.*$", vars)
   if (length(unwanted_vars) > 0){
     attr(vars, "I() removed") <- vars[unwanted_vars]
     vars <- vars[-unwanted_vars]
   }
-
+  
   pat <- "^[[:alpha:]\\.]+[^(]+\\(.*$"
   fn_vars <- grep(pat, vars)
   if(length(fn_vars) > 0){
@@ -200,7 +200,7 @@ prGetModelVariables <- function(model,
       vars[fn_vars] <- sub(pat, "\\1", vars[fn_vars])
     }
   }
-
+  
   # Remove interaction terms as these are not variables
   int_term <- "^.+:.+$"
   in_vars <- grep(int_term, vars)
@@ -213,20 +213,20 @@ prGetModelVariables <- function(model,
     attr(vars, "interactions removed") <- vars[in_vars]
     vars <- vars[-in_vars]
   }
-
+  
   if (add_intercept &&
-        grepl("intercept", names(coef(model))[1], ignore.case = TRUE)){
+      grepl("intercept", names(coef(model))[1], ignore.case = TRUE)){
     vars <- c(names(coef(model))[1],
               vars)
   }
-
+  
   clean_vars <- unique(vars)
   attributes(clean_vars) <- attributes(vars)
   if (!is.null(strata))
     attr(clean_vars, "strata") <- strata
   if (!is.null(cluster))
     attr(clean_vars, "cluster") <- cluster
-
+  
   return(clean_vars)
 }
 
@@ -265,29 +265,29 @@ prGetModelVariables <- function(model,
 #' @importFrom Gmisc describeFactors
 #' @keywords internal
 prGetStatistics <- function(x,
-  show_perc = FALSE,
-  html = TRUE,
-  digits = 1,
-  numbers_first = TRUE,
-  useNA = "no",
-  show_all_values = FALSE,
-  continuous_fn = describeMean,
-  factor_fn = describeFactors,
-  prop_fn = factor_fn,
-  percentage_sign = percentage_sign)
+                            show_perc = FALSE,
+                            html = TRUE,
+                            digits = 1,
+                            numbers_first = TRUE,
+                            useNA = "no",
+                            show_all_values = FALSE,
+                            continuous_fn = describeMean,
+                            factor_fn = describeFactors,
+                            prop_fn = factor_fn,
+                            percentage_sign = percentage_sign)
 {
   useNA <- prConvertShowMissing(useNA)
   if (is.factor(x) ||
-        is.logical(x) ||
-        is.character(x)){
+      is.logical(x) ||
+      is.character(x)){
     if (length(unique(x)) == 2){
       if (show_perc){
         total_table <- prop_fn(x,
-            html=html,
-            digits=digits,
-            number_first=numbers_first,
-            useNA = useNA,
-            percentage_sign = percentage_sign)
+                               html=html,
+                               digits=digits,
+                               number_first=numbers_first,
+                               useNA = useNA,
+                               percentage_sign = percentage_sign)
       }else{
         total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
@@ -296,15 +296,15 @@ prGetStatistics <- function(x,
         if (show_all_values == FALSE && FALSE)
           total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
       }
-
+      
     } else {
       if (show_perc)
         total_table <- factor_fn(x,
-            html=html,
-            digits=digits,
-            number_first=numbers_first,
-            useNA = useNA,
-            percentage_sign = percentage_sign)
+                                 html=html,
+                                 digits=digits,
+                                 number_first=numbers_first,
+                                 useNA = useNA,
+                                 percentage_sign = percentage_sign)
       else{
         total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
@@ -312,13 +312,13 @@ prGetStatistics <- function(x,
     }
   }else{
     total_table <- continuous_fn(x,
-      html=html, digits=digits,
-      number_first=numbers_first,
-      useNA = useNA)
-
+                                 html=html, digits=digits,
+                                 number_first=numbers_first,
+                                 useNA = useNA)
+    
     # If a continuous variable has two rows then it's assumed that the second is the missing
     if (length(total_table) == 2 &&
-      show_perc == FALSE)
+        show_perc == FALSE)
       total_table[2] <- sum(is.na(x))
   }
   return(total_table)
@@ -338,15 +338,15 @@ prGetStatistics <- function(x,
 #'
 #' @keywords internal
 prGetFpDataFromSurvivalFit <- function (fit,
-  conf.int = 0.95,
-  exp      = TRUE){
+                                        conf.int = 0.95,
+                                        exp      = TRUE){
   # Get the p-value, I use the method in the
   # print.cph -> prModFit from the rms package
   Z <- coef(fit)/sqrt(diag(fit$var))
   p_val <- signif(1 - pchisq(Z^2, 1), 5)
   order <- rep(-1, length(beta))
   ci <- confint(fit, level=conf.int)
-
+  
   if (exp){
     ret_matrix <- cbind(
       beta=exp(coef(fit)),
@@ -362,10 +362,10 @@ prGetFpDataFromSurvivalFit <- function (fit,
       high=ci[,2],
       order=order)
   }
-
+  
   # Set the names of the rows
   rownames(ret_matrix) <- names(fit$coef)
-
+  
   return(ret_matrix)
 }
 
@@ -383,10 +383,10 @@ prGetFpDataFromSurvivalFit <- function (fit,
 #'
 #' @keywords internal
 prGetFpDataFromGlmFit <- function(glm.fit,
-  conf.int = 0.95,
-  exp      = TRUE){
+                                  conf.int = 0.95,
+                                  exp      = TRUE){
   summary_glm <- summary.glm(glm.fit)
-
+  
   # Extract the summary values of interest
   summary_se <- summary_glm$coefficients[,colnames(summary_glm$coefficients) == "Std. Error"]
   if ("quasipoisson" %in% glm.fit$family){
@@ -396,10 +396,10 @@ prGetFpDataFromGlmFit <- function(glm.fit,
   }else{
     stop("Type of analysis not prepared!")
   }
-
+  
   order = rep(-1, length(glm.fit$coefficients))
   ci <- confint(glm.fit, level=conf.int)
-
+  
   if (exp){
     ret_matrix <- cbind(
       beta=exp(coef(glm.fit)),
@@ -415,13 +415,13 @@ prGetFpDataFromGlmFit <- function(glm.fit,
       high=ci[,2],
       order=order)
   }
-
+  
   # Set the names of the rows
   rownames(ret_matrix) <- names(glm.fit$coefficients)
-
+  
   # Remove the intercept
   ret_matrix <- ret_matrix[names(glm.fit$coefficients) != "(Intercept)", ]
-
+  
   return(ret_matrix)
 }
 
@@ -441,18 +441,18 @@ prGetFpDataFromGlmFit <- function(glm.fit,
 #'
 #' @keywords internal
 prGetFpDataFromFit <- function(model_fit,
-  conf.int = 0.95,
-  exp = TRUE){
+                               conf.int = 0.95,
+                               exp = TRUE){
   # Get the estimates, confidence intervals and the p_values
   if (any(class(model_fit) %in% "coxph") ||
-    any(class(model_fit) %in% "crr")){
+      any(class(model_fit) %in% "crr")){
     sd <- prGetFpDataFromSurvivalFit(fit = model_fit, conf.int = conf.int, exp = exp)
   } else if (any(class(model_fit) %in% "glm")){
     sd <- prGetFpDataFromGlmFit(glm.fit = model_fit, conf.int = conf.int, exp = exp)
   } else {
     stop(paste("Unknown fit class type:", class(model_fit)))
   }
-
+  
   return(sd)
 }
 
@@ -471,10 +471,10 @@ prConvertShowMissing <- function(useNA){
     useNA <- "no"
   else if (useNA == TRUE)
     useNA <- "ifany"
-
+  
   if (!useNA %in% c("no", "ifany", "always"))
     stop(sprintf("You have set an invalid option for useNA variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", useNA))
-
+  
   return(useNA)
 }
 
@@ -499,12 +499,13 @@ prConvertShowMissing <- function(useNA){
 #'  element and where those rows are located. For factors the list also contains
 #'  \code{lvls} and \code{no_lvls}.
 #' @keywords internal
+#' @import utils
 prMapVariable2Name <- function(var_names, available_names,
                                data, force_match = TRUE){
   if (any(duplicated(available_names)))
     stop("You have non-unique names. You probably need to adjust",
          " (1) variable names or (2) factor labels.")
-
+  
   # Start with figuring out how many rows each variable
   var_data <- list()
   for (name in var_names){
