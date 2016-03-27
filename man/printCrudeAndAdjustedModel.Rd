@@ -25,7 +25,7 @@ rbind.printCrudeAndAdjusted(..., alt.names, deparse.level = 1)
 
 \method{[}{printCrudeAndAdjusted}(x, i, j, ...)
 
-cbind.printCrudeAndAdjusted(..., deparse.level = 1)
+cbind.printCrudeAndAdjusted(..., alt.names, deparse.level = 1)
 
 \method{knit_print}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
 
@@ -118,8 +118,8 @@ the formals of \code{\link{getCrudeAndAdjustedModelData}} are identified
 and passed on in case you have provided a model and not the returned element
 from the \code{\link{getCrudeAndAdjustedModelData}} call.}
 
-\item{alt.names}{If you don't want to use named arguments for the tspanner attribute
-but a vector with names then use this argument.}
+\item{alt.names}{If you don't want to use named arguments for the tspanner attribute in the rbind
+or the cgroup in the cbind but a vector with names then use this argument.}
 
 \item{deparse.level}{backward compatibility}
 
