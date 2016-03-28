@@ -1,9 +1,9 @@
-#' A package that helps with regressions
+#' Regression Helper Functions
 #' 
 #' This R-package provides functions that primarily aimed at helping 
-#' you work with regression models. While mych of the data presented by the
+#' you work with regression models. While much of the data presented by the
 #' standard regression output is useful and important - there is often a
-#' need for further simplifaction prior to publication. The methods implemented
+#' need for further simplification prior to publication. The methods implemented
 #' in this package are inspired by some of the top journals such as NEJM, BMJ,
 #' and other medical journals as this is my research field. 
 #' 
@@ -15,6 +15,15 @@
 #' 
 #' The forestplot wrappers allows for easily displaying regression
 #' estimates, often convenient for models with a large number of variables. 
+#' There is also functionality that can help you comparing different models,
+#' e.g. subsets of patients or compare different regression types.
+#' 
+#' @section Time-splitter:
+#' 
+#' When working with Cox regressions the proportional hazards can sometimes be violated.
+#' As the \code{tt()} approach doesn't lend itself that well to big datasets I often
+#' rely on time-splitting the dataset and then using the start time as an interaction
+#' term. See the function \code{\link{timeSplitter}} and the associated \code{vignette("timeSplitter")}.
 #' 
 #' @section Other regression functions:
 #' 
