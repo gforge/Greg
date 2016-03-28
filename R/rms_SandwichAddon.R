@@ -41,8 +41,6 @@ robcov_alt <- function (fit, type="HC3", ...)
 #' defaults to the qnorm() function. Otherwise it is
 #' a copy of the \code{\link[stats]{confint}} function.
 #' 
-#' TODO: Switch to the summaryrms 
-#' 
 #' @param object 	a fitted ols-model object.
 #' @param parm a specification of which parameters 
 #'  are to be given confidence intervals, either a vector 
@@ -57,10 +55,10 @@ robcov_alt <- function (fit, type="HC3", ...)
 #' 
 #' @example inst/examples/rms_SandwichAddon_example.R
 #' @method confint ols
-#' @method confint ols
-#' @importFrom stats confint
+#' @import stats
 #' @export
 confint.ols <- function(object, parm, level = 0.95, ...) {
+  # TODO: Switch to the summaryrms 
   cf <- coef(object)
   pnames <- names(cf)
   if (missing(parm)) 
@@ -105,8 +103,8 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @example inst/examples/rms_SandwichAddon_example.R
 #' 
 #' @importFrom rms ols.influence
-#' @importFrom stats hatvalues
 #' @method hatvalues ols
+#' @import stats
 #' @export
 #' @keywords internal
 hatvalues.ols <- function(model, ...) {
@@ -143,18 +141,18 @@ bread.ols <- function(x, ...)
 
 #' A fix for the model.matrix
 #' 
-#' The model.matrix.lm that the ols falls back upon
+#' The \code{\link[stats]{model.matrix.lm}()} that the \code{\link[rms]{ols}} falls back upon
 #' "forgets" the intercept value and behaves unreliable in
-#' the vcovHC() funcitons. I've therefore created this subfunction
-#' to generate the actual model.matrix() by just accessing the formula.
-#'  
+#' the \code{\link[sandwich]{vcovHC}()} funcitons. I've therefore created this subfunction
+#' to generate the actual \code{\link[stats]{model.matrix}()} by just accessing the formula.
+#' 
 #' @param object A Model 
 #' @param ... Parameters passed on
 #' @return matrix
 #' 
 #' @method model.matrix ols
 #' @importFrom rms ols
-#' @importFrom stats model.matrix
+#' @import stats
 #' @export
 #' @keywords internal
 model.matrix.ols <- function(object, ...){
@@ -187,6 +185,7 @@ model.matrix.ols <- function(object, ...){
 #' 
 #' @importFrom rms ols
 #' @importFrom sandwich estfun
+#' @import stats
 #' @method estfun ols
 #' @export 
 #' @keywords internal

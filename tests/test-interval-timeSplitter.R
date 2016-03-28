@@ -31,7 +31,7 @@ interval_model <-
          Surv(Start_time, Stop_time, status == "melanoma-specific death") ~ .,
          data = spl_melanoma)
 mismatch <- abs(sum(coef(interval_model) - coef(regular_model)))
-if (mismatch > .Machine$double.eps*100)
+if (mismatch > 10^-10)
   stop("Failed to match interval with regular cox model.",
        " Total coefficient difference = ", mismatch,
        "\n Regular: ", paste(txtRound(coef(regular_model), 3),

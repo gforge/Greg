@@ -6,9 +6,9 @@ Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
              person("Reinhard", "Seifert", role = "aut", comment = "Author of original plotHR"))
 Description: This R-package provides functions that primarily aimed at helping
-    work with regression models in both conveying and modeling. While mych of 
+    work with regression models in both conveying and modeling. While much of 
     the data presented by the standard regression output is useful and important 
-    - there is often a need for further simplifaction prior to publication. The methods implemented in
+    - there is often a need for further simplification  prior to publication. The methods implemented in
     this package are inspired by some of the top journals such as NEJM, BMJ,
     and other medical journals as this is my research field.
 License: GPL (>= 3)
@@ -26,7 +26,9 @@ Imports:
     magrittr,
     knitr,
     Epi,
-    utils
+    utils,
+    graphics,
+    grDevices
 Depends:
     forestplot,
     Gmisc (>= 1.0.3)

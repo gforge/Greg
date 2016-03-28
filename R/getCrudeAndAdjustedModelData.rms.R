@@ -1,5 +1,3 @@
-#' @rdname getCrudeAndAdjustedModelData
-#' @method getCrudeAndAdjustedModelData rms
 #' @export
 #' @importFrom rms bootcov
 #' @importFrom rms robcov

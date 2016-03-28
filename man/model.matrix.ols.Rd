@@ -15,10 +15,10 @@
 matrix
 }
 \description{
-The model.matrix.lm that the ols falls back upon
+The \code{\link[stats]{model.matrix.lm}()} that the \code{\link[rms]{ols}} falls back upon
 "forgets" the intercept value and behaves unreliable in
-the vcovHC() funcitons. I've therefore created this subfunction
-to generate the actual model.matrix() by just accessing the formula.
+the \code{\link[sandwich]{vcovHC}()} funcitons. I've therefore created this subfunction
+to generate the actual \code{\link[stats]{model.matrix}()} by just accessing the formula.
 }
 \keyword{internal}
 

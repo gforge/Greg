@@ -46,6 +46,7 @@
 #' @example inst/examples/getCrudeAndAdjustedModelData_example.R
 #' 
 #' @importFrom stringr str_split
+#' @import stats
 #' 
 #' @rdname getCrudeAndAdjustedModelData
 #' @export
@@ -57,8 +58,6 @@ getCrudeAndAdjustedModelData <- function(model, level=.95,
                                          ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
-#' @rdname getCrudeAndAdjustedModelData
-#' @method getCrudeAndAdjustedModelData default
 #' @export
 #' @keywords internal
 getCrudeAndAdjustedModelData.default <- function(model, level=.95, 

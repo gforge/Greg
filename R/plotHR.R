@@ -99,6 +99,8 @@
 #' @example inst/examples/plotHR_example.R
 #' 
 #' @importFrom Gmisc fastDoCall
+#' @importFrom grDevices grey
+#' @importFrom graphics axTicks axis box lines par plot polygon
 #' @author Reinhard Seifert, Max Gordon
 #' @export
 plotHR <- function (models, 
