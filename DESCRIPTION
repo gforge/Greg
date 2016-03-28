@@ -5,12 +5,12 @@ Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
              person("Reinhard", "Seifert", role = "aut", comment = "Author of original plotHR"))
-Description: This R-package provides functions that primarily aimed at helping
-    work with regression models in both conveying and modeling. While much of 
-    the data presented by the standard regression output is useful and important 
-    - there is often a need for further simplification  prior to publication. The methods implemented in
-    this package are inspired by some of the top journals such as NEJM, BMJ,
-    and other medical journals as this is my research field.
+Description: Methods for manipulating regression models and for describing these in a style adapted for medical journals. 
+  Contains functions for generating an HTML table with crude and adjusted estimates, plotting hazard ratio, plotting model 
+  estimates and confidence intervals using forest plots, extending this to comparing multiple models in a single forest plots. 
+  In addition to the descriptives methods, there are addons for the robust covariance matrix provided by the sandwich
+  package, a function for adding non-linearities to a model, and a wrapper around the Epi package's Lexis functions for
+  time-spliting a dataset when modeling non-proportional hazards in Cox regressions.
 License: GPL (>= 3)
 URL: http://gforge.se
 Biarch: yes
