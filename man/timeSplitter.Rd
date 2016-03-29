@@ -12,7 +12,8 @@ timeSplitter(data, by, time_var, event_var, event_start_status,
 option.}
 
 \item{by}{The time period that you want to split the dataset by. The size of the variable
-must be in proportion to the the \code{time_var}.}
+must be in proportion to the the \code{time_var}. The by variable can also be a vector
+for each time split, useful if the effect has large varyations over time.}
 
 \item{time_var}{The name of the main time variable in the dataset. This variable
 must be a numeric variable.}

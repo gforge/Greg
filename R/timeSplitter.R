@@ -19,7 +19,8 @@
 #' @param data The dataset that you want to split according to the \code{time_var}
 #'  option.
 #' @param by The time period that you want to split the dataset by. The size of the variable
-#'  must be in proportion to the the \code{time_var}.
+#'  must be in proportion to the the \code{time_var}. The by variable can also be a vector
+#'  for each time split, useful if the effect has large varyations over time.
 #' @param event_var The event variable
 #' @param event_start_status The start status of the event status, e.g. "Alive"
 #' @param time_var The name of the main time variable in the dataset. This variable
