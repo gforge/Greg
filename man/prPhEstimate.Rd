@@ -32,4 +32,3 @@ in order to attain the estimate, upper, and lower
 confidence interval
 }
 \keyword{internal}
-

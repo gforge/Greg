@@ -18,4 +18,3 @@ table(..., useNA=useNA). It throughs an error
 if not compatible
 }
 \keyword{internal}
-

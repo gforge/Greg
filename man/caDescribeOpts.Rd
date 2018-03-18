@@ -38,4 +38,3 @@ for the \code{\link{printCrudeAndAdjustedModel}} function they
 have been gathered into a list. This function is simply a 
 helper in order to generate a valid list.
 }
-

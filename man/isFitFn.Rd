@@ -117,4 +117,3 @@ fit_glm <- glm(blood.pressure ~ sex)
 if (isFitLogit(fit_glm) == FALSE)
   print("Correct, the glm without logit as a family is not a logistic regression")
 }
-

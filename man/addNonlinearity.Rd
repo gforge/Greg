@@ -83,4 +83,3 @@ nl_model <- addNonlinearity(model, "age",
                             workers = FALSE)
 # Note that there is no support for nonlinearity in this case
 }
-

@@ -53,4 +53,3 @@ for the total column. This function is also used by \code{\link{printCrudeAndAdj
 in case of a basic linear regression is asked for a raw stat column
 }
 \keyword{internal}
-

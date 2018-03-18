@@ -75,4 +75,3 @@ forestplotCombineRegrObj (
 par(org.par)
 }
 \keyword{internal}
-

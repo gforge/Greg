@@ -25,4 +25,3 @@ A matrix with the columns:
 Gets the boundaries for a GLM fit that is poisson or quasipoisson based
 }
 \keyword{internal}
-

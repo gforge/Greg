@@ -116,6 +116,7 @@ mostly confounded. For instance - younger persons may exhibit a higher risk for 
 procedure but when you put in your covariates you find that the increased hazard
 changes back to the basic
 }
+
 \examples{
 library(survival)
 library(rms)
@@ -181,4 +182,3 @@ par(org_par)
 \author{
 Reinhard Seifert, Max Gordon
 }
-

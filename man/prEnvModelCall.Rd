@@ -22,4 +22,3 @@ uses the \code{\link[stats]{as.formula}} together with
 that the original code used.
 }
 \keyword{internal}
-

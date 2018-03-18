@@ -44,5 +44,5 @@ better option to go through the summary function (\code{rms:::summary.rms}).
 Infortunately skip intercept is not an option as the summary doesn't 
 include the intercept for the rms regression outputs
 }
-\keyword{internal}
 
+\keyword{internal}

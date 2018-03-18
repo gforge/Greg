@@ -27,4 +27,3 @@ Uses \code{\link[graphics]{polygon}} or
 intervals.
 }
 \keyword{internal}
-

@@ -22,4 +22,3 @@ intends to plot.}
 A function for retrieving new_data argument for predict
 }
 \keyword{internal}
-

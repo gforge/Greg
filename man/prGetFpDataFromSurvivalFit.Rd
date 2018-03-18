@@ -25,4 +25,3 @@ A matrix with the columns:
 Gets the boundaries for a survival fit
 }
 \keyword{internal}
-

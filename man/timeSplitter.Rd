@@ -51,6 +51,7 @@ we set the \code{time_offset = 4}. In the outputted dataset the smallest
 generally want to look at those that survived the start date, e.g. if a 
 patient dies on the 4-year mark we would not include him/her in our study.
 }
+
 \examples{
 test_data <- data.frame(
   id = 1:4,
@@ -68,4 +69,3 @@ timeSplitter(test_data, .5,
              time_related_vars = c("age", "date"),
              event_var = "event")
 }
-

@@ -25,4 +25,3 @@ useful to have a common string preparer.
 \emph{Note:} Currently knit_print doesn't work as expected...
 }
 \keyword{internal}
-

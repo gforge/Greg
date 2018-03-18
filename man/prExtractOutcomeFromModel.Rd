@@ -22,4 +22,3 @@ Uses the model to extract the outcome variable. Throws
 error if unable to find the outcome.
 }
 \keyword{internal}
-

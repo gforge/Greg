@@ -16,4 +16,3 @@ prPhRugPlot(xvalues)
 Plot a rug on the datapoints
 }
 \keyword{internal}
-

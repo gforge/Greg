@@ -52,7 +52,7 @@ In addition I use the \code{\link[survival]{coxph}} in many of my analyses and s
 also be safe. Please send me a notice if you are using the package with some other 
 regression models, especially if you have some tests verifying the functionality.
 }
+
 \author{
 Max Gordon
 }
-

@@ -52,4 +52,3 @@ confint_robust(fit, HC_type = "HC4m")
  Journal of Statistical Computation and Simulation, 
  vol. 79, no. 6, pp. 787-803, 2009.}
 }
-

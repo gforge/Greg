@@ -19,4 +19,3 @@ but with the twist that it also performs any associated
 subsetting based on the model's \code{subset} argument.
 }
 \keyword{internal}
-

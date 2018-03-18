@@ -27,4 +27,3 @@ Gets the confidence interval, p-values,
 coefficients from a survival object
 }
 \keyword{internal}
-

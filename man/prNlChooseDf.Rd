@@ -46,4 +46,3 @@ right libraries are available in the threads}
 Looks for the model with the minimal \code{min_fn} within the flex_param span.
 }
 \keyword{internal}
-

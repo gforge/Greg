@@ -110,4 +110,3 @@ par(org.par)
 \seealso{
 Other \code{\link[forestplot]{forestplot}} wrappers: \code{\link{forestplotRegrObj}}
 }
-

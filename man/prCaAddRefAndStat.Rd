@@ -64,4 +64,3 @@ Other printCrudeAndAdjusted functions: \code{\link{prCaAddReference}},
   \code{\link{printCrudeAndAdjustedModel}}
 }
 \keyword{internal}
-

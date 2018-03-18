@@ -16,4 +16,3 @@ list
 Removes the printCrudeAndAdjusted class from arguments
 }
 \keyword{internal}
-

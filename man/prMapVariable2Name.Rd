@@ -33,4 +33,3 @@ what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary.rms}}
 correspond to we for generalizeability this rather elaborate function.
 }
 \keyword{internal}
-

@@ -52,4 +52,3 @@ confint(f_rob)
 options(org.op)
 }
 \keyword{internal}
-

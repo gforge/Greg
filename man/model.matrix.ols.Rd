@@ -21,4 +21,3 @@ the \code{\link[sandwich]{vcovHC}()} funcitons. I've therefore created this subf
 to generate the actual \code{\link[stats]{model.matrix}()} by just accessing the formula.
 }
 \keyword{internal}
-

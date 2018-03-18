@@ -18,4 +18,3 @@ prPhDensityPlot(xvalues, color)
 Plot a density on the datapoints
 }
 \keyword{internal}
-
