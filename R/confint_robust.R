@@ -19,7 +19,7 @@
 #' @example inst/examples/confint_robust_example.R
 #' 
 #' @inheritParams stats::confint
-#' @references \href{http://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
+#' @references \href{https://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
 #'  F. Cribari-Neto and M. da G. A. Lima, 
 #'  "Heteroskedasticity-consistent interval estimators", 
 #'  Journal of Statistical Computation and Simulation, 
