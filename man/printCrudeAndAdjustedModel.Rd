@@ -258,7 +258,7 @@ printCrudeAndAdjustedModel(fit_mtcar,
 printCrudeAndAdjustedModel(fit_mtcar, 
                            order=c("col", "gear"), 
                            groups=c("Color", "Gears"),
-                           add_references=c("Black", NA),
+                           add_references=c("black", NA),
                            ctable=TRUE)
 
 # Now we can also combine models into one table using rbind()
@@ -269,6 +269,7 @@ mpg_model <- printCrudeAndAdjustedModel(lm(mpg ~ wt + gear + col, data=mtcars),
                                     digits=1,
                                     desc_args = caDescribeOpts(digits = 1,
                                                                colnames = c("Avg.")))
+
 wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data=mtcars), 
                                     add_references=TRUE,
                                     ctable=TRUE, 

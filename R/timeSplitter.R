@@ -1,7 +1,7 @@
 #' A function for splitting a time according to time periods
 #' 
 #' If we have a violation of the cox proprtional hazards assumption we need to
-#' split an individual's followup time into several.See vignette("timeSplitter", package="Greg")
+#' split an individual's followup time into several. See vignette("timeSplitter", package="Greg")
 #' for a detailed description.
 #' 
 #' \emph{Important note:} The time variables must have the same time unit. I.e. function can not dedu
