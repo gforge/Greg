@@ -196,6 +196,9 @@ test_that("Subsetting and bindings",{
 
   ret <- cbind(out[,2:5], out[,1])  
   expect_equal(ncol(ret), 5)
+  
+  ret <- cbind(NULL, out[,1:2])  
+  expect_equal(ret, out[,1:2])
 })
 
 

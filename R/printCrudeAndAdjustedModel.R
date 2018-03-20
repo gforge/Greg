@@ -455,6 +455,15 @@ cbind.printCrudeAndAdjusted <- function(..., alt.names, deparse.level = 1){
   # cbind is an internal generics and thus doesn't
   # work with the NextMethod()
   pca <- list(...)
+  tmp <- list()
+  for (i in 1:length(pca)){
+    if (!is.null(pca[[i]]))
+      tmp[[length(tmp) + 1]] <- pca[[i]]
+  }
+  pca <- tmp
+  if(length(pca) == 1)
+    return(pca[[1]])
+  
   pca_args <- c(prClearPCAclass(pca),
                 list(deparse.level = deparse.level))
   # Check that names are the same in all models
@@ -490,8 +499,9 @@ cbind.printCrudeAndAdjusted <- function(..., alt.names, deparse.level = 1){
 prClearPCAclass <- function(pca){
   all_non_pca <- all(sapply(pca, function(elmnt) inherits(elmnt, "printCrudeAndAdjusted")))
   for (i in 1:length(pca)){
-    class(pca[[i]]) <- 
-      class(pca[[i]])[class(pca[[i]]) != "printCrudeAndAdjusted"]
+    if (!is.null(pca[[i]]))
+      class(pca[[i]]) <- 
+        class(pca[[i]])[class(pca[[i]]) != "printCrudeAndAdjusted"]
   }
   return(pca)
 }
