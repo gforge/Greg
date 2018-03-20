@@ -9,13 +9,13 @@ prCaReorderReferenceDescribe(x, model, order, var_order, add_references,
   use_labels)
 }
 \arguments{
-\item{x}{The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}}}
+\item{x}{The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}()}}
 
 \item{model}{The model}
 
 \item{order}{A vector A vector with regular expressions for each group.}
 
-\item{var_order}{The output from the \code{\link{prMapVariable2Name}}}
+\item{var_order}{The output from the \code{\link{prMapVariable2Name}()}}
 
 \item{add_references}{True if it should use the data set to look for 
 references, otherwise supply the function with a vector with names. 
@@ -51,7 +51,7 @@ The reordered groups as a matrix
 }
 \description{
 This is a wrapper function around some more basic functions that
-\code{\link{printCrudeAndAdjustedModel}} uses.
+\code{\link{printCrudeAndAdjustedModel}()} uses.
 }
 \seealso{
 Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},

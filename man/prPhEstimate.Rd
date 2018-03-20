@@ -14,7 +14,7 @@ prPhEstimate(model, term.label, ylog, cntrst, xlim, alpha, new_data)
 \item{ylog}{If the outcome should be presented in the anti-log form, i.e.
 \code{exp()}.}
 
-\item{cntrst}{A boolean that indicates if the \code{\link[rms]{contrast}}
+\item{cntrst}{A boolean that indicates if the \code{\link[rms]{contrast}()}
 function is to be deployed for \pkg{rms} generated functions. The nice
 thing is that you get the median as a reference by default.}
 

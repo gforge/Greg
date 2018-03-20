@@ -33,7 +33,7 @@ printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
 }
 \arguments{
 \item{model}{A regression model fit, i.e. the returned object from your 
-regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}}}
+regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}()}}
 
 \item{order}{A vector with regular expressions for each group, use if youe
 want to reorder the groups in another way than what you've used in your original
@@ -46,7 +46,7 @@ abbreviated above or below this value, for instance a value of 1000
 would give a value of \code{> -1000} for a value of 1001. This gives
 a prettier table when you have very wide confidence intervals.}
 
-\item{sprintf_ci_str}{A string according to \code{\link{sprintf}} to 
+\item{sprintf_ci_str}{A string according to \code{\link{sprintf}()} to 
 write the confidence interval where the first \%s is the lower and 
 the second the upper. You can choose to set this through setting the option 
 \code{sprintf_ci_str}, e.g. \code{options(sprintf_ci_str = "\%s - \%s")}.}
@@ -94,8 +94,8 @@ The \code{coef_change} adds a column with the change in coefficients due to
 the imputation, the the "raw" model is subtracted from the imputed results.
 The "raw" model is the unimputed model, \code{coef(imputed_model) - coef(raw_model)}.
 The \code{variance.inflation} adds the \code{variance.inflation.impute} from the 
-\code{\link[Hmisc]{fit.mult.impute}} to a separate column. See the description
-for the \code{variance.inflation.impute} in in the \code{\link[Hmisc]{fit.mult.impute}}
+\code{\link[Hmisc]{fit.mult.impute}()} to a separate column. See the description
+for the \code{variance.inflation.impute} in in the \code{\link[Hmisc]{fit.mult.impute}()}
 description.
 Both arguments can be customized by providing a \code{list}. The list can have
 the elements \code{type}, \code{name}, \code{out_str}, and/or \code{digits}.
@@ -104,19 +104,19 @@ The \code{type} can for \code{coef_change}/\code{variance.impute} be either
 originally intended to be interpreted as \%. The default for \code{coef_change} is to 
 have "diff", that gives the absolute difference in the coefficient.
 The \code{name} provides the column name, the \code{out_str} should be a string
-that is compatible with \code{\link[base]{sprintf}} and also contains an argument
+that is compatible with \code{\link[base]{sprintf}()} and also contains an argument
 for accepting a float value, e.g. "%.0f%%" is used by default iun the coef_change
 column. The \code{digits} can be used if you are not using the \code{out_str}
 argument, it simply specifies the number of digits to show. See the example
 for how for a working example.
-\emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}}
+\emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}()}
 is supported by this option.}
 
-\item{...}{Passed onto the Hmisc::\code{\link{latex}} function, or to 
-the \code{\link{htmlTable}} via the print call. Any variables that match
-the formals of \code{\link{getCrudeAndAdjustedModelData}} are identified
+\item{...}{Passed onto the Hmisc::\code{\link[Hmisc]{latex}()} function, or to 
+the \code{\link[htmlTable]{htmlTable}()} via the \code{\link[base]{print}()} call. Any variables that match
+the formals of \code{\link{getCrudeAndAdjustedModelData}()} are identified
 and passed on in case you have provided a model and not the returned element
-from the \code{\link{getCrudeAndAdjustedModelData}} call.}
+from the \code{\link{getCrudeAndAdjustedModelData}()} call.}
 
 \item{alt.names}{If you don't want to use named arguments for the tspanner attribute in the rbind
 or the cgroup in the cbind but a vector with names then use this argument.}
@@ -126,7 +126,7 @@ or the cgroup in the cbind but a vector with names then use this argument.}
 \item{x}{The output object from the printCrudeAndAdjustedModel function}
 
 \item{css.rgroup}{Css style for the rgorup, if different styles are wanted for each of the
-rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}}.}
+rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.}
 
 \item{object}{The output object from the printCrudeAndAdjustedModel function}
 
@@ -283,7 +283,7 @@ rbind(Miles = mpg_model, Weight = wt_model) \%>\%
   htmlTable(caption="Combining models together with a table spanner element separating each model")
 }
 \seealso{
-\code{\link[Hmisc]{latex}} for details regarding the \code{latex()} function.
+\code{\link[Hmisc]{latex}()} for details.
 
 Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
   \code{\link{prCaAddReference}},

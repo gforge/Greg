@@ -10,7 +10,7 @@ prExtractOutcomeFromModel(model, mf)
 \item{model}{The fitted model}
 
 \item{mf}{The dataset that the model is fitted to - if missing it
-uses the \code{\link[stats]{model.frame}} dataset. This can cause
+uses the \code{\link[stats]{model.frame}()} dataset. This can cause
 length issues as there may be variables that are excluded from the
 model for different reasons.}
 }

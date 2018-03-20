@@ -26,13 +26,13 @@
 #'   fits. 
 #' @param ref_txt Text instead of estimate number
 #' @param digits Number of digits to use for the estimate output
-#' @param ... Passed to \code{\link[forestplot]{forestplot}}
+#' @param ... Passed to \code{\link[forestplot]{forestplot}()}
 #' 
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' 
 #' @inheritParams forestplot::forestplot
 #' @import forestplot
-#' @family \code{\link[forestplot]{forestplot}} wrappers
+#' @family \code{\link[forestplot]{forestplot}()} wrappers
 #' @export
 forestplotCombineRegrObj <- function( 
   regr.obj,

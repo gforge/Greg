@@ -1,12 +1,12 @@
 #' Adds the ordering, references, and descriptions
 #' 
 #' This is a wrapper function around some more basic functions that
-#' \code{\link{printCrudeAndAdjustedModel}} uses.
+#' \code{\link{printCrudeAndAdjustedModel}()} uses.
 #'
-#' @param x The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}}
+#' @param x The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}()}
 #' @param model The model
 #' @param order A vector A vector with regular expressions for each group.
-#' @param var_order The output from the \code{\link{prMapVariable2Name}}
+#' @param var_order The output from the \code{\link{prMapVariable2Name}()}
 #' @param ds The dataset from the model
 #'  
 #' @return The reordered groups as a matrix

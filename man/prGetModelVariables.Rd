@@ -15,7 +15,7 @@ from the variables as these no longer are "pure" variables}
 
 \item{remove_interaction_vars}{If interaction variables are
 not interesting then these should be removed. Often in
-the case of \code{\link{printCrudeAndAdjustedModel}} it is impossible
+the case of \code{\link{printCrudeAndAdjustedModel}()} it is impossible
 to properly show interaction variables and it's better to show
 these in a separate table}
 

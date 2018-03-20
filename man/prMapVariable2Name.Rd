@@ -16,7 +16,7 @@ prMapVariable2Name(var_names, available_names, data, force_match = TRUE)
 \item{force_match}{Whether all variables need to be identified or not.
 E.g. you may only want to use some variables and already pruned the
 \code{available_names} and therefore wont have matches. This is the
-case when \code{\link{getCrudeAndAdjustedModelData}} has been used together
+case when \code{\link{getCrudeAndAdjustedModelData}()} has been used together
 with the \code{var_select} argument.}
 }
 \value{
@@ -27,9 +27,9 @@ with the \code{var_select} argument.}
  \code{lvls} and \code{no_lvls}.
 }
 \description{
-As both the \code{\link{getCrudeAndAdjustedModelData}} and the
-\code{\link{printCrudeAndAdjustedModel}} need to now exactly
-what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary.rms}}
+As both the \code{\link{getCrudeAndAdjustedModelData}()} and the
+\code{\link{printCrudeAndAdjustedModel}()} need to now exactly
+what name from the \code{\link[stats]{coef}()}/\code{\link[rms]{summary.rms}()}
 correspond to we for generalizeability this rather elaborate function.
 }
 \keyword{internal}

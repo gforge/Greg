@@ -56,7 +56,7 @@ prFindRownameMatches <- function(rnames, vn, vars){
 #'
 #' @param model The fitted model
 #' @param mf The dataset that the model is fitted to - if missing it
-#'  uses the \code{\link[stats]{model.frame}} dataset. This can cause
+#'  uses the \code{\link[stats]{model.frame}()} dataset. This can cause
 #'  length issues as there may be variables that are excluded from the
 #'  model for different reasons.
 #' @return vector
@@ -83,9 +83,9 @@ prExtractOutcomeFromModel <- function(model, mf){
 #' Get model data.frame
 #'
 #' Returns the raw variables from the original data
-#' frame using the \code{\link[stats]{get_all_vars}}
+#' frame using the \code{\link[stats]{get_all_vars}()}
 #' but with the twist that it also performs any associated
-#' subsetting based on the model's \code{subset} argument.
+#' subsetting based on the model's \code{\link[base]{subset}()} argument.
 #'
 #' @param x The fitted model.
 #' @return data.frame
@@ -135,7 +135,7 @@ prGetModelData <- function(x){
 #'  from the variables as these no longer are "pure" variables
 #' @param remove_interaction_vars If interaction variables are
 #'  not interesting then these should be removed. Often in
-#'  the case of \code{\link{printCrudeAndAdjustedModel}} it is impossible
+#'  the case of \code{\link{printCrudeAndAdjustedModel}()} it is impossible
 #'  to properly show interaction variables and it's better to show
 #'  these in a separate table
 #' @param add_intercept Adds the intercept if it exists
@@ -232,8 +232,8 @@ prGetModelVariables <- function(model,
 
 #' Get statistics according to the type
 #'
-#' A simple function applied by the \code{\link[Gmisc]{getDescriptionStatsBy}}
-#' for the total column. This function is also used by \code{\link{printCrudeAndAdjustedModel}}
+#' A simple function applied by the \code{\link[Gmisc]{getDescriptionStatsBy}()}
+#' for the total column. This function is also used by \code{\link{printCrudeAndAdjustedModel}()}
 #' in case of a basic linear regression is asked for a raw stat column
 #'
 #' @param x The variable that we want the statistics for
@@ -249,11 +249,11 @@ prGetModelVariables <- function(model,
 #'  sex - if you know gender then automatically you know the distribution of the
 #'  other sex as it's 100 \% - other \%.
 #' @param continuous_fn A function for describing continuous variables
-#'  defaults to \code{\link{describeMean}}
+#'  defaults to \code{\link{describeMean}()}
 #' @param prop_fn A function for describing proportions, defaults to
 #'  the factor function
 #' @param factor_fn A function for describing factors, defaults to
-#'  \code{\link{describeFactors}}
+#'  \code{\link{describeFactors}()}
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
@@ -480,9 +480,9 @@ prConvertShowMissing <- function(useNA){
 
 #' A function that tries to resolve what variable corresponds to what row
 #'
-#' As both the \code{\link{getCrudeAndAdjustedModelData}} and the
-#' \code{\link{printCrudeAndAdjustedModel}} need to now exactly
-#' what name from the \code{\link[stats]{coef}}/\code{\link[rms]{summary.rms}}
+#' As both the \code{\link{getCrudeAndAdjustedModelData}()} and the
+#' \code{\link{printCrudeAndAdjustedModel}()} need to now exactly
+#' what name from the \code{\link[stats]{coef}()}/\code{\link[rms]{summary.rms}()}
 #' correspond to we for generalizeability this rather elaborate function.
 #'
 #' @param var_names The variable names that are saught after
@@ -491,7 +491,7 @@ prConvertShowMissing <- function(useNA){
 #' @param force_match Whether all variables need to be identified or not.
 #'  E.g. you may only want to use some variables and already pruned the
 #'  \code{available_names} and therefore wont have matches. This is the
-#'  case when \code{\link{getCrudeAndAdjustedModelData}} has been used together
+#'  case when \code{\link{getCrudeAndAdjustedModelData}()} has been used together
 #'  with the \code{var_select} argument.
 #' @return \code{list} Returns a list with each element has the corresponding
 #'  variable name and a subsequent list with the parameters \code{no_rows}
@@ -676,17 +676,17 @@ prMapVariable2Name <- function(var_names, available_names,
   return(var_data)
 }
 
-#' Runs an \code{fastDoCall} within the environment of the model
+#' Runs an \code{\link[Gmisc]{fastDoCall}()} within the environment of the model
 #'
 #' Sometimes the function can't find some of the variables that
 #' were available when running the original variable. This function
-#' uses the \code{\link[stats]{as.formula}} together with
-#' \code{\link[base]{environment}} in order to get the environment
+#' uses the \code{\link[stats]{as.formula}()} together with
+#' \code{\link[base]{environment}()} in order to get the environment
 #' that the original code used.
 #'
 #' @param model The model used
 #' @param what The function or non-empty character string used for
-#'  \code{\link[Gmisc]{fastDoCall}}
+#'  \code{\link[Gmisc]{fastDoCall}()}
 #' @param ... Additional arguments passed to the function
 #' @keywords internal
 prEnvModelCall <- function(model, what, ...){

@@ -1,8 +1,8 @@
 #' Get model data
 #' 
-#' A helper function for \code{\link{forestplotCombineRegrObj}}. Extracts
+#' A helper function for \code{\link{forestplotCombineRegrObj}()}. Extracts
 #' the data from the regression model fits and returns a \code{list}
-#' with model data gathered by the function \code{\link{prGetFpDataFromFit}}
+#' with model data gathered by the function \code{\link{prGetFpDataFromFit}()}
 #' 
 #' @inheritParams forestplotCombineRegrObj
 #' @example inst/examples/forestplotCombineRegrObj_example.R

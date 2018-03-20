@@ -8,7 +8,7 @@
 #' @param term.label The name of the label
 #' @param ylog If the outcome should be presented in the anti-log form, i.e.
 #'  \code{exp()}.
-#' @param cntrst A boolean that indicates if the \code{\link[rms]{contrast}}
+#' @param cntrst A boolean that indicates if the \code{\link[rms]{contrast}()}
 #'  function is to be deployed for \pkg{rms} generated functions. The nice
 #'  thing is that you get the median as a reference by default.
 #' @param xlim The xlim if provided
@@ -132,9 +132,9 @@ prPhEstimate <- function(model,
 
 #' A function for retrieving new_data argument for predict
 #' 
-#' @param model The model fit from \code{\link[survival]{coxph}}
-#'  or \code{\link[rms]{cph}}
-#' @param term.label The label that is the one that \code{\link{plotHR}}
+#' @param model The model fit from \code{\link[survival]{coxph}()}
+#'  or \code{\link[rms]{cph}()}
+#' @param term.label The label that is the one that \code{\link{plotHR}()}
 #'  intends to plot.
 #' @param xlim The x-limits for the plot if any
 #' @return \code{data.frame}
@@ -198,16 +198,16 @@ prPhNewData <- function(model, term.label, xlim){
 
 #' Plots the confidence intervals
 #' 
-#' Uses \code{\link[graphics]{polygon}} or 
-#' \code{\link[graphics]{lines}} to plot confidence
+#' Uses \code{\link[graphics]{polygon}()} or 
+#' \code{\link[graphics]{lines}()} to plot confidence
 #' intervals.
 #' 
 #' @param model_data A data frame with 'xvalues', 'upper', and 'lower'
 #'  columns.
 #' @param color The color of the line/polygon
 #' @param polygon Boolean indicating polygon or line
-#' @param lwd Line width - see \code{\link[grid]{gpar}}
-#' @param lty Line type - see \code{\link[grid]{gpar}}
+#' @param lwd Line width - see \code{\link[grid]{gpar}()}
+#' @param lty Line type - see \code{\link[grid]{gpar}()}
 #' @keywords internal
 #' @return \code{void} The function performs the print
 prPhConfIntPlot <- function(model_data, color, polygon, lwd, lty){

@@ -62,7 +62,7 @@ odds ratio}
 
 \item{get_box_size}{A function for extracting the box sizes}
 
-\item{...}{Passed to \code{\link[forestplot]{forestplot}}}
+\item{...}{Passed to \code{\link[forestplot]{forestplot}()}}
 
 \item{p_values}{The p-values that will work as the foundation for the box size}
 
@@ -123,7 +123,4 @@ forestplotRegrObj (regr.obj = list(fit1, fit2),
                    rowname.fn = modifyNameFunction, new_page=TRUE)
   
 par(org.par)
-}
-\seealso{
-Other \code{\link[forestplot]{forestplot}} wrappers: \code{\link{forestplotCombineRegrObj}}
 }

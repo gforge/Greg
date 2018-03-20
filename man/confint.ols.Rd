@@ -26,9 +26,9 @@ A matrix (or vector) with columns giving lower
 }
 \description{
 This function checks that there is a df.residual
-before running the qt(). If not found it then
-defaults to the qnorm() function. Otherwise it is
-a copy of the \code{\link[stats]{confint}} function.
+before running the \code{qt()}. If not found it then
+defaults to the \code{qnorm()} function. Otherwise it is
+a copy of the \code{\link[stats]{confint}()} function.
 }
 \examples{
 # Generate some data

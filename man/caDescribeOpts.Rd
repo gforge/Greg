@@ -14,14 +14,14 @@ caDescribeOpts(show_tot_perc = FALSE, numb_first = TRUE,
 \item{numb_first}{Whether to show the number before the percentages}
 
 \item{continuous_fn}{Stat function used for the descriptive statistics, 
-defaults to \code{\link{describeMean}}}
+defaults to \code{\link{describeMean}()}}
 
 \item{prop_fn}{Stat function used for the descriptive statistics, 
-defaults to \code{\link{describeFactors}} since there has to be a reference
+defaults to \code{\link{describeFactors}()} since there has to be a reference
 in the current setup.}
 
 \item{factor_fn}{Stat function used for the descriptive statistics, 
-defaults to \code{\link{describeFactors}}}
+defaults to \code{\link{describeFactors}()}}
 
 \item{digits}{Number of digits to use in the descriptive columns. 
 Defaults to the general digits if not specified.}
@@ -34,7 +34,7 @@ Total and Event.}
 }
 \description{
 Since there are so many different description options
-for the \code{\link{printCrudeAndAdjustedModel}} function they
+for the \code{\link{printCrudeAndAdjustedModel}()} function they
 have been gathered into a list. This function is simply a 
 helper in order to generate a valid list.
 }

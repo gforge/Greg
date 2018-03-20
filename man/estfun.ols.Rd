@@ -16,7 +16,7 @@ matrix A matrix containing the empirical estimating functions.
 }
 \description{
 As missing data is handled a little different for the ols 
-than for the lm we need to change the estfun to work with the ols()
+than for the lm we need to change the estfun to work with the \code{ols()}
 }
 \details{
 I have never worked with weights and this should probably be checked

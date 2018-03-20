@@ -23,20 +23,20 @@
 #' When working with Cox regressions the proportional hazards can sometimes be violated.
 #' As the \code{tt()} approach doesn't lend itself that well to big datasets I often
 #' rely on time-splitting the dataset and then using the start time as an interaction
-#' term. See the function \code{\link{timeSplitter}} and the associated \code{vignette("timeSplitter")}.
+#' term. See the function \code{\link{timeSplitter}()} and the associated \code{vignette("timeSplitter")}.
 #' 
 #' @section Other regression functions:
 #' 
 #' In addition to these funciton the package has some extentions to linear regression
 #' where it extends the functionality by allowing for robust covariance matrices. 
-#' by integrating the sandwich-package for rms::ols().
+#' by integrating the \pkg{'sandwich'}-package for \code{rms::\link[rms]{ols}()}.
 #' 
 #' @section Important notice:
 #' 
 #' This package has an extensive test-set for ensuring that everything behaves as expected.
 #' Despite this I strongly urge you to check that the values make sense. I commonly use
-#' the regression methods available in the \code{rms}-package and in the \code{stats} package.
-#' In addition I use the \code{\link[survival]{coxph}} in many of my analyses and should
+#' the regression methods available in the \pkg{'rms'}-package and in the \pkg{'stats'}-package.
+#' In addition I use the \code{\link[survival]{coxph}()} in many of my analyses and should
 #' also be safe. Please send me a notice if you are using the package with some other 
 #' regression models, especially if you have some tests verifying the functionality.
 #' 

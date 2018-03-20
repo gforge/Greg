@@ -2,7 +2,7 @@
 % Please edit documentation in R/rms_SandwichAddon.R
 \name{robcov_alt}
 \alias{robcov_alt}
-\title{Robust covariance matrix based upon the sandwich-package}
+\title{Robust covariance matrix based upon the 'sandwich'-package}
 \usage{
 robcov_alt(fit, type = "HC3", ...)
 }
@@ -10,18 +10,18 @@ robcov_alt(fit, type = "HC3", ...)
 \item{fit}{The ols fit that}
 
 \item{type}{a character string specifying the estimation type. See 
-\code{\link[sandwich]{vcovHC}} for options.}
+\code{\link[sandwich]{vcovHC}()} for options.}
 
 \item{...}{You should specify type= followed by some of the alternative available
-for the \code{\link[sandwich]{vcovHC}} function.}
+for the \code{\link[sandwich]{vcovHC}()} function.}
 }
 \value{
 model The fitted model with adjusted variance and df.residual set to NULL
 }
 \description{
-This is an alternative to the rms-package robust covariance
-matrix that uses the sandwich package \code{\link[sandwich]{vcovHC}} function
-instead of the rms-built-in estimator. The advantage being that 
+This is an alternative to the 'rms'-package robust covariance
+matrix that uses the \pkg{'sandwich'} package \code{\link[sandwich]{vcovHC}()} function
+instead of the \pkg{'rms'}-built-in estimator. The advantage being that 
 many more estimation types are available.
 }
 \examples{

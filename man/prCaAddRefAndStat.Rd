@@ -9,7 +9,7 @@ prCaAddRefAndStat(model, var_order, add_references, add_references_pos,
 }
 \arguments{
 \item{model}{A regression model fit, i.e. the returned object from your 
-regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}}}
+regression function, or the output from \code{\link{getCrudeAndAdjustedModelData}()}}
 
 \item{var_order}{The output from the \code{\link{prMapVariable2Name}}}
 

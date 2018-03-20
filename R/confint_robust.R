@@ -3,15 +3,15 @@
 #' The confint.lm uses the t-distribution as the default
 #' confidence interval estimator. When there is reason to believe that 
 #' the normal distribution is violated an alternative approach using
-#' the \code{\link[sandwich]{vcovHC}} may be more suitable.
+#' the \code{\link[sandwich]{vcovHC}()} may be more suitable.
 #'   
 #' @param object The regression model object, either an ols or lm object 
-#' @param HC_type See options for \code{\link[sandwich]{vcovHC}}
+#' @param HC_type See options for \code{\link[sandwich]{vcovHC}()}
 #' @param t_distribution A boolean for if the t-distribution should be used
 #'  or not. Defaults to FALSE. According to Cribari-Nieto and Lima's study from
 #'  2009 this should not be the case.
 #' @param ... Additional parameters that are passed on to 
-#'  \code{\link[sandwich]{vcovHC}}
+#'  \code{\link[sandwich]{vcovHC}()}
 #' @return \code{matrix} A matrix (or vector) with columns giving lower and 
 #'  upper confidence limits for each parameter. These will be labelled as 
 #'  (1-level)/2 and 1 - (1-level)/2 in % (by default 2.5% and 97.5%).

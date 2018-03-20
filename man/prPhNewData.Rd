@@ -7,10 +7,10 @@
 prPhNewData(model, term.label, xlim)
 }
 \arguments{
-\item{model}{The model fit from \code{\link[survival]{coxph}}
-or \code{\link[rms]{cph}}}
+\item{model}{The model fit from \code{\link[survival]{coxph}()}
+or \code{\link[rms]{cph}()}}
 
-\item{term.label}{The label that is the one that \code{\link{plotHR}}
+\item{term.label}{The label that is the one that \code{\link{plotHR}()}
 intends to plot.}
 
 \item{xlim}{The x-limits for the plot if any}

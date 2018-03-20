@@ -4,7 +4,7 @@
 #' for a regression model. It takes a full model and walks through each
 #' variable, removes in the regression all variables except one then
 #' reruns that variable to get the unadjusted value. This functions not
-#' intended for direct use, it's better to use \code{\link{printCrudeAndAdjustedModel}}
+#' intended for direct use, it's better to use \code{\link{printCrudeAndAdjustedModel}()}
 #' that utilizes this function.
 #' 
 #' This function saves a lot of time creating tables since it compiles a fully
@@ -29,10 +29,10 @@
 #'  \code{remove_strata = TRUE}
 #' @param remove_cluster Cluster information should most likely also retain
 #'  just as the \code{remove_strata} option. Clusters are sometimes used in
-#'  cox regression models, \code{\link[survival]{cluster}}
+#'  cox regression models, \code{\link[survival]{cluster}()}
 #' @param var_select A vector with regular expressions for choosing what variables
 #'  to return (the same format as for the \code{order} argument in 
-#'  \code{\link{printCrudeAndAdjustedModel}} call). It can be useful when working with 
+#'  \code{\link{printCrudeAndAdjustedModel}()} call). It can be useful when working with 
 #'  large datasets only to report a subsection of all tested variables. This
 #'  makes the function both run faster and the data presentation more consice. 
 #' @param ... Not used
@@ -41,7 +41,7 @@
 #'   The row order is not changed from the original model. The percentages can vary depending
 #'   on the set level.
 #'
-#' @seealso \code{\link{printCrudeAndAdjustedModel}}
+#' @seealso \code{\link{printCrudeAndAdjustedModel}()}
 #' 
 #' @example inst/examples/getCrudeAndAdjustedModelData_example.R
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/private_functions.R
 \name{prEnvModelCall}
 \alias{prEnvModelCall}
-\title{Runs an \code{fastDoCall} within the environment of the model}
+\title{Runs an \code{\link[Gmisc]{fastDoCall}()} within the environment of the model}
 \usage{
 prEnvModelCall(model, what, ...)
 }
@@ -10,15 +10,15 @@ prEnvModelCall(model, what, ...)
 \item{model}{The model used}
 
 \item{what}{The function or non-empty character string used for
-\code{\link[Gmisc]{fastDoCall}}}
+\code{\link[Gmisc]{fastDoCall}()}}
 
 \item{...}{Additional arguments passed to the function}
 }
 \description{
 Sometimes the function can't find some of the variables that
 were available when running the original variable. This function
-uses the \code{\link[stats]{as.formula}} together with
-\code{\link[base]{environment}} in order to get the environment
+uses the \code{\link[stats]{as.formula}()} together with
+\code{\link[base]{environment}()} in order to get the environment
 that the original code used.
 }
 \keyword{internal}

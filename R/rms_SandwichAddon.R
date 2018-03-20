@@ -1,15 +1,15 @@
-#' Robust covariance matrix based upon the sandwich-package
+#' Robust covariance matrix based upon the 'sandwich'-package
 #' 
-#' This is an alternative to the rms-package robust covariance
-#' matrix that uses the sandwich package \code{\link[sandwich]{vcovHC}} function
-#' instead of the rms-built-in estimator. The advantage being that 
+#' This is an alternative to the 'rms'-package robust covariance
+#' matrix that uses the \pkg{'sandwich'} package \code{\link[sandwich]{vcovHC}()} function
+#' instead of the \pkg{'rms'}-built-in estimator. The advantage being that 
 #' many more estimation types are available.
 #'  
 #' @param fit The ols fit that
 #' @param type a character string specifying the estimation type. See 
-#'  \code{\link[sandwich]{vcovHC}} for options. 
+#'  \code{\link[sandwich]{vcovHC}()} for options. 
 #' @param ... You should specify type= followed by some of the alternative available
-#'  for the \code{\link[sandwich]{vcovHC}} function.
+#'  for the \code{\link[sandwich]{vcovHC}()} function.
 #' @return model The fitted model with adjusted variance and df.residual set to NULL
 #' 
 #' @example inst/examples/rms_SandwichAddon_example.R
@@ -37,9 +37,9 @@ robcov_alt <- function (fit, type="HC3", ...)
 #' A confint function for the ols
 #' 
 #' This function checks that there is a df.residual
-#' before running the qt(). If not found it then
-#' defaults to the qnorm() function. Otherwise it is
-#' a copy of the \code{\link[stats]{confint}} function.
+#' before running the \code{qt()}. If not found it then
+#' defaults to the \code{qnorm()} function. Otherwise it is
+#' a copy of the \code{\link[stats]{confint}()} function.
 #' 
 #' @param object 	a fitted ols-model object.
 #' @param parm a specification of which parameters 
@@ -95,7 +95,7 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' \deqn{\hat{\epsilon}=y-X\hat{\beta}=\{I_n-X(X'X)X'\}y=(I_n-H)y}{epsilon = y - Xbeta_hat=(I_n - X(X'X)X')y = (I_n - H)y}
 #' where the H is called the hat matrix since \deqn{Hy = \hat{y}}{Hy = y_hat}. The hat
 #' values are actually the diagonal elements of the matrix that sum up
-#' to p (the rank of X, i.e. the number of parameters + 1). See \code{\link[rms]{ols.influence}}.
+#' to p (the rank of X, i.e. the number of parameters + 1). See \code{\link[rms]{ols.influence}()}.
 #' 
 #' @param model The ols model fit
 #' @param ... arguments passed to methods.
@@ -141,7 +141,7 @@ bread.ols <- function(x, ...)
 
 #' A fix for the model.matrix
 #' 
-#' The \code{\link[stats]{model.matrix.lm}()} that the \code{\link[rms]{ols}} falls back upon
+#' The \code{\link[stats]{model.matrix.lm}()} that the \code{\link[rms]{ols}()} falls back upon
 #' "forgets" the intercept value and behaves unreliable in
 #' the \code{\link[sandwich]{vcovHC}()} funcitons. I've therefore created this subfunction
 #' to generate the actual \code{\link[stats]{model.matrix}()} by just accessing the formula.
@@ -173,7 +173,7 @@ model.matrix.ols <- function(object, ...){
 #' Fix for the Extract Empirical Estimating Functions
 #' 
 #' As missing data is handled a little different for the ols 
-#' than for the lm we need to change the estfun to work with the ols()
+#' than for the lm we need to change the estfun to work with the \code{ols()}
 #'
 #' I have never worked with weights and this should probably be checked
 #' as this just uses the original estfun.lm as a template

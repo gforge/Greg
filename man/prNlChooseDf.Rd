@@ -12,7 +12,7 @@ prNlChooseDf(model, flex_param, variable, spline_fn, min_fn, simplest_nonlinear,
 
 \item{flex_param}{A \code{vector} with values that are to be tested as the 
 default second parameter for the non-linearity function that you want to 
-evaluate. This defaults to 2:7, for the \code{\link[splines]{ns}} it tests 
+evaluate. This defaults to 2:7, for the \code{\link[splines]{ns}()} it tests 
 the degrees of freedom ranging between 2 and 7.}
 
 \item{variable}{The name of the parameter that is to be tested for non-linearity.
@@ -23,9 +23,9 @@ form in the model.}
 for testing alternative non-linearity models}
 
 \item{min_fn}{This is the function that we want to minmized if the variable supports
-the non-linearity assumption. E.g. \code{\link[stats]{BIC}} or 
-\code{\link[stats]{AIC}}, note that the \code{BIC} will in the majority of cases
-support a lower complexity than the \code{AIC}.}
+the non-linearity assumption. E.g. \code{\link[stats]{BIC}()} or 
+\code{\link[stats]{AIC}}, note that the \code{\link[stats]{BIC}()} will in the majority of cases
+support a lower complexity than the \code{\link[stats]{AIC}()}.}
 
 \item{simplest_nonlinear}{The simplest non-linear form that the ANOVA has been tested against}
 
@@ -34,9 +34,9 @@ anova test and the chosen knots.}
 
 \item{workers}{The function tries to run everything in parallel. Under some
 circumstances you may want to restrict the number of parallel threads to less
-than the defaul \code{dectectCores() - 1}, e.g. you may run out of memory
+than the defaul \code{\link[parallel]{detectCores}() - 1}, e.g. you may run out of memory
 then you can provide this parameter. If you do not want to use parallel then 
-simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}} 
+simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}()} 
 function.}
 
 \item{libraries}{If we use the parallel approach we need to make sure that the 

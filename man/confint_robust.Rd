@@ -16,14 +16,14 @@ confint_robust(object, parm, level = 0.95, HC_type = "HC3",
 
 \item{level}{the confidence level required.}
 
-\item{HC_type}{See options for \code{\link[sandwich]{vcovHC}}}
+\item{HC_type}{See options for \code{\link[sandwich]{vcovHC}()}}
 
 \item{t_distribution}{A boolean for if the t-distribution should be used
 or not. Defaults to FALSE. According to Cribari-Nieto and Lima's study from
 2009 this should not be the case.}
 
 \item{...}{Additional parameters that are passed on to 
-\code{\link[sandwich]{vcovHC}}}
+\code{\link[sandwich]{vcovHC}()}}
 }
 \value{
 \code{matrix} A matrix (or vector) with columns giving lower and 
@@ -34,7 +34,7 @@ or not. Defaults to FALSE. According to Cribari-Nieto and Lima's study from
 The confint.lm uses the t-distribution as the default
 confidence interval estimator. When there is reason to believe that 
 the normal distribution is violated an alternative approach using
-the \code{\link[sandwich]{vcovHC}} may be more suitable.
+the \code{\link[sandwich]{vcovHC}()} may be more suitable.
 }
 \examples{
 n <- 50
@@ -46,7 +46,7 @@ library("sandwich")
 confint_robust(fit, HC_type = "HC4m")
 }
 \references{
-\href{http://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
+\href{https://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
  F. Cribari-Neto and M. da G. A. Lima, 
  "Heteroskedasticity-consistent interval estimators", 
  Journal of Statistical Computation and Simulation, 

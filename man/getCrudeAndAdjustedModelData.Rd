@@ -25,11 +25,11 @@ version. If you want to force the removal of stratas you can specify the
 
 \item{remove_cluster}{Cluster information should most likely also retain
 just as the \code{remove_strata} option. Clusters are sometimes used in
-cox regression models, \code{\link[survival]{cluster}}}
+cox regression models, \code{\link[survival]{cluster}()}}
 
 \item{var_select}{A vector with regular expressions for choosing what variables
 to return (the same format as for the \code{order} argument in 
-\code{\link{printCrudeAndAdjustedModel}} call). It can be useful when working with 
+\code{\link{printCrudeAndAdjustedModel}()} call). It can be useful when working with 
 large datasets only to report a subsection of all tested variables. This
 makes the function both run faster and the data presentation more consice.}
 
@@ -46,7 +46,7 @@ This function is used for getting the adjusted and unadjusted values
 for a regression model. It takes a full model and walks through each
 variable, removes in the regression all variables except one then
 reruns that variable to get the unadjusted value. This functions not
-intended for direct use, it's better to use \code{\link{printCrudeAndAdjustedModel}}
+intended for direct use, it's better to use \code{\link{printCrudeAndAdjustedModel}()}
 that utilizes this function.
 }
 \details{
@@ -94,6 +94,6 @@ data_matrix <- getCrudeAndAdjustedModelData(fit)
 print(data_matrix)
 }
 \seealso{
-\code{\link{printCrudeAndAdjustedModel}}
+\code{\link{printCrudeAndAdjustedModel}()}
 }
 \keyword{internal}

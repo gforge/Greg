@@ -14,16 +14,16 @@ columns.}
 
 \item{polygon}{Boolean indicating polygon or line}
 
-\item{lwd}{Line width - see \code{\link[grid]{gpar}}}
+\item{lwd}{Line width - see \code{\link[grid]{gpar}()}}
 
-\item{lty}{Line type - see \code{\link[grid]{gpar}}}
+\item{lty}{Line type - see \code{\link[grid]{gpar}()}}
 }
 \value{
 \code{void} The function performs the print
 }
 \description{
-Uses \code{\link[graphics]{polygon}} or 
-\code{\link[graphics]{lines}} to plot confidence
+Uses \code{\link[graphics]{polygon}()} or 
+\code{\link[graphics]{lines}()} to plot confidence
 intervals.
 }
 \keyword{internal}

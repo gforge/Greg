@@ -30,10 +30,10 @@ sex - if you know gender then automatically you know the distribution of the
 other sex as it's 100 \% - other \%.}
 
 \item{continuous_fn}{A function for describing continuous variables
-defaults to \code{\link{describeMean}}}
+defaults to \code{\link{describeMean}()}}
 
 \item{factor_fn}{A function for describing factors, defaults to
-\code{\link{describeFactors}}}
+\code{\link{describeFactors}()}}
 
 \item{prop_fn}{A function for describing proportions, defaults to
 the factor function}
@@ -48,8 +48,8 @@ A matrix or a vector depending on the settings
 TODO: Use the Gmisc function instead of this copy
 }
 \description{
-A simple function applied by the \code{\link[Gmisc]{getDescriptionStatsBy}}
-for the total column. This function is also used by \code{\link{printCrudeAndAdjustedModel}}
+A simple function applied by the \code{\link[Gmisc]{getDescriptionStatsBy}()}
+for the total column. This function is also used by \code{\link{printCrudeAndAdjustedModel}()}
 in case of a basic linear regression is asked for a raw stat column
 }
 \keyword{internal}
