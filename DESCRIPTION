@@ -1,6 +1,6 @@
 Package: Greg
 Version: 1.2.1
-Date: 2018-03-18
+Date: 2018-03-20
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -8,8 +8,8 @@ Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "c
 Description: Methods for manipulating regression models and for describing these in a style adapted for medical journals. 
   Contains functions for generating an HTML table with crude and adjusted estimates, plotting hazard ratio, plotting model 
   estimates and confidence intervals using forest plots, extending this to comparing multiple models in a single forest plots. 
-  In addition to the descriptive methods, there are add-ons for the robust covariance matrix provided by the sandwich
-  package, a function for adding non-linearities to a model, and a wrapper around the Epi package's Lexis functions for
+  In addition to the descriptive methods, there are add-ons for the robust covariance matrix provided by the 'sandwich'
+  package, a function for adding non-linearities to a model, and a wrapper around the 'Epi' package's Lexis() functions for
   time-splitting a dataset when modeling non-proportional hazards in Cox regressions.
 License: GPL (>= 3)
 URL: http://gforge.se
