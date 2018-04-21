@@ -1,5 +1,9 @@
 NEWS for the Greg package
 
+Changes for 1.2.2
+-----------------
+* Fix bug due to change in survival::coxph
+
 Changes for 1.2
 -----------------
 * Fixed spelling errors, travis package check, added tests for coverage and other things related to CRAN submission

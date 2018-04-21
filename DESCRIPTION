@@ -1,6 +1,6 @@
 Package: Greg
-Version: 1.2.1
-Date: 2018-03-18
+Version: 1.2.2
+Date: 2018-05-21
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
