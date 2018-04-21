@@ -113,6 +113,7 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
   # Sort in order to keep the order
   adjusted <- adjusted[sort(keep), ,drop=FALSE]
   
+  model_list <- list()
   unadjusted <- c()
   for(variable in var_names){
     if (!grepl("intercept", variable, 
@@ -140,7 +141,6 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
       new_vars <- prCaDefaultGetCoefAndCI(model_only1, 
                                           level = level,
                                           skip_intercept = TRUE)
-      
       # Add them to the previous
       unadjusted <- rbind(unadjusted, new_vars)
     }else{
@@ -159,6 +159,8 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
       rownames(unadjusted)[1] <- variable[grepl("intercept", variable, 
                                                 ignore.case = TRUE)]
     }
+    # Save the model for the future
+    model_list[[paste0('model_4_', variable)]] <- model_only1
   }
 
   if (any(rownames(adjusted) != rownames(unadjusted)))
@@ -180,6 +182,7 @@ getCrudeAndAdjustedModelData.default <- function(model, level=.95,
                       "Adjusted", levels_str)
   
   attr(both, "model") <- model
+  attr(both, "crude_models") <- model_list
   class(both) <- c("getCrudeAndAdjustedModelData", class(both))
   return(both)
 }
