@@ -1,7 +1,9 @@
 NEWS for the Greg package
 
-Changes for 1.2.2
+Changes for 1.3
 -----------------
+* Fix vignette bug
+* Fixed CRAN package names
 * Fix bug due to change in survival::coxph
 
 Changes for 1.2

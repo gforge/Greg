@@ -23,7 +23,8 @@
 #' When working with Cox regressions the proportional hazards can sometimes be violated.
 #' As the \code{tt()} approach doesn't lend itself that well to big datasets I often
 #' rely on time-splitting the dataset and then using the start time as an interaction
-#' term. See the function \code{\link{timeSplitter}()} and the associated \code{vignette("timeSplitter")}.
+#' term. See the function \code{\link{timeSplitter}()} and the associated 
+#' \code{vignette("timeSplitter")}.
 #' 
 #' @section Other regression functions:
 #' 

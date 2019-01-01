@@ -13,7 +13,8 @@ melanoma %<>%
          ulcer = factor(ulcer,
                         levels = 0:1,
                         labels = c("Absent", "Present")),
-         time = time/365.25, # All variables should be in the same time unit
+         # All variables should be in the same time unit
+         time = time/365.25,
          sex = factor(sex,
                       levels = 0:1,
                       labels = c("Female", "Male")))

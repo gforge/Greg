@@ -1,6 +1,6 @@
 Package: Greg
-Version: 1.2.2
-Date: 2018-05-21
+Version: 1.3
+Date: 2019-01-01
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -14,6 +14,7 @@ Description: Methods for manipulating regression models and for describing these
 License: GPL (>= 3)
 URL: http://gforge.se
 Biarch: yes
+Encoding: UTF-8
 Imports:
     Hmisc,
     stringr,
@@ -39,6 +40,7 @@ Suggests:
     survival,
     dplyr,
     ggplot2,
-    parallel
+    parallel,
+    rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

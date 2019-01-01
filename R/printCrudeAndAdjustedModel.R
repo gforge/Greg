@@ -2,7 +2,7 @@
 #' 
 #' Prints table for a fitted object. It prints by default a latex table but can 
 #' also be converted into a HTML table that should be more compatible with common
-#' word processors.
+#' word processors. For details run \code{vignette("printCrudeAndAdjustedModel")}
 #' 
 #' @section Warning:
 #' If you call this function and you've changed any of the variables

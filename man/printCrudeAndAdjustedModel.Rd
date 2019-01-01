@@ -11,10 +11,10 @@
 \alias{latex.printCrudeAndAdjusted}
 \title{Output crude and adjusted model data}
 \usage{
-printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
-  sprintf_ci_str = getOption("sprintf_ci_str", "\%s to \%s"), add_references,
-  add_references_pos, reference_zero_effect, groups, rowname.fn,
-  use_labels = TRUE, desc_column = FALSE,
+printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf,
+  Inf), sprintf_ci_str = getOption("sprintf_ci_str", "\%s to \%s"),
+  add_references, add_references_pos, reference_zero_effect, groups,
+  rowname.fn, use_labels = TRUE, desc_column = FALSE,
   desc_args = caDescribeOpts(digits = digits), impute_args, ...)
 
 \method{rbind}{printCrudeAndAdjusted}(..., alt.names, deparse.level = 1)
@@ -139,7 +139,7 @@ rgroups you can just specify a vector with the number of elements. Passed on to 
 \description{
 Prints table for a fitted object. It prints by default a latex table but can 
 also be converted into a HTML table that should be more compatible with common
-word processors.
+word processors. For details run \code{vignette("printCrudeAndAdjustedModel")}
 }
 \section{Warning}{
 
@@ -297,4 +297,5 @@ Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
   \code{\link{prCaSelectAndOrderVars}},
   \code{\link{prCaSetRownames}}
 }
+\concept{printCrudeAndAdjusted functions}
 \keyword{internal}

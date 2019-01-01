@@ -4,10 +4,10 @@
 \alias{forestplotCombineRegrObj}
 \title{Compares different scores in different regression objects.}
 \usage{
-forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp, reference.names,
-  rowname.fn, estimate.txt, exp = xlog, add_first_as_ref = FALSE,
-  ref_txt = "ref.", ref_labels = c(), digits = 1, is.summary, xlab, zero,
-  xlog, ...)
+forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp,
+  reference.names, rowname.fn, estimate.txt, exp = xlog,
+  add_first_as_ref = FALSE, ref_txt = "ref.", ref_labels = c(),
+  digits = 1, is.summary, xlab, zero, xlog, ...)
 }
 \arguments{
 \item{regr.obj}{A list with all the fits that have variables that are to 
@@ -107,3 +107,4 @@ forestplotCombineRegrObj (
 
 par(org.par)
 }
+\concept{\code{\link[forestplot]{forestplot}()} wrappers}

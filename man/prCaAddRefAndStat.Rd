@@ -63,4 +63,5 @@ Other printCrudeAndAdjusted functions: \code{\link{prCaAddReference}},
   \code{\link{prCaSetRownames}},
   \code{\link{printCrudeAndAdjustedModel}}
 }
+\concept{printCrudeAndAdjusted functions}
 \keyword{internal}
