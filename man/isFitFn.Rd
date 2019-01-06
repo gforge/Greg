@@ -20,10 +20,6 @@ isFitLogit(fit)
 The \emph{isFitCoxPH} A simple check if object inherits either 
 "coxph" or "crr" class indicating
 that it is a survival function.
-
-The \emph{isFitLogit} is a simple check if object inherits either "lrm" 
-class or inherits the  "glm" class together with a "logit" link 
-funciton indicating that it is a logistic function.
 }
 \examples{
 # simulated data to use 

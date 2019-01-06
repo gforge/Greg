@@ -11,10 +11,10 @@
 \alias{latex.printCrudeAndAdjusted}
 \title{Output crude and adjusted model data}
 \usage{
-printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf, Inf),
-  sprintf_ci_str = getOption("sprintf_ci_str", "\%s to \%s"), add_references,
-  add_references_pos, reference_zero_effect, groups, rowname.fn,
-  use_labels = TRUE, desc_column = FALSE,
+printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf,
+  Inf), sprintf_ci_str = getOption("sprintf_ci_str", "\%s to \%s"),
+  add_references, add_references_pos, reference_zero_effect, groups,
+  rowname.fn, use_labels = TRUE, desc_column = FALSE,
   desc_args = caDescribeOpts(digits = digits), impute_args, ...)
 
 \method{rbind}{printCrudeAndAdjusted}(..., alt.names, deparse.level = 1)
@@ -297,4 +297,5 @@ Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
   \code{\link{prCaSelectAndOrderVars}},
   \code{\link{prCaSetRownames}}
 }
+\concept{printCrudeAndAdjusted functions}
 \keyword{internal}

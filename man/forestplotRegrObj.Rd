@@ -124,3 +124,4 @@ forestplotRegrObj (regr.obj = list(fit1, fit2),
   
 par(org.par)
 }
+\concept{\code{\link[forestplot]{forestplot}} wrappers}

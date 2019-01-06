@@ -4,8 +4,8 @@
 \alias{prNlChooseDf}
 \title{Chooses the degrees of freedom for the non-linearity}
 \usage{
-prNlChooseDf(model, flex_param, variable, spline_fn, min_fn, simplest_nonlinear,
-  verbal, workers, libraries)
+prNlChooseDf(model, flex_param, variable, spline_fn, min_fn,
+  simplest_nonlinear, verbal, workers, libraries)
 }
 \arguments{
 \item{model}{The model that is to be evaluated and adatpted for non-linearity}
