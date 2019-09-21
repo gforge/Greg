@@ -8,10 +8,10 @@ getModelData4Forestplot(regr.obj, exp = TRUE, variablesOfInterest.regexp,
   ref_labels, add_first_as_ref)
 }
 \arguments{
-\item{regr.obj}{A list with all the fits that have variables that are to 
+\item{regr.obj}{A list with all the fits that have variables that are to
 be identified through the regular expression}
 
-\item{exp}{Report in exponential form. Default true since the function was built for 
+\item{exp}{Report in exponential form. Default true since the function was built for
 use with survival models.}
 
 \item{variablesOfInterest.regexp}{A regular expression identifying the variables
@@ -21,7 +21,7 @@ that finds scores in different models that should be compared.}
 \item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
 fits.}
 
-\item{add_first_as_ref}{If you want that the first variable should be reference for 
+\item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
 if exp() and the confidence interval 0.}
 }

@@ -1,3 +1,5 @@
+^CRAN-RELEASE$
+^revdep$
 ^Meta$
 ^doc$
 ^.*\.Rproj$
@@ -6,3 +8,4 @@
 ^cran-comments.md
 ^cran-comments\.md$
 ^CONDUCT\.md$
+^.vscode

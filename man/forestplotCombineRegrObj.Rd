@@ -10,7 +10,7 @@ forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp,
   digits = 1, is.summary, xlab, zero, xlog, ...)
 }
 \arguments{
-\item{regr.obj}{A list with all the fits that have variables that are to 
+\item{regr.obj}{A list with all the fits that have variables that are to
 be identified through the regular expression}
 
 \item{variablesOfInterest.regexp}{A regular expression identifying the variables
@@ -23,13 +23,13 @@ that finds scores in different models that should be compared.}
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
 
-\item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for 
+\item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
 odds ratio}
 
-\item{exp}{Report in exponential form. Default true since the function was built for 
+\item{exp}{Report in exponential form. Default true since the function was built for
 use with survival models.}
 
-\item{add_first_as_ref}{If you want that the first variable should be reference for 
+\item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
 if exp() and the confidence interval 0.}
 
@@ -107,4 +107,7 @@ forestplotCombineRegrObj (
 
 par(org.par)
 }
-\concept{\code{\link[forestplot]{forestplot}()} wrappers}
+\seealso{
+Other forestplot wrappers: \code{\link{forestplotRegrObj}}
+}
+\concept{forestplot wrappers}
