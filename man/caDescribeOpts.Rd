@@ -4,10 +4,15 @@
 \alias{caDescribeOpts}
 \title{A function for gathering all the description options}
 \usage{
-caDescribeOpts(show_tot_perc = FALSE, numb_first = TRUE,
-  continuous_fn = describeMean, prop_fn = describeFactors,
-  factor_fn = describeFactors, digits = 1, colnames = c("Total",
-  "Event"))
+caDescribeOpts(
+  show_tot_perc = FALSE,
+  numb_first = TRUE,
+  continuous_fn = describeMean,
+  prop_fn = describeFactors,
+  factor_fn = describeFactors,
+  digits = 1,
+  colnames = c("Total", "Event")
+)
 }
 \arguments{
 \item{show_tot_perc}{Show percentages for the total column}

@@ -4,8 +4,18 @@
 \alias{prCaAddRefAndStat}
 \title{Add reference according to the model}
 \usage{
-prCaAddRefAndStat(model, var_order, add_references, add_references_pos,
-  reference_zero_effect, values, ds, desc_column, desc_args, use_labels)
+prCaAddRefAndStat(
+  model,
+  var_order,
+  add_references,
+  add_references_pos,
+  reference_zero_effect,
+  values,
+  ds,
+  desc_column,
+  desc_args,
+  use_labels
+)
 }
 \arguments{
 \item{model}{A regression model fit, i.e. the returned object from your 
@@ -51,17 +61,18 @@ label and it isn't a factor.}
 This is of course for factored variables and not in general.
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{prCaAddReference}},
-  \code{\link{prCaAddUserReferences}},
-  \code{\link{prCaGetImputationCols}},
-  \code{\link{prCaGetRowname}},
-  \code{\link{prCaGetVnStats}},
-  \code{\link{prCaPrepareCrudeAndAdjusted}},
-  \code{\link{prCaReorderReferenceDescribe}},
-  \code{\link{prCaReorder}},
-  \code{\link{prCaSelectAndOrderVars}},
-  \code{\link{prCaSetRownames}},
-  \code{\link{printCrudeAndAdjustedModel}}
+Other printCrudeAndAdjusted functions: 
+\code{\link{prCaAddReference}()},
+\code{\link{prCaAddUserReferences}()},
+\code{\link{prCaGetImputationCols}()},
+\code{\link{prCaGetRowname}()},
+\code{\link{prCaGetVnStats}()},
+\code{\link{prCaPrepareCrudeAndAdjusted}()},
+\code{\link{prCaReorderReferenceDescribe}()},
+\code{\link{prCaReorder}()},
+\code{\link{prCaSelectAndOrderVars}()},
+\code{\link{prCaSetRownames}()},
+\code{\link{printCrudeAndAdjustedModel}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

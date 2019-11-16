@@ -11,11 +11,23 @@
 \alias{latex.printCrudeAndAdjusted}
 \title{Output crude and adjusted model data}
 \usage{
-printCrudeAndAdjustedModel(model, order, digits = 2, ci_lim = c(-Inf,
-  Inf), sprintf_ci_str = getOption("sprintf_ci_str", "\%s to \%s"),
-  add_references, add_references_pos, reference_zero_effect, groups,
-  rowname.fn, use_labels = TRUE, desc_column = FALSE,
-  desc_args = caDescribeOpts(digits = digits), impute_args, ...)
+printCrudeAndAdjustedModel(
+  model,
+  order,
+  digits = 2,
+  ci_lim = c(-Inf, Inf),
+  sprintf_ci_str = getOption("sprintf_ci_str", "\%s to \%s"),
+  add_references,
+  add_references_pos,
+  reference_zero_effect,
+  groups,
+  rowname.fn,
+  use_labels = TRUE,
+  desc_column = FALSE,
+  desc_args = caDescribeOpts(digits = digits),
+  impute_args,
+  ...
+)
 
 \method{rbind}{printCrudeAndAdjusted}(..., alt.names, deparse.level = 1)
 
@@ -112,11 +124,7 @@ for how for a working example.
 \emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}()}
 is supported by this option.}
 
-\item{...}{Passed onto the Hmisc::\code{\link[Hmisc]{latex}()} function, or to 
-the \code{\link[htmlTable]{htmlTable}()} via the \code{\link[base]{print}()} call. Any variables that match
-the formals of \code{\link{getCrudeAndAdjustedModelData}()} are identified
-and passed on in case you have provided a model and not the returned element
-from the \code{\link{getCrudeAndAdjustedModelData}()} call.}
+\item{...}{outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame}
 
 \item{alt.names}{If you don't want to use named arguments for the tspanner attribute in the rbind
 or the cgroup in the cbind but a vector with names then use this argument.}
@@ -129,8 +137,6 @@ or the cgroup in the cbind but a vector with names then use this argument.}
 rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.}
 
 \item{object}{The output object from the printCrudeAndAdjustedModel function}
-
-\item{...}{outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame}
 }
 \value{
 \code{matrix} Returns a matrix of class printCrudeAndAdjusted that 
@@ -285,17 +291,18 @@ rbind(Miles = mpg_model, Weight = wt_model) \%>\%
 \seealso{
 \code{\link[Hmisc]{latex}()} for details.
 
-Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
-  \code{\link{prCaAddReference}},
-  \code{\link{prCaAddUserReferences}},
-  \code{\link{prCaGetImputationCols}},
-  \code{\link{prCaGetRowname}},
-  \code{\link{prCaGetVnStats}},
-  \code{\link{prCaPrepareCrudeAndAdjusted}},
-  \code{\link{prCaReorderReferenceDescribe}},
-  \code{\link{prCaReorder}},
-  \code{\link{prCaSelectAndOrderVars}},
-  \code{\link{prCaSetRownames}}
+Other printCrudeAndAdjusted functions: 
+\code{\link{prCaAddRefAndStat}()},
+\code{\link{prCaAddReference}()},
+\code{\link{prCaAddUserReferences}()},
+\code{\link{prCaGetImputationCols}()},
+\code{\link{prCaGetRowname}()},
+\code{\link{prCaGetVnStats}()},
+\code{\link{prCaPrepareCrudeAndAdjusted}()},
+\code{\link{prCaReorderReferenceDescribe}()},
+\code{\link{prCaReorder}()},
+\code{\link{prCaSelectAndOrderVars}()},
+\code{\link{prCaSetRownames}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

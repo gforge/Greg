@@ -4,8 +4,15 @@
 \alias{timeSplitter}
 \title{A function for splitting a time according to time periods}
 \usage{
-timeSplitter(data, by, time_var, event_var, event_start_status,
-  time_related_vars, time_offset)
+timeSplitter(
+  data,
+  by,
+  time_var,
+  event_var,
+  event_start_status,
+  time_related_vars,
+  time_offset
+)
 }
 \arguments{
 \item{data}{The dataset that you want to split according to the \code{time_var}

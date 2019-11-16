@@ -5,9 +5,15 @@
 \alias{[.getCrudeAndAdjustedModelData}
 \title{This function helps with printing regression models}
 \usage{
-getCrudeAndAdjustedModelData(model, level = 0.95,
-  remove_interaction_vars = TRUE, remove_strata = FALSE,
-  remove_cluster = FALSE, var_select, ...)
+getCrudeAndAdjustedModelData(
+  model,
+  level = 0.95,
+  remove_interaction_vars = TRUE,
+  remove_strata = FALSE,
+  remove_cluster = FALSE,
+  var_select,
+  ...
+)
 
 \method{[}{getCrudeAndAdjustedModelData}(x, i, j, ...)
 }
@@ -58,7 +64,7 @@ reports the exp() values instead of the original values
 
 The function skips by default all spline variables since this becomes very complicated
 and there is no simple \deqn{\beta}{beta} to display. For the same reason it skips
-any interaction variables since it's probably better to display these as a contrast table.
+any interaction variables since it's probably better to display these as a contrast table. 
 
 Note that the rms regression has a separate function that uses the rms:::summaryrms function
 that returns a matrix that is then pruned.

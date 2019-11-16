@@ -4,8 +4,12 @@
 \alias{prGetModelVariables}
 \title{Get the models variables}
 \usage{
-prGetModelVariables(model, remove_splines = TRUE,
-  remove_interaction_vars = FALSE, add_intercept = FALSE)
+prGetModelVariables(
+  model,
+  remove_splines = TRUE,
+  remove_interaction_vars = FALSE,
+  add_intercept = FALSE
+)
 }
 \arguments{
 \item{model}{A model fit}

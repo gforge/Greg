@@ -4,10 +4,19 @@
 \alias{prGetStatistics}
 \title{Get statistics according to the type}
 \usage{
-prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
-  numbers_first = TRUE, useNA = "no", show_all_values = FALSE,
-  continuous_fn = describeMean, factor_fn = describeFactors,
-  prop_fn = factor_fn, percentage_sign = percentage_sign)
+prGetStatistics(
+  x,
+  show_perc = FALSE,
+  html = TRUE,
+  digits = 1,
+  numbers_first = TRUE,
+  useNA = "no",
+  show_all_values = FALSE,
+  continuous_fn = describeMean,
+  factor_fn = describeFactors,
+  prop_fn = factor_fn,
+  percentage_sign = percentage_sign
+)
 }
 \arguments{
 \item{x}{The variable that we want the statistics for}

@@ -4,10 +4,15 @@
 \alias{prGetModelData}
 \title{Get model data.frame}
 \usage{
-prGetModelData(x)
+prGetModelData(x, terms_only = FALSE, term.label)
 }
 \arguments{
 \item{x}{The fitted model.}
+
+\item{terms_only}{Only use the right side of the equation by selecting the terms}
+
+\item{term.label}{Sometimes need to retrieve specific spline labels that are not among
+the labels(terms(x))}
 }
 \value{
 data.frame

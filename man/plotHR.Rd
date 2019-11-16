@@ -4,14 +4,35 @@
 \alias{plotHR}
 \title{Plot a spline in a Cox regression model}
 \usage{
-plotHR(models, term = 1, se = TRUE, cntrst = ifelse(inherits(models,
-  "rms") || inherits(models[[1]], "rms"), TRUE, FALSE),
-  polygon_ci = TRUE, rug = "density", xlab = "",
-  ylab = "Hazard Ratio", main = NULL, xlim = NULL, ylim = NULL,
-  col.term = "#08519C", col.se = "#DEEBF7", col.dens = grey(0.9),
-  lwd.term = 3, lty.term = 1, lwd.se = lwd.term, lty.se = lty.term,
-  x.ticks = NULL, y.ticks = NULL, ylog = TRUE, cex = 1,
-  y_axis_side = 2, plot.bty = "n", axes = TRUE, alpha = 0.05, ...)
+plotHR(
+  models,
+  term = 1,
+  se = TRUE,
+  cntrst = ifelse(inherits(models, "rms") || inherits(models[[1]], "rms"), TRUE, FALSE),
+  polygon_ci = TRUE,
+  rug = "density",
+  xlab = "",
+  ylab = "Hazard Ratio",
+  main = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  col.term = "#08519C",
+  col.se = "#DEEBF7",
+  col.dens = grey(0.9),
+  lwd.term = 3,
+  lty.term = 1,
+  lwd.se = lwd.term,
+  lty.se = lty.term,
+  x.ticks = NULL,
+  y.ticks = NULL,
+  ylog = TRUE,
+  cex = 1,
+  y_axis_side = 2,
+  plot.bty = "n",
+  axes = TRUE,
+  alpha = 0.05,
+  ...
+)
 }
 \arguments{
 \item{models}{A single model or a list() with several models}

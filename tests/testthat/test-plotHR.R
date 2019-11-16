@@ -62,7 +62,7 @@ test_that("Check the prPhNewData function",{
 
 
 
-test_that("Check the prPhEstimate function",{
+test_that("Check the prPhEstimate function", {
   # From the cph example
   library(rms)
   n <- 100
@@ -78,11 +78,17 @@ test_that("Check the prPhEstimate function",{
   e <- ifelse(dt <= cens,1,0)
   dt <- pmin(dt, cens)
   units(dt) <- "Year"
-  dd <<- datadist(age, sex)
-  options(datadist='dd')
-  S <- Surv(dt,e)
   
-  fit <- cph(S ~ age + sex, x=TRUE, y=TRUE)
+  ds <- data.frame(age = age,
+                   sex = sex,
+                   e = e,
+                   dt = dt)
+
+  ds$S <- with(ds, Surv(dt,e))
+  dd <<- datadist(ds)
+  options(datadist='dd')
+  
+  fit <- cph(S ~ age + sex, x=TRUE, y=TRUE, data=ds)
   est <- prPhEstimate(fit, 
                       alpha=.05,
                       term.label = "age",
@@ -113,7 +119,7 @@ test_that("Check the prPhEstimate function",{
                         estimate[which.min(xvalues)])) > 0,
               info="Two negative estimates should produce a positive value as well as two positive")
 
-  fit <- coxph(S ~ age + sex, x=TRUE, y=TRUE)
+  fit <- coxph(Surv(dt,e) ~ age + sex, x=TRUE, y=TRUE)
   expect_error(prPhEstimate(fit, 
                             term.label = "age",
                             alpha=.05,
@@ -140,7 +146,7 @@ test_that("Check the prPhEstimate function",{
   expect_true(all(est$xvalues <= max(age)))
   expect_true(all(est$xvalues >= min(age)))
   
-  fit <- cph(S ~ rcs(age, 3) + sex, x=TRUE, y=TRUE)
+  fit <- cph(S ~ rcs(age, 3) + sex, x=TRUE, y=TRUE, data=ds)
   est <- prPhEstimate(fit, 
                       alpha=.05,
                       term.label = "age",
@@ -150,8 +156,8 @@ test_that("Check the prPhEstimate function",{
                     c("xvalues", "estimate",
                       "lower", "upper"))
   
-  fit <- coxph(S ~ pspline(age, 3) + sex)
-  est <- prPhEstimate(fit, 
+  fit <- coxph(S ~ pspline(age, 3) + sex, data=ds)
+  est <- prPhEstimate(fit,
                       alpha=.05,
                       term.label = "age",
                       ylog=TRUE,
@@ -199,23 +205,25 @@ test_that("General plotting funcitonality of plotHR",{
     age=age, 
     smoking=smoking,
     sex=sex)
+  ds$S <- with(ds, Surv(dt,e))
   
   library(splines)
-  Srv <- Surv(dt,e)
-  fit.coxph <- coxph(Srv ~ bs(age, 3) + sex + smoking, data=ds)
+  dd <<- datadist(ds)
+  options(datadist='dd')
+  fit.coxph <- coxph(S ~ bs(age, 3) + sex + smoking, data=ds)
   
   org_par <- par(xaxs="i")
   plotHR(fit.coxph, term="age", plot.bty="o", xlim=c(30, 70), xlab="Age")
   
   dd <- datadist(ds)
   options(datadist='dd')
-  fit.cph <- cph(Srv ~ rcs(age,4) + sex + smoking, data=ds, x=TRUE, y=TRUE)
+  fit.cph <- cph(S ~ rcs(age,4) + sex + smoking, data=ds, x=TRUE, y=TRUE)
   
   plotHR(fit.cph, term=1, plot.bty="l", xlim=c(30, 70), xlab="Age")
   
   plotHR(fit.cph, term="age", plot.bty="l", xlim=c(30, 70), ylog=FALSE, rug="ticks", xlab="Age")
   
-  unadjusted_fit <- cph(Srv ~ rcs(age,4), data=ds, x=TRUE, y=TRUE)
+  unadjusted_fit <- cph(S ~ rcs(age,4), data=ds, x=TRUE, y=TRUE)
   plotHR(list(fit.cph, unadjusted_fit), term="age", xlab="Age",
          polygon_ci=c(TRUE, FALSE), 
          col.term = c("#08519C", "#77777799"),

@@ -4,8 +4,13 @@
 \alias{prCaAddUserReferences}
 \title{Adds references}
 \usage{
-prCaAddUserReferences(reordered_groups, var_order, add_references,
-  add_references_pos, reference_zero_effect)
+prCaAddUserReferences(
+  reordered_groups,
+  var_order,
+  add_references,
+  add_references_pos,
+  reference_zero_effect
+)
 }
 \arguments{
 \item{reordered_groups}{The value matrix that needs refrences}
@@ -37,17 +42,18 @@ i.e. \code{0 = 0} (can be set to any value)}
 Adds references
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
-  \code{\link{prCaAddReference}},
-  \code{\link{prCaGetImputationCols}},
-  \code{\link{prCaGetRowname}},
-  \code{\link{prCaGetVnStats}},
-  \code{\link{prCaPrepareCrudeAndAdjusted}},
-  \code{\link{prCaReorderReferenceDescribe}},
-  \code{\link{prCaReorder}},
-  \code{\link{prCaSelectAndOrderVars}},
-  \code{\link{prCaSetRownames}},
-  \code{\link{printCrudeAndAdjustedModel}}
+Other printCrudeAndAdjusted functions: 
+\code{\link{prCaAddRefAndStat}()},
+\code{\link{prCaAddReference}()},
+\code{\link{prCaGetImputationCols}()},
+\code{\link{prCaGetRowname}()},
+\code{\link{prCaGetVnStats}()},
+\code{\link{prCaPrepareCrudeAndAdjusted}()},
+\code{\link{prCaReorderReferenceDescribe}()},
+\code{\link{prCaReorder}()},
+\code{\link{prCaSelectAndOrderVars}()},
+\code{\link{prCaSetRownames}()},
+\code{\link{printCrudeAndAdjustedModel}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}
