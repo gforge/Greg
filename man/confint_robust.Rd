@@ -4,8 +4,14 @@
 \alias{confint_robust}
 \title{The confint function adapted for vcovHC}
 \usage{
-confint_robust(object, parm, level = 0.95, HC_type = "HC3",
-  t_distribution = FALSE, ...)
+confint_robust(
+  object,
+  parm,
+  level = 0.95,
+  HC_type = "HC3",
+  t_distribution = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{The regression model object, either an ols or lm object}

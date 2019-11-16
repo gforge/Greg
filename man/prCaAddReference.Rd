@@ -4,8 +4,15 @@
 \alias{prCaAddReference}
 \title{Adds a reference to value matrix}
 \usage{
-prCaAddReference(vn, var_order, values, add_references_pos,
-  reference_zero_effect, ds, use_labels)
+prCaAddReference(
+  vn,
+  var_order,
+  values,
+  add_references_pos,
+  reference_zero_effect,
+  ds,
+  use_labels
+)
 }
 \arguments{
 \item{vn}{Variable name}
@@ -38,17 +45,18 @@ label and it isn't a factor.}
 Adds a reference to value matrix
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
-  \code{\link{prCaAddUserReferences}},
-  \code{\link{prCaGetImputationCols}},
-  \code{\link{prCaGetRowname}},
-  \code{\link{prCaGetVnStats}},
-  \code{\link{prCaPrepareCrudeAndAdjusted}},
-  \code{\link{prCaReorderReferenceDescribe}},
-  \code{\link{prCaReorder}},
-  \code{\link{prCaSelectAndOrderVars}},
-  \code{\link{prCaSetRownames}},
-  \code{\link{printCrudeAndAdjustedModel}}
+Other printCrudeAndAdjusted functions: 
+\code{\link{prCaAddRefAndStat}()},
+\code{\link{prCaAddUserReferences}()},
+\code{\link{prCaGetImputationCols}()},
+\code{\link{prCaGetRowname}()},
+\code{\link{prCaGetVnStats}()},
+\code{\link{prCaPrepareCrudeAndAdjusted}()},
+\code{\link{prCaReorderReferenceDescribe}()},
+\code{\link{prCaReorder}()},
+\code{\link{prCaSelectAndOrderVars}()},
+\code{\link{prCaSetRownames}()},
+\code{\link{printCrudeAndAdjustedModel}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

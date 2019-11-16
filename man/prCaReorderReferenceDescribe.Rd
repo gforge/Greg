@@ -4,9 +4,19 @@
 \alias{prCaReorderReferenceDescribe}
 \title{Adds the ordering, references, and descriptions}
 \usage{
-prCaReorderReferenceDescribe(x, model, order, var_order, add_references,
-  add_references_pos, reference_zero_effect, ds, desc_column, desc_args,
-  use_labels)
+prCaReorderReferenceDescribe(
+  x,
+  model,
+  order,
+  var_order,
+  add_references,
+  add_references_pos,
+  reference_zero_effect,
+  ds,
+  desc_column,
+  desc_args,
+  use_labels
+)
 }
 \arguments{
 \item{x}{The main value matrix from the \code{\link{prCaPrepareCrudeAndAdjusted}()}}
@@ -54,17 +64,18 @@ This is a wrapper function around some more basic functions that
 \code{\link{printCrudeAndAdjustedModel}()} uses.
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
-  \code{\link{prCaAddReference}},
-  \code{\link{prCaAddUserReferences}},
-  \code{\link{prCaGetImputationCols}},
-  \code{\link{prCaGetRowname}},
-  \code{\link{prCaGetVnStats}},
-  \code{\link{prCaPrepareCrudeAndAdjusted}},
-  \code{\link{prCaReorder}},
-  \code{\link{prCaSelectAndOrderVars}},
-  \code{\link{prCaSetRownames}},
-  \code{\link{printCrudeAndAdjustedModel}}
+Other printCrudeAndAdjusted functions: 
+\code{\link{prCaAddRefAndStat}()},
+\code{\link{prCaAddReference}()},
+\code{\link{prCaAddUserReferences}()},
+\code{\link{prCaGetImputationCols}()},
+\code{\link{prCaGetRowname}()},
+\code{\link{prCaGetVnStats}()},
+\code{\link{prCaPrepareCrudeAndAdjusted}()},
+\code{\link{prCaReorder}()},
+\code{\link{prCaSelectAndOrderVars}()},
+\code{\link{prCaSetRownames}()},
+\code{\link{printCrudeAndAdjustedModel}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

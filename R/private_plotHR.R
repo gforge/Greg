@@ -25,10 +25,9 @@ prPhEstimate <- function(model,
                          alpha,
                          new_data){
   if (missing(new_data)){
-    new_data <- 
-      prPhNewData(model = model, 
-                  term.label = term.label, 
-                  xlim = xlim)
+    new_data <- prPhNewData(model = model, 
+                            term.label = term.label, 
+                            xlim = xlim)
   }else{
     # Unfortunately we cannot rely on all the
     # needed variables to be present among the
@@ -141,7 +140,7 @@ prPhEstimate <- function(model,
 #' @keywords internal
 prPhNewData <- function(model, term.label, xlim){
   # Get new data to use as basis for the prediction
-  new_data <- prGetModelData(model)
+  new_data <- prGetModelData(model, terms_only=TRUE, term.label=term.label)
   
   # Remove any Surv class variable as this is not 
   # part of the predictors

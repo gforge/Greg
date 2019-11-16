@@ -27,17 +27,18 @@ is supported by the function.}
 Function for retrieving the imputation arguments
 }
 \seealso{
-Other printCrudeAndAdjusted functions: \code{\link{prCaAddRefAndStat}},
-  \code{\link{prCaAddReference}},
-  \code{\link{prCaAddUserReferences}},
-  \code{\link{prCaGetRowname}},
-  \code{\link{prCaGetVnStats}},
-  \code{\link{prCaPrepareCrudeAndAdjusted}},
-  \code{\link{prCaReorderReferenceDescribe}},
-  \code{\link{prCaReorder}},
-  \code{\link{prCaSelectAndOrderVars}},
-  \code{\link{prCaSetRownames}},
-  \code{\link{printCrudeAndAdjustedModel}}
+Other printCrudeAndAdjusted functions: 
+\code{\link{prCaAddRefAndStat}()},
+\code{\link{prCaAddReference}()},
+\code{\link{prCaAddUserReferences}()},
+\code{\link{prCaGetRowname}()},
+\code{\link{prCaGetVnStats}()},
+\code{\link{prCaPrepareCrudeAndAdjusted}()},
+\code{\link{prCaReorderReferenceDescribe}()},
+\code{\link{prCaReorder}()},
+\code{\link{prCaSelectAndOrderVars}()},
+\code{\link{prCaSetRownames}()},
+\code{\link{printCrudeAndAdjustedModel}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

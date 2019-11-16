@@ -4,8 +4,13 @@
 \alias{getModelData4Forestplot}
 \title{Get model data}
 \usage{
-getModelData4Forestplot(regr.obj, exp = TRUE, variablesOfInterest.regexp,
-  ref_labels, add_first_as_ref)
+getModelData4Forestplot(
+  regr.obj,
+  exp = TRUE,
+  variablesOfInterest.regexp,
+  ref_labels,
+  add_first_as_ref
+)
 }
 \arguments{
 \item{regr.obj}{A list with all the fits that have variables that are to 

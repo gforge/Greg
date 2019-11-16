@@ -88,10 +88,13 @@ prExtractOutcomeFromModel <- function(model, mf){
 #' subsetting based on the model's \code{\link[base]{subset}()} argument.
 #'
 #' @param x The fitted model.
+#' @param terms_only Only use the right side of the equation by selecting the terms
+#' @param term.label Sometimes need to retrieve specific spline labels that are not among
+#'  the labels(terms(x))
 #' @return data.frame
 #'
 #' @keywords internal
-prGetModelData <- function(x){
+prGetModelData <- function(x, terms_only = FALSE, term.label){
   # Extract the variable names
   true_vars <- all.vars(as.formula(x))
   
@@ -103,6 +106,15 @@ prGetModelData <- function(x){
   # The data frame without the
   mf <- get_all_vars(as.formula(x),
                      data=data)
+  
+  if (terms_only) {
+    cols2keep <- labels(terms(x))
+    if  (!missing(term.label)) {
+      cols2keep <- c(cols2keep, term.label)  
+    }
+    
+    mf <- mf[,names(mf) %in% cols2keep, drop=FALSE]
+  }
   
   if (!is.null(x$call$subset)){
     if (!is.null(data)){

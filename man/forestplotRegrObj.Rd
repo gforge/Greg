@@ -5,9 +5,22 @@
 \alias{fpBoxSize}
 \title{Forest plot for multiple models}
 \usage{
-forestplotRegrObj(regr.obj, skip.variables, add.empty_row, order.regexps,
-  order.addrows, box.default.size, rowname.fn, xlab, xlog, exp,
-  estimate.txt = xlab, zero, get_box_size = fpBoxSize, ...)
+forestplotRegrObj(
+  regr.obj,
+  skip.variables,
+  add.empty_row,
+  order.regexps,
+  order.addrows,
+  box.default.size,
+  rowname.fn,
+  xlab,
+  xlog,
+  exp,
+  estimate.txt = xlab,
+  zero,
+  get_box_size = fpBoxSize,
+  ...
+)
 
 fpBoxSize(p_values, variable_count, box.default.size, significant = 0.05)
 }

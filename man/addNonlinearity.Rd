@@ -5,8 +5,17 @@
 \alias{addNonlinearity.negbin}
 \title{Add a nonlinear function to the model}
 \usage{
-addNonlinearity(model, variable, spline_fn, flex_param = 2:7,
-  min_fn = AIC, sig_level = 0.05, verbal = FALSE, workers, ...)
+addNonlinearity(
+  model,
+  variable,
+  spline_fn,
+  flex_param = 2:7,
+  min_fn = AIC,
+  sig_level = 0.05,
+  verbal = FALSE,
+  workers,
+  ...
+)
 
 \method{addNonlinearity}{negbin}(model, ...)
 }

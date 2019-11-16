@@ -5,8 +5,14 @@
 \alias{print.simpleRmsAnova}
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
-simpleRmsAnova(anova_output, subregexps, digits = 4,
-  pval_lim.sig = 10^-4, rowlabel = "", ...)
+simpleRmsAnova(
+  anova_output,
+  subregexps,
+  digits = 4,
+  pval_lim.sig = 10^-4,
+  rowlabel = "",
+  ...
+)
 
 \method{print}{simpleRmsAnova}(x, html = TRUE, ...)
 }
