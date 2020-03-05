@@ -10,7 +10,8 @@ test_that("Check position of reference", {
     same_labell = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
     same_labelll = factor(sample(c("Yes", "No"), size = n, replace = TRUE)),
     boolean = sample(c(TRUE, FALSE), size = n, replace = TRUE),
-    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)))
+    subsetting = factor(sample(c(TRUE, FALSE), size = n, replace = TRUE)),
+    stringsAsFactors = TRUE)
   
   library(survival)
   fit <- coxph(Surv(ftime, fstatus == 1) ~ x + boolean, data=ds)
@@ -155,7 +156,8 @@ test_that("Issue #5", {
   set.seed(1)
   data <- data.frame(outcome=rnorm(100),
                      sex=sample(c("Male","Female"),100,TRUE),
-                     country=sample(c("USA","UK","AUS"),100,TRUE))
+                     country=sample(c("USA","UK","AUS"),100,TRUE),
+                     stringsAsFactors = TRUE)
   
   fit <- lm(outcome ~ sex + country, data=data)
   out <- printCrudeAndAdjustedModel(fit,desc_column=TRUE)

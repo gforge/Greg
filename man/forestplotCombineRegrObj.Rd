@@ -121,6 +121,7 @@ forestplotCombineRegrObj (
 par(org.par)
 }
 \seealso{
-Other forestplot wrappers: \code{\link{forestplotRegrObj}}
+Other forestplot wrappers: 
+\code{\link{forestplotRegrObj}()}
 }
 \concept{forestplot wrappers}

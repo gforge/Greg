@@ -70,7 +70,8 @@ test_data <- data.frame(
     c("2003-01-01", 
       "2010-04-01", 
       "2013-09-20",
-      "2002-02-23"))
+      "2002-02-23")),
+  stringsAsFactors = TRUE
 )
 timeSplitter(test_data, .5, 
              time_var = "time",

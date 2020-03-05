@@ -138,6 +138,7 @@ forestplotRegrObj (regr.obj = list(fit1, fit2),
 par(org.par)
 }
 \seealso{
-Other forestplot wrappers: \code{\link{forestplotCombineRegrObj}}
+Other forestplot wrappers: 
+\code{\link{forestplotCombineRegrObj}()}
 }
 \concept{forestplot wrappers}

@@ -132,7 +132,8 @@ test_data <- data.frame(
     c("2003-01-01", 
       "2010-04-01", 
       "2013-09-20",
-      "2002-02-23"))
+      "2002-02-23")),
+  stringsAsFactors = TRUE
 )
 
 test_data$time_str <- sprintf("0 to %.1f", test_data$time)
@@ -466,7 +467,8 @@ adv_int_model <-
 # To get the estimates we use the predict function
 new_data <- data.frame(thickness_cat = rep(levels(spl_melanoma$thickness_cat)[-1],
                                            each = 100),
-                       Start_time = 2^seq(-3, 3, length.out = 100)) %>% 
+                       Start_time = 2^seq(-3, 3, length.out = 100),
+                       stringsAsFactors = FALSE) %>% 
   mutate(thickness_1.0_to_4.9_time = (thickness_cat == levels(spl_melanoma$thickness_cat)[2]) *
            Start_time,
          thickness_at_least_5.0_time = (thickness_cat == levels(spl_melanoma$thickness_cat)[3]) *
