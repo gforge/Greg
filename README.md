@@ -1,4 +1,5 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/Greg)](https://cran.r-project.org/package=Greg)
+[![](https://cranlogs.r-pkg.org/badges/Greg)](https://cran.r-project.org/package=Greg)
 
 Greg - the G-forge regression package
 =====================================
