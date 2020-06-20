@@ -154,4 +154,5 @@ wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data = mtcars),
 
 library(magrittr)
 rbind(Miles = mpg_model, Weight = wt_model) %>%
-  htmlTable(caption = "Combining models together with a table spanner element separating each model")
+  htmlTable(caption = paste("Combining models together with a table spanner element", 
+                            "separating each model"))

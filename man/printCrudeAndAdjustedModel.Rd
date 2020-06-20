@@ -31,9 +31,9 @@ printCrudeAndAdjustedModel(
 
 \method{rbind}{printCrudeAndAdjusted}(..., alt.names, deparse.level = 1)
 
-\method{print}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
+\method{print}{printCrudeAndAdjusted}(x, ...)
 
-\method{htmlTable}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
+\method{htmlTable}{printCrudeAndAdjusted}(x, ...)
 
 \method{[}{printCrudeAndAdjusted}(x, i, j, ...)
 
@@ -124,17 +124,17 @@ for how for a working example.
 \emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}()}
 is supported by this option.}
 
-\item{...}{outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame}
+\item{...}{outputs from \code{printCrudeAndAdjusted}. If mixed then it defaults to rbind.data.frame}
 
-\item{alt.names}{If you don't want to use named arguments for the tspanner attribute in the rbind
-or the cgroup in the cbind but a vector with names then use this argument.}
+\item{alt.names}{If you don't want to use named arguments for the \code{tspanner} attribute in the \code{rbind}
+or the \code{cgroup} in the \code{cbind} but a vector with names then use this argument.}
 
 \item{deparse.level}{backward compatibility}
 
-\item{x}{The output object from the printCrudeAndAdjustedModel function}
+\item{x}{The output object from the \code{printCrudeAndAdjustedModel} function}
 
-\item{css.rgroup}{Css style for the rgorup, if different styles are wanted for each of the
-rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.}
+\item{css.rgroup}{Css style for the \code{rgroup}, if different styles are wanted for each of the
+\code{rgroup}s you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.}
 
 \item{object}{The output object from the printCrudeAndAdjustedModel function}
 }
@@ -311,7 +311,8 @@ wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data = mtcars),
 
 library(magrittr)
 rbind(Miles = mpg_model, Weight = wt_model) \%>\%
-  htmlTable(caption = "Combining models together with a table spanner element separating each model")
+  htmlTable(caption = paste("Combining models together with a table spanner element", 
+                            "separating each model"))
 }
 \seealso{
 \code{\link[Hmisc]{latex}()} for details.

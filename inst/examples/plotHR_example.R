@@ -17,7 +17,12 @@ smoking <- factor(sample(c("Yes", "No"), n,
   rep = TRUE, prob = c(.2, .75)
 ))
 
-h <- .02 * exp(.02 * (age - 50) + .1 * ((age - 50) / 10)^3 + .8 * (sex == "Female") + 2 * (smoking == "Yes"))
+# Build outcome
+h <- .02 * exp(.02 * 
+                 (age - 50) + .1 * 
+                 ((age - 50) / 10)^3 + .8 * 
+                 (sex == "Female") + 2 * 
+                 (smoking == "Yes"))
 dt <- -log(runif(n)) / h
 label(dt) <- "Follow-up Time"
 
@@ -49,13 +54,24 @@ dd <- datadist(ds)
 options(datadist = "dd")
 fit.cph <- cph(Srv ~ rcs(age, 4) + sex + smoking, data = ds, x = TRUE, y = TRUE)
 
-plotHR(fit.cph, term = 1, plot.bty = "l", xlim = c(30, 70), xlab = "Age")
+plotHR(fit.cph,
+       term = 1,
+       plot.bty = "l",
+       xlim = c(30, 70),
+       xlab = "Age")
 
-plotHR(fit.cph, term = "age", plot.bty = "l", xlim = c(30, 70), ylog = FALSE, rug = "ticks", xlab = "Age")
+plotHR(fit.cph, 
+       term = "age", 
+       plot.bty = "l", 
+       xlim = c(30, 70),
+       ylog = FALSE,
+       rug = "ticks",
+       xlab = "Age")
 
 unadjusted_fit <- cph(Srv ~ rcs(age, 4), data = ds, x = TRUE, y = TRUE)
 plotHR(list(fit.cph, unadjusted_fit),
-  term = "age", xlab = "Age",
+  term = "age", 
+  xlab = "Age",
   polygon_ci = c(TRUE, FALSE),
   col.term = c("#08519C", "#77777799"),
   col.se = c("#DEEBF7BB", grey(0.6)),

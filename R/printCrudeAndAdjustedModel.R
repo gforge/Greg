@@ -378,9 +378,9 @@ printCrudeAndAdjustedModel <- function(model,
 
 setClass("printCrudeAndAdjusted", contains = "matrix")
 
-#' @param ... outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame
-#' @param alt.names If you don't want to use named arguments for the tspanner attribute in the rbind
-#'  or the cgroup in the cbind but a vector with names then use this argument.
+#' @param ... outputs from \code{printCrudeAndAdjusted}. If mixed then it defaults to rbind.data.frame
+#' @param alt.names If you don't want to use named arguments for the \code{tspanner} attribute in the \code{rbind}
+#'  or the \code{cgroup} in the \code{cbind} but a vector with names then use this argument.
 #' @param deparse.level  backward compatibility
 #'
 #' @rdname printCrudeAndAdjustedModel
@@ -439,25 +439,39 @@ rbind.printCrudeAndAdjusted <-
     return(ret)
   }
 
-#' @param x The output object from the printCrudeAndAdjustedModel function
-#' @param css.rgroup Css style for the rgorup, if different styles are wanted for each of the
-#'  rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.
+#' @param x The output object from the \code{printCrudeAndAdjustedModel} function
+#' @param css.rgroup Css style for the \code{rgroup}, if different styles are wanted for each of the
+#'  \code{rgroup}s you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.
 #' @rdname printCrudeAndAdjustedModel
 #' @export
 #' @import magrittr
+#' @importFrom htmlTable addHtmlTableStyle hasHtmlTableStyle
 #' @keywords internal
-print.printCrudeAndAdjusted <- function(x,
-                                        css.rgroup = "",
-                                        ...) {
-  prPrintCAstring(x, css.rgroup, ...) %>%
+print.printCrudeAndAdjusted <- function(x, ...) {
+  # Add default style "" for css.cgroup, i.e. empty style
+  args <- list(...)
+  if (!("css.rgroup" %in% args)) {
+    if (!hasHtmlTableStyle(x, "css.cgroup")) {
+      x <- addHtmlTableStyle(x, css.cgroup = "")
+    }
+  }
+  prPrintCAstring(x, ...) %>%
     print()
 }
 
 #' @export
 #' @keywords internal
 #' @rdname printCrudeAndAdjustedModel
-htmlTable.printCrudeAndAdjusted <- function(x, css.rgroup = "", ...) {
-  prPrintCAstring(x, css.rgroup, ...) %>%
+#' @importFrom htmlTable addHtmlTableStyle hasHtmlTableStyle
+htmlTable.printCrudeAndAdjusted <- function(x, ...) {
+  # Add default style "" for css.cgroup, i.e. empty style
+  args <- list(...)
+  if (!("css.rgroup" %in% args)) {
+    if (!hasHtmlTableStyle(x, "css.cgroup")) {
+      x <- addHtmlTableStyle(x, css.cgroup = "")
+    }
+  }
+  prPrintCAstring(x, ...) %>%
     print()
 }
 
@@ -589,7 +603,7 @@ knit_print.printCrudeAndAdjusted <- function(x,
 #'
 #' @inheritParams print.printCrudeAndAdjusted
 #' @keywords internal
-prPrintCAstring <- function(x, css.rgroup, ...) {
+prPrintCAstring <- function(x, ...) {
   # Since we have the htmlTable.printCrudeAndAdjusted we need to remove
   # the class in order to avoid infinite loop
   class(x) <- class(x)[!class(x) %in% "printCrudeAndAdjusted"]
@@ -597,8 +611,7 @@ prPrintCAstring <- function(x, css.rgroup, ...) {
     x = x,
     rowlabel.just = attr(x, "rowlabel.just"),
     rowlabel = attr(x, "rowlabel"),
-    align = attr(x, "align"),
-    css.rgroup = css.rgroup
+    align = attr(x, "align")
   )
   if (!is.null(attr(x, "header"))) {
     call_args$header <- attr(x, "header")
