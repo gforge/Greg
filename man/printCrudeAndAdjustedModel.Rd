@@ -133,9 +133,6 @@ or the \code{cgroup} in the \code{cbind} but a vector with names then use this a
 
 \item{x}{The output object from the \code{printCrudeAndAdjustedModel} function}
 
-\item{css.rgroup}{Css style for the \code{rgroup}, if different styles are wanted for each of the
-\code{rgroup}s you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.}
-
 \item{object}{The output object from the printCrudeAndAdjustedModel function}
 }
 \value{
@@ -152,6 +149,15 @@ word processors. For details run \code{vignette("printCrudeAndAdjustedModel")}
 If you call this function and you've changed any of the variables
 used in the original call, i.e. the premises are changed, this function will not
 remember the original values and the statistics will be faulty!
+}
+
+\section{Table style}{
+
+
+There is a blank default css style for the \code{rgroup}, this can be overridden
+through using the \code{\link[base]{options}(Greg.htmlTable.css.rgroup = "font-weight: bold")}.
+The style are passed on to \code{\link[htmlTable]{htmlTable}()} and the recommended approach
+is to use \code{\link[htmlTable]{addHtmlTableStyle}} for styling.
 }
 
 \examples{
