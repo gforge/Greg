@@ -29,13 +29,13 @@ form in the model.}
 \item{spline_fn}{Either a string or a function that is to be used
 for testing alternative non-linearity models}
 
-\item{flex_param}{A \code{vector} with values that are to be tested as the 
-default second parameter for the non-linearity function that you want to 
-evaluate. This defaults to 2:7, for the \code{\link[splines]{ns}()} it tests 
+\item{flex_param}{A \code{vector} with values that are to be tested as the
+default second parameter for the non-linearity function that you want to
+evaluate. This defaults to 2:7, for the \code{\link[splines]{ns}()} it tests
 the degrees of freedom ranging between 2 and 7.}
 
 \item{min_fn}{This is the function that we want to minmized if the variable supports
-the non-linearity assumption. E.g. \code{\link[stats]{BIC}()} or 
+the non-linearity assumption. E.g. \code{\link[stats]{BIC}()} or
 \code{\link[stats]{AIC}}, note that the \code{\link[stats]{BIC}()} will in the majority of cases
 support a lower complexity than the \code{\link[stats]{AIC}()}.}
 
@@ -48,16 +48,16 @@ anova test and the chosen knots.}
 \item{workers}{The function tries to run everything in parallel. Under some
 circumstances you may want to restrict the number of parallel threads to less
 than the defaul \code{\link[parallel]{detectCores}() - 1}, e.g. you may run out of memory
-then you can provide this parameter. If you do not want to use parallel then 
-simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}()} 
+then you can provide this parameter. If you do not want to use parallel then
+simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}()}
 function.}
 
 \item{...}{Passed onto internal \code{\link{prNlChooseDf}()} function.}
 }
 \description{
 This function takes a model and adds a non-linear function if
-the likelihood-ratio supports this (via the 
-\code{\link[stats]{anova}(..., test="chisq")} test for \pkg{stats}
+the likelihood-ratio supports this (via the
+\code{\link[stats]{anova}(..., test = "chisq")} test for \pkg{stats}
 while for \pkg{rms} you need to use the \code{\link[rms]{rcs}()} spline
 that is automatically evaluated for non-linearity).
 }

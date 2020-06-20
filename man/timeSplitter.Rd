@@ -32,7 +32,7 @@ must be a numeric variable.}
 \item{time_related_vars}{A dataset often contains other variabels that you want
 to update during the split, most commonly these are age or calendar time.}
 
-\item{time_offset}{If you want to skip the initial years you can offset the 
+\item{time_offset}{If you want to skip the initial years you can offset the
 entire dataset by setting this variable. See detailed description below.}
 }
 \value{
@@ -42,7 +42,7 @@ entire dataset by setting this variable. See detailed description below.}
 }
 \description{
 If we have a violation of the cox proprtional hazards assumption we need to
-split an individual's followup time into several. See \code{vignette("timeSplitter", package="Greg")}
+split an individual's followup time into several. See \code{vignette("timeSplitter", package = "Greg")}
 for a detailed description.
 }
 \details{
@@ -52,11 +52,11 @@ if all variables are in years or if one happens to be in days.
 \section{The time_offset - details}{
 
 
-Both time_var and other variables will be adjusted by the time_offset, 
-e.g. if we the time scale is in years and we want to skip the first 4 years 
-we set the \code{time_offset = 4}. In the outputted dataset the smallest 
-\code{time_var} will be 0. \emph{Note:} 0 will not be included as we 
-generally want to look at those that survived the start date, e.g. if a 
+Both time_var and other variables will be adjusted by the time_offset,
+e.g. if we the time scale is in years and we want to skip the first 4 years
+we set the \code{time_offset = 4}. In the outputted dataset the smallest
+\code{time_var} will be 0. \emph{Note:} 0 will not be included as we
+generally want to look at those that survived the start date, e.g. if a
 patient dies on the 4-year mark we would not include him/her in our study.
 }
 

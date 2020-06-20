@@ -39,9 +39,9 @@ and  \code{\link[stats]{coef}}.
 \section{The rms}{
 
 
-The rms-package does not have confint implemented and it is therefore a 
+The rms-package does not have confint implemented and it is therefore a
 better option to go through the summary function (\code{rms:::summary.rms}).
-Infortunately skip intercept is not an option as the summary doesn't 
+Infortunately skip intercept is not an option as the summary doesn't
 include the intercept for the rms regression outputs
 }
 

@@ -22,7 +22,7 @@ getCrudeAndAdjustedModelData(
 
 \item{level}{The confidence interval level}
 
-\item{remove_interaction_vars}{Removes the interaction terms as they in 
+\item{remove_interaction_vars}{Removes the interaction terms as they in
 the raw state are difficult to understand}
 
 \item{remove_strata}{Strata should most likely not be removed in the crude
@@ -34,15 +34,15 @@ just as the \code{remove_strata} option. Clusters are sometimes used in
 cox regression models, \code{\link[survival]{cluster}()}}
 
 \item{var_select}{A vector with regular expressions for choosing what variables
-to return (the same format as for the \code{order} argument in 
-\code{\link{printCrudeAndAdjustedModel}()} call). It can be useful when working with 
+to return (the same format as for the \code{order} argument in
+\code{\link{printCrudeAndAdjustedModel}()} call). It can be useful when working with
 large datasets only to report a subsection of all tested variables. This
 makes the function both run faster and the data presentation more consice.}
 
 \item{...}{Not used}
 }
 \value{
-Returns a matrix with the columns: 
+Returns a matrix with the columns:
   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
   The row order is not changed from the original model. The percentages can vary depending
   on the set level.
@@ -64,29 +64,30 @@ reports the exp() values instead of the original values
 
 The function skips by default all spline variables since this becomes very complicated
 and there is no simple \deqn{\beta}{beta} to display. For the same reason it skips
-any interaction variables since it's probably better to display these as a contrast table. 
+any interaction variables since it's probably better to display these as a contrast table.
 
 Note that the rms regression has a separate function that uses the rms:::summaryrms function
 that returns a matrix that is then pruned.
 }
 \examples{
-# simulated data to use 
+# simulated data to use
 set.seed(10)
 ds <- data.frame(
   ftime = rexp(200),
-  fstatus = sample(0:1,200,replace=TRUE),
+  fstatus = sample(0:1, 200, replace = TRUE),
   x1 = runif(200),
   x2 = runif(200),
   x3 = runif(200),
   x4 = runif(200),
-  x5 = runif(200))
+  x5 = runif(200)
+)
 
 library(rms)
 dd <- datadist(ds)
-options(datadist="dd")
+options(datadist = "dd")
 
 s <- Surv(ds$ftime, ds$fstatus == 1)
-fit <- cph(s ~ x1 + x2 + x3, data=ds)
+fit <- cph(s ~ x1 + x2 + x3, data = ds)
 
 data_matrix <- getCrudeAndAdjustedModelData(fit)
 
@@ -94,7 +95,7 @@ print(data_matrix)
 
 # If we have interaction then those variable are not
 # reported
-fit <- cph(s ~ x1 + x2 + x3 + x4*x5, data=ds)
+fit <- cph(s ~ x1 + x2 + x3 + x4 * x5, data = ds)
 data_matrix <- getCrudeAndAdjustedModelData(fit)
 
 print(data_matrix)

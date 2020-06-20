@@ -11,7 +11,7 @@ prCaGetImputationCols(impute_args, output_mtrx, model, data)
 function call.}
 
 \item{output_mtrx}{The reordered groups matrix (a nx4 matrix)
-that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}} 
+that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}}
 function. It is important that the references
 if any have been added.}
 
