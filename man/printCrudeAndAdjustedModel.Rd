@@ -39,7 +39,7 @@ printCrudeAndAdjustedModel(
 
 \method{cbind}{printCrudeAndAdjusted}(..., alt.names, deparse.level = 1)
 
-\method{knit_print}{printCrudeAndAdjusted}(x, css.rgroup = "", ...)
+\method{knit_print}{printCrudeAndAdjusted}(x, ...)
 
 \method{latex}{printCrudeAndAdjusted}(object, ...)
 }
@@ -151,15 +151,6 @@ used in the original call, i.e. the premises are changed, this function will not
 remember the original values and the statistics will be faulty!
 }
 
-\section{Table style}{
-
-
-There is a blank default css style for the \code{rgroup}, this can be overridden
-through using the \code{\link[base]{options}(Greg.htmlTable.css.rgroup = "font-weight: bold")}.
-The style are passed on to \code{\link[htmlTable]{htmlTable}()} and the recommended approach
-is to use \code{\link[htmlTable]{addHtmlTableStyle}} for styling.
-}
-
 \examples{
 # simulated data to use
 set.seed(10)
@@ -245,7 +236,7 @@ printCrudeAndAdjustedModel(fmult,
 )
 
 
-# Use some labels to prettify the output
+# Use some labels and style to prettify the output
 # fro the mtcars dataset
 data("mtcars")
 
@@ -275,8 +266,9 @@ printCrudeAndAdjustedModel(fit_mtcar,
   desc_args = caDescribeOpts(
     digits = 1,
     colnames = c("Avg.")
-  )
-)
+  )) \%>\% 
+  htmlTable::addHtmlTableStyle(css.rgroup = "",
+                               css.header = "font-weight: normal")
 
 printCrudeAndAdjustedModel(fit_mtcar,
   add_references = TRUE,
@@ -316,7 +308,9 @@ wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data = mtcars),
 )
 
 library(magrittr)
+library(htmlTable)
 rbind(Miles = mpg_model, Weight = wt_model) \%>\%
+  addHtmlTableStyle(pos.caption = "bottom") \%>\% 
   htmlTable(caption = paste("Combining models together with a table spanner element", 
                             "separating each model"))
 }

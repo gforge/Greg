@@ -14,7 +14,7 @@ prPrintCAstring(x, ...)
 \description{
 Since we have both the \code{\link[base]{print}()} and the
 \code{\link[knitr]{knit_print}()} that we need to call it is
-useful to have a common string preparer.
+useful to have a common string preparation.
 \emph{Note:} Currently knit_print doesn't work as expected...
 }
 \keyword{internal}

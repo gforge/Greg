@@ -64,6 +64,24 @@ printCrudeAndAdjustedModel(fit,
                            add_references = TRUE)
 ```
 
+If we want to style the table we can use `htmlTable::addHtmlTableStyle`
+
+```{r styling_with_addHtmlTableStyle}
+library(htmlTable)
+
+printCrudeAndAdjustedModel(fit, 
+                           digits = 1, 
+                           add_references = TRUE) %>% 
+  # We can also style the output as shown here
+  addHtmlTableStyle(css.rgroup = "")
+```
+
+The style can be added to all the tables by setting a theme option and activating the style for all the table elements.
+
+```{r theming}
+setHtmlTableTheme(css.rgroup = "")
+```
+
 Binding columns/rows
 --------------------
 
@@ -115,14 +133,15 @@ ds <- data.frame(
 
 library(survival)
 library(splines)
-fit <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + ns(x2, 4) + x3 + strata(x4), data=ds)
+fit <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + ns(x2, 4) + x3 + strata(x4), data = ds)
 
 printCrudeAndAdjustedModel(fit, add_references = TRUE)
+```
 
+
+```{r}
 # Note that the crude is with the strata
 a <- getCrudeAndAdjustedModelData(fit)
-a["x3", "Crude"] == 
-  exp(coef(coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x3 + 
-                   strata(x4), data=ds)))
+a["x3", "Crude"] == exp(coef(coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x3 + strata(x4), data = ds)))
 ```
 

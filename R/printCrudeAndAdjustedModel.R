@@ -109,7 +109,7 @@ printCrudeAndAdjustedModel <- function(model,
                                        impute_args,
                                        ...) {
   dot_args <- list(...)
-
+  
   if (missing(reference_zero_effect)) {
     reference_zero_effect <- ifelse(all("lm" %in% class(model)) ||
       "ols" %in% class(model) ||
@@ -443,22 +443,8 @@ rbind.printCrudeAndAdjusted <-
 #' @rdname printCrudeAndAdjustedModel
 #' @export
 #' @import magrittr
-#' @importFrom htmlTable addHtmlTableStyle hasHtmlTableStyle
 #' @keywords internal
-#' @section Table style:
-#' 
-#' There is a blank default css style for the \code{rgroup}, this can be overridden
-#' through using the \code{\link[base]{options}(Greg.htmlTable.css.rgroup = "font-weight: bold")}.
-#' The style are passed on to \code{\link[htmlTable]{htmlTable}()} and the recommended approach
-#' is to use \code{\link[htmlTable]{addHtmlTableStyle}} for styling.
 print.printCrudeAndAdjusted <- function(x, ...) {
-  # Add default style "" for css.rgroup, i.e. empty style
-  args <- list(...)
-  if (!("css.rgroup" %in% args)) {
-    if (!hasHtmlTableStyle(x, "css.rgroup")) {
-      x <- addHtmlTableStyle(x, css.cgroup = getOption("Greg.htmlTable.css.rgroup", default = ""))
-    }
-  }
   prPrintCAstring(x, ...) %>%
     print()
 }
@@ -466,15 +452,7 @@ print.printCrudeAndAdjusted <- function(x, ...) {
 #' @export
 #' @keywords internal
 #' @rdname printCrudeAndAdjustedModel
-#' @importFrom htmlTable addHtmlTableStyle hasHtmlTableStyle
 htmlTable.printCrudeAndAdjusted <- function(x, ...) {
-  # Add default style "" for css.rgroup, i.e. empty style
-  args <- list(...)
-  if (!("css.rgroup" %in% args)) {
-    if (!hasHtmlTableStyle(x, "css.rgroup")) {
-      x <- addHtmlTableStyle(x, css.cgroup = getOption("Greg.htmlTable.css.rgroup", default = ""))
-    }
-  }
   prPrintCAstring(x, ...) %>%
     print()
 }
@@ -592,9 +570,8 @@ prClearPCAclass <- function(pca) {
 #'
 #' @keywords internal
 knit_print.printCrudeAndAdjusted <- function(x,
-                                             css.rgroup = "",
                                              ...) {
-  prPrintCAstring(x, css.rgroup, ...) %>%
+  prPrintCAstring(x, ...) %>%
     asis_output()
 }
 
@@ -602,7 +579,7 @@ knit_print.printCrudeAndAdjusted <- function(x,
 #'
 #' Since we have both the \code{\link[base]{print}()} and the
 #' \code{\link[knitr]{knit_print}()} that we need to call it is
-#' useful to have a common string preparer.
+#' useful to have a common string preparation.
 #' \emph{Note:} Currently knit_print doesn't work as expected...
 #'
 #' @inheritParams print.printCrudeAndAdjusted
