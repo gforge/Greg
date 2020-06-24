@@ -41,6 +41,7 @@ Suggests:
     dplyr,
     ggplot2,
     parallel,
-    rmarkdown
+    rmarkdown,
+    rmeta
 VignetteBuilder: knitr
 RoxygenNote: 7.1.0
