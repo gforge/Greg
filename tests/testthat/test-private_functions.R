@@ -1,6 +1,5 @@
 library(testthat)
 
-context("prGetModelVariables")
 test_that("Check how well variables are identified and stratification, etc are removed", {
   set.seed(10)
   n <- 50
@@ -404,8 +403,7 @@ test_that("Handling cox regression survival object", {
     as.numeric(ds$fstatus == 1)
   )
 
-  s <- Surv(ds$ftime, ds$fstatus == 0)
-  fit <- coxph(s ~ x1 + x2 + x3, data = ds)
+  fit <- coxph(Surv(ftime, fstatus == 0) ~ x1 + x2 + x3, data = ds)
 
   expect_equivalent(
     prExtractOutcomeFromModel(fit),
@@ -423,8 +421,7 @@ test_that("Handling cox regression survival object", {
     as.numeric(ds$fstatus == 1)
   )
 
-  s <- Surv(ds$ftime, ds$fstatus == 0)
-  fit <- cph(s ~ x1 + x2 + x3, data = ds)
+  fit <- cph(Surv(ds$ftime, ds$fstatus == 0) ~ x1 + x2 + x3, data = ds)
 
   expect_equivalent(
     prExtractOutcomeFromModel(fit),
@@ -459,7 +456,7 @@ test_that("Handling simple linear regression outcomes", {
     ds$y
   )
 
-  fit <- lm(ds$y ~ x1 + x2 + x3, data = ds)
+  fit <- lm(y ~ x1 + x2 + x3, data = ds)
 
   expect_equivalent(
     prExtractOutcomeFromModel(fit),
@@ -467,7 +464,7 @@ test_that("Handling simple linear regression outcomes", {
   )
 
 
-  fit <- glm(ds$y_fact == "A (1)" ~ x1 + x2 + x3, data = ds)
+  fit <- glm(y_fact == "A (1)" ~ x1 + x2 + x3, data = ds)
 
   expect_equivalent(
     prExtractOutcomeFromModel(fit),

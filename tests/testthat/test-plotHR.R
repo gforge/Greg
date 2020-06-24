@@ -63,8 +63,7 @@ test_that("Check the prPhNewData function", {
     info = "The values beyond the xlim should be ignored"
   )
 
-  S <- with(ds, Surv(ftime, fstatus))
-  fit <- cph(S ~ x1 + x2, data = ds)
+  fit <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = ds)
   expect_equivalent(
     ncol(prPhNewData(fit, "x2")),
     2

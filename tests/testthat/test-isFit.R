@@ -4,7 +4,7 @@ context("isFit")
 library("survival")
 library("rms")
 
-test_that("Cox regression isFit works", {
+test_that("Check isFitCoxPH works", {
   set.seed(10)
   n <- 500
   ds <<- data.frame(
@@ -19,12 +19,10 @@ test_that("Cox regression isFit works", {
   dd <<- datadist(ds)
   options(datadist = "dd")
 
-  s <- Surv(ds$ftime, ds$fstatus == 1)
-  fit1 <- coxph(s ~ x1 + x2 + x3, data = ds)
+  fit1 <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data = ds)
 
-  s <- Surv(ds$ftime, ds$fstatus == 1)
-  fit_cox <- coxph(s ~ x1 + x2 + x3, data = ds)
-  fit_cph <- cph(s ~ x1 + x2 + x3, data = ds)
+  fit_cox <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data = ds)
+  fit_cph <- cph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data = ds)
 
   fit_logistic <- glm(fstatus ~ x1 + x2 + x3, data = ds, family = binomial)
   fit_lrm <- lrm(fstatus ~ x1 + x2 + x3, data = ds)
@@ -39,7 +37,7 @@ test_that("Cox regression isFit works", {
 })
 
 
-test_that("Logit regression isFit works", {
+test_that("Check isFitLogit works", {
   set.seed(10)
   n <- 500
   ds <- data.frame(
@@ -54,12 +52,10 @@ test_that("Logit regression isFit works", {
   dd <<- datadist(ds)
   options(datadist = "dd")
 
-  s <- Surv(ds$ftime, ds$fstatus == 1)
-  fit1 <- coxph(s ~ x1 + x2 + x3, data = ds)
+  fit1 <- coxph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data = ds)
 
-  s <- Surv(ds$ftime, ds$fstatus == 1)
-  fit_cox <- coxph(s ~ x1 + x2 + x3, data = ds)
-  fit_cph <- cph(s ~ x1 + x2 + x3, data = ds)
+  fit_cox <- coxph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data = ds)
+  fit_cph <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data = ds)
 
   fit_logistic <- glm(fstatus ~ x1 + x2 + x3, data = ds, family = binomial)
   fit_lrm <- lrm(fstatus ~ x1 + x2 + x3, data = ds)
