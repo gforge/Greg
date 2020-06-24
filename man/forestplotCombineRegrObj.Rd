@@ -32,7 +32,7 @@ that finds scores in different models that should be compared.}
 
 \item{reference.names}{Additional reference names to be added to each model}
 
-\item{rowname.fn}{A function that takes a rowname and sees if it needs
+\item{rowname.fn}{A function that takes a row name and sees if it needs
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
 

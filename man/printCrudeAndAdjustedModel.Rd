@@ -106,8 +106,8 @@ The \code{coef_change} adds a column with the change in coefficients due to
 the imputation, the the "raw" model is subtracted from the imputed results.
 The "raw" model is the unimputed model, \code{coef(imputed_model) - coef(raw_model)}.
 The \code{variance.inflation} adds the \code{variance.inflation.impute} from the
-\code{\link[Hmisc]{fit.mult.impute}()} to a separate column. See the description
-for the \code{variance.inflation.impute} in in the \code{\link[Hmisc]{fit.mult.impute}()}
+\code{\link[Hmisc:transcan]{fit.mult.impute}()} to a separate column. See the description
+for the \code{variance.inflation.impute} in in the \code{\link[Hmisc:transcan]{fit.mult.impute}()}
 description.
 Both arguments can be customized by providing a \code{list}. The list can have
 the elements \code{type}, \code{name}, \code{out_str}, and/or \code{digits}.
@@ -121,7 +121,7 @@ for accepting a float value, e.g. "%.0f%%" is used by default iun the coef_chang
 column. The \code{digits} can be used if you are not using the \code{out_str}
 argument, it simply specifies the number of digits to show. See the example
 for how for a working example.
-\emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}()}
+\emph{Note} that currently only the \code{\link[Hmisc:transcan]{fit.mult.impute}()}
 is supported by this option.}
 
 \item{...}{outputs from \code{printCrudeAndAdjusted}. If mixed then it defaults to rbind.data.frame}

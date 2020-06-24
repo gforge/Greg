@@ -20,7 +20,7 @@ addNonlinearity(
 \method{addNonlinearity}{negbin}(model, ...)
 }
 \arguments{
-\item{model}{The model that is to be evaluated and adatpted for non-linearity}
+\item{model}{The model that is to be evaluated and adapted for non-linearity}
 
 \item{variable}{The name of the parameter that is to be tested for non-linearity.
 \emph{Note} that the variable should be included plain (i.e. as a linear variable)
@@ -34,9 +34,9 @@ default second parameter for the non-linearity function that you want to
 evaluate. This defaults to 2:7, for the \code{\link[splines]{ns}()} it tests
 the degrees of freedom ranging between 2 and 7.}
 
-\item{min_fn}{This is the function that we want to minmized if the variable supports
-the non-linearity assumption. E.g. \code{\link[stats]{BIC}()} or
-\code{\link[stats]{AIC}}, note that the \code{\link[stats]{BIC}()} will in the majority of cases
+\item{min_fn}{This is the function that we want to minimized if the variable supports
+the non-linearity assumption. E.g. \code{\link[stats:AIC]{BIC}()} or
+\code{\link[stats]{AIC}}, note that the \code{\link[stats:AIC]{BIC}()} will in the majority of cases
 support a lower complexity than the \code{\link[stats]{AIC}()}.}
 
 \item{sig_level}{The significance level for which the non-linearity is deemed
@@ -47,7 +47,7 @@ anova test and the chosen knots.}
 
 \item{workers}{The function tries to run everything in parallel. Under some
 circumstances you may want to restrict the number of parallel threads to less
-than the defaul \code{\link[parallel]{detectCores}() - 1}, e.g. you may run out of memory
+than the default \code{\link[parallel]{detectCores}() - 1}, e.g. you may run out of memory
 then you can provide this parameter. If you do not want to use parallel then
 simply set workers to \code{FALSE}. The cluster created using \code{\link[parallel]{makeCluster}()}
 function.}
@@ -58,7 +58,7 @@ function.}
 This function takes a model and adds a non-linear function if
 the likelihood-ratio supports this (via the
 \code{\link[stats]{anova}(..., test = "chisq")} test for \pkg{stats}
-while for \pkg{rms} you need to use the \code{\link[rms]{rcs}()} spline
+while for \pkg{rms} you need to use the \code{\link[rms:rms.trans]{rcs}()} spline
 that is automatically evaluated for non-linearity).
 }
 \examples{

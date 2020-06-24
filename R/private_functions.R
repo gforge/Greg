@@ -89,7 +89,7 @@ prExtractOutcomeFromModel <- function(model, mf) {
 #' Get model data.frame
 #'
 #' Returns the raw variables from the original data
-#' frame using the \code{\link[stats]{get_all_vars}()}
+#' frame using the \code{\link[stats:model.frame]{get_all_vars}()}
 #' but with the twist that it also performs any associated
 #' subsetting based on the model's \code{\link[base]{subset}()} argument.
 #'
@@ -745,7 +745,7 @@ prMapVariable2Name <- function(var_names, available_names,
 #'
 #' Sometimes the function can't find some of the variables that
 #' were available when running the original variable. This function
-#' uses the \code{\link[stats]{as.formula}()} together with
+#' uses the \code{\link[stats:formula]{as.formula}()} together with
 #' \code{\link[base]{environment}()} in order to get the environment
 #' that the original code used.
 #'

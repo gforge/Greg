@@ -2,12 +2,12 @@
 % Please edit documentation in R/rms_SandwichAddon.R
 \name{confint.ols}
 \alias{confint.ols}
-\title{A confint function for the ols}
+\title{A \code{confint} function for the \code{ols}}
 \usage{
 \method{confint}{ols}(object, parm, level = 0.95, ...)
 }
 \arguments{
-\item{object}{a fitted ols-model object.}
+\item{object}{a fitted \code{\link[rms]{ols}}-model object.}
 
 \item{parm}{a specification of which parameters
 are to be given confidence intervals, either a vector
@@ -25,7 +25,7 @@ A matrix (or vector) with columns giving lower
  in % (by default 2.5% and 97.5%).
 }
 \description{
-This function checks that there is a df.residual
+This function checks that there is a \code{df.residual}
 before running the \code{qt()}. If not found it then
 defaults to the \code{qnorm()} function. Otherwise it is
 a copy of the \code{\link[stats]{confint}()} function.

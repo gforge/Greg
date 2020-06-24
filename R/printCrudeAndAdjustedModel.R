@@ -58,8 +58,8 @@
 #'  the imputation, the the "raw" model is subtracted from the imputed results.
 #'  The "raw" model is the unimputed model, \code{coef(imputed_model) - coef(raw_model)}.
 #'  The \code{variance.inflation} adds the \code{variance.inflation.impute} from the
-#'  \code{\link[Hmisc]{fit.mult.impute}()} to a separate column. See the description
-#'  for the \code{variance.inflation.impute} in in the \code{\link[Hmisc]{fit.mult.impute}()}
+#'  \code{\link[Hmisc:transcan]{fit.mult.impute}()} to a separate column. See the description
+#'  for the \code{variance.inflation.impute} in in the \code{\link[Hmisc:transcan]{fit.mult.impute}()}
 #'  description.
 #'  Both arguments can be customized by providing a \code{list}. The list can have
 #'  the elements \code{type}, \code{name}, \code{out_str}, and/or \code{digits}.
@@ -73,7 +73,7 @@
 #'  column. The \code{digits} can be used if you are not using the \code{out_str}
 #'  argument, it simply specifies the number of digits to show. See the example
 #'  for how for a working example.
-#'  \emph{Note} that currently only the \code{\link[Hmisc]{fit.mult.impute}()}
+#'  \emph{Note} that currently only the \code{\link[Hmisc:transcan]{fit.mult.impute}()}
 #'  is supported by this option.
 #' @param ... Passed onto the Hmisc::\code{\link[Hmisc]{latex}()} function, or to
 #'  the \code{\link[htmlTable]{htmlTable}()} via the \code{\link[base]{print}()} call. Any variables that match

@@ -17,7 +17,7 @@
 #' and there is no simple \deqn{\beta}{beta} to display. For the same reason it skips
 #' any interaction variables since it's probably better to display these as a contrast table.
 #'
-#' Note that the rms regression has a separate function that uses the rms:::summaryrms function
+#' Note that the rms regression has a separate function that uses the \code{rms:::summaryrms} function
 #' that returns a matrix that is then pruned.
 #'
 #' @param model The regression model
@@ -34,7 +34,7 @@
 #'  to return (the same format as for the \code{order} argument in
 #'  \code{\link{printCrudeAndAdjustedModel}()} call). It can be useful when working with
 #'  large datasets only to report a subsection of all tested variables. This
-#'  makes the function both run faster and the data presentation more consice.
+#'  makes the function both run faster and the data presentation more concise.
 #' @param ... Not used
 #' @return Returns a matrix with the columns:
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.

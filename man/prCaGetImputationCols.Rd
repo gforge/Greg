@@ -15,7 +15,7 @@ that have been prepared in for the \code{\link{printCrudeAndAdjustedModel}}
 function. It is important that the references
 if any have been added.}
 
-\item{model}{The imputation model. Currently only \code{\link[Hmisc]{fit.mult.impute}}
+\item{model}{The imputation model. Currently only \code{\link[Hmisc:transcan]{fit.mult.impute}}
 is supported by the function.}
 
 \item{data}{The data that has been used for generating the model.}

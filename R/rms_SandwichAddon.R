@@ -34,14 +34,14 @@ robcov_alt <- function(fit, type = "HC3", ...) {
   fit
 }
 
-#' A confint function for the ols
+#' A \code{confint} function for the \code{ols}
 #'
-#' This function checks that there is a df.residual
+#' This function checks that there is a \code{df.residual}
 #' before running the \code{qt()}. If not found it then
 #' defaults to the \code{qnorm()} function. Otherwise it is
 #' a copy of the \code{\link[stats]{confint}()} function.
 #'
-#' @param object 	a fitted ols-model object.
+#' @param object 	a fitted \code{\link[rms]{ols}}-model object.
 #' @param parm a specification of which parameters
 #'  are to be given confidence intervals, either a vector
 #'  of numbers or a vector of names. If missing, all
@@ -104,7 +104,8 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' \deqn{\hat{\epsilon} = y-X\hat{\beta} = \{I_n-X(X'X)X'\}y = (I_n-H)y}{epsilon = y - Xbeta_hat = (I_n - X(X'X)X')y = (I_n - H)y}
 #' where the H is called the hat matrix since \deqn{Hy = \hat{y}}{Hy = y_hat}. The hat
 #' values are actually the diagonal elements of the matrix that sum up
-#' to p (the rank of X, i.e. the number of parameters + 1). See \code{\link[rms]{ols.influence}()}.
+#' to p (the rank of X, i.e. the number of parameters + 1). 
+#' See \code{\link[rms:rms-internal]{ols.influence}()}.
 #'
 #' @param model The ols model fit
 #' @param ... arguments passed to methods.
@@ -120,17 +121,18 @@ hatvalues.ols <- function(model, ...) {
   return(ols.influence(model, ...)$hat)
 }
 
-#' Getting the bread for the vcovHC
+#' Getting the bread for the `vcovHC`
 #'
-#' The original bread.lm uses the summary.lm function
+#' The original `bread.lm` uses the `summary.lm` function
 #' it seems like a quick fix and I've therefore created
 #' the original bread definition: $(X'X)^-1$
 #'
-#' @param x The ols model fit
-#' @return matrix The bread for the sandwich vcovHC function
+#' @param x The `ols` model fit
+#' @return matrix The bread for the sandwich `vcovHC` function
 #' @param ... arguments passed to methods.
 #' @example inst/examples/rms_SandwichAddon_example.R
 #'
+#' @md
 #' @importFrom rms ols
 #' @importFrom sandwich bread
 #' @method bread ols
@@ -150,11 +152,11 @@ bread.ols <- function(x, ...) {
   return(solve(crossprod(X)) * (x$rank + x$df.residual))
 }
 
-#' A fix for the model.matrix
+#' A fix for the \code{model.matrix}
 #'
-#' The \code{\link[stats]{model.matrix.lm}()} that the \code{\link[rms]{ols}()} falls back upon
+#' The \code{\link[stats:model.matrix]{model.matrix.lm}()} that the \code{\link[rms]{ols}()} falls back upon
 #' "forgets" the intercept value and behaves unreliable in
-#' the \code{\link[sandwich]{vcovHC}()} funcitons. I've therefore created this subfunction
+#' the \code{\link[sandwich]{vcovHC}()} functions. I've therefore created this sub-function
 #' to generate the actual \code{\link[stats]{model.matrix}()} by just accessing the formula.
 #'
 #' @param object A Model
@@ -186,13 +188,14 @@ model.matrix.ols <- function(object, ...) {
 
 #' Fix for the Extract Empirical Estimating Functions
 #'
-#' As missing data is handled a little different for the ols
-#' than for the lm we need to change the estfun to work with the \code{ols()}
+#' As missing data is handled a little different for the \code{\link[rms]{ols}}
+#' than for the \code{\link[stats]{lm}} we need to change the 
+#' \code{\link[sandwich]{estfun}} to work with the \code{\link[rms]{ols}()}.
 #'
 #' I have never worked with weights and this should probably be checked
-#' as this just uses the original estfun.lm as a template
+#' as this just uses the original \code{estfun.lm} as a template.
 #'
-#' @param x	A fitted ols model object.
+#' @param x	A fitted \code{\link[rms]{ols}} model object.
 #' @param ... arguments passed to methods.
 #' @return matrix A matrix containing the empirical estimating functions.
 #' @example inst/examples/rms_SandwichAddon_example.R
@@ -211,7 +214,8 @@ estfun.ols <- function(x, ...) {
   xmat <- model.matrix(x)
   xmat <- naresid(x$na.action$omit, xmat) # Modification
   x$na.action
-  if (any(alias <- is.na(coef(x)))) {
+  alias <- is.na(coef(x))
+  if (any(alias)) {
     xmat <- xmat[, !alias, drop = FALSE]
   }
   wts <- weights(x)
