@@ -28,17 +28,17 @@ confint_robust(
 or not. Defaults to FALSE. According to Cribari-Nieto and Lima's study from
 2009 this should not be the case.}
 
-\item{...}{Additional parameters that are passed on to 
+\item{...}{Additional parameters that are passed on to
 \code{\link[sandwich]{vcovHC}()}}
 }
 \value{
-\code{matrix} A matrix (or vector) with columns giving lower and 
- upper confidence limits for each parameter. These will be labelled as 
+\code{matrix} A matrix (or vector) with columns giving lower and
+ upper confidence limits for each parameter. These will be labelled as
  (1-level)/2 and 1 - (1-level)/2 in % (by default 2.5% and 97.5%).
 }
 \description{
 The confint.lm uses the t-distribution as the default
-confidence interval estimator. When there is reason to believe that 
+confidence interval estimator. When there is reason to believe that
 the normal distribution is violated an alternative approach using
 the \code{\link[sandwich]{vcovHC}()} may be more suitable.
 }
@@ -53,8 +53,8 @@ confint_robust(fit, HC_type = "HC4m")
 }
 \references{
 \href{https://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
- F. Cribari-Neto and M. da G. A. Lima, 
- "Heteroskedasticity-consistent interval estimators", 
- Journal of Statistical Computation and Simulation, 
+ F. Cribari-Neto and M. da G. A. Lima,
+ "Heteroskedasticity-consistent interval estimators",
+ Journal of Statistical Computation and Simulation,
  vol. 79, no. 6, pp. 787-803, 2009.}
 }

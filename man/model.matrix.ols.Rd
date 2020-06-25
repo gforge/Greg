@@ -2,7 +2,7 @@
 % Please edit documentation in R/rms_SandwichAddon.R
 \name{model.matrix.ols}
 \alias{model.matrix.ols}
-\title{A fix for the model.matrix}
+\title{A fix for the \code{model.matrix}}
 \usage{
 \method{model.matrix}{ols}(object, ...)
 }
@@ -15,9 +15,9 @@
 matrix
 }
 \description{
-The \code{\link[stats]{model.matrix.lm}()} that the \code{\link[rms]{ols}()} falls back upon
+The \code{\link[stats:model.matrix]{model.matrix.lm}()} that the \code{\link[rms]{ols}()} falls back upon
 "forgets" the intercept value and behaves unreliable in
-the \code{\link[sandwich]{vcovHC}()} funcitons. I've therefore created this subfunction
+the \code{\link[sandwich]{vcovHC}()} functions. I've therefore created this sub-function
 to generate the actual \code{\link[stats]{model.matrix}()} by just accessing the formula.
 }
 \keyword{internal}

@@ -1,6 +1,6 @@
 Package: Greg
-Version: 1.3.3
-Date: 2020-03-05
+Version: 1.3.4
+Date: 2020-06-24
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -23,7 +23,7 @@ Imports:
     stats,
     nlme,
     methods,
-    htmlTable,
+    htmlTable (>= 2.0.0),
     magrittr,
     knitr,
     Epi,
@@ -41,6 +41,7 @@ Suggests:
     dplyr,
     ggplot2,
     parallel,
-    rmarkdown
+    rmarkdown,
+    rmeta
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0

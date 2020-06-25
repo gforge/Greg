@@ -19,8 +19,8 @@ prCaPrepareCrudeAndAdjusted(x, ci_lim, digits, sprintf_ci_str)
 \code{matrix} A string matrix with the values formated
 }
 \description{
-Sets the number of digits, formats the confidence interval and 
-changes the number of cols into 4 where the upper and lower CI 
+Sets the number of digits, formats the confidence interval and
+changes the number of cols into 4 where the upper and lower CI
 meet in one string column
 }
 \seealso{

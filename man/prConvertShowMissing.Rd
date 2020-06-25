@@ -14,7 +14,7 @@ string
 }
 \description{
 The variable is suppose to be directly compatible with
-table(..., useNA=useNA). It throughs an error
+table(..., useNA = useNA). It throughs an error
 if not compatible
 }
 \keyword{internal}

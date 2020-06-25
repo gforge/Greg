@@ -2,27 +2,27 @@
 % Please edit documentation in R/rms_SandwichAddon.R
 \name{bread.ols}
 \alias{bread.ols}
-\title{Getting the bread for the vcovHC}
+\title{Getting the bread for the \code{vcovHC}}
 \usage{
 \method{bread}{ols}(x, ...)
 }
 \arguments{
-\item{x}{The ols model fit}
+\item{x}{The \code{ols} model fit}
 
 \item{...}{arguments passed to methods.}
 }
 \value{
-matrix The bread for the sandwich vcovHC function
+matrix The bread for the sandwich \code{vcovHC} function
 }
 \description{
-The original bread.lm uses the summary.lm function
+The original \code{bread.lm} uses the \code{summary.lm} function
 it seems like a quick fix and I've therefore created
 the original bread definition: $(X'X)^-1$
 }
 \examples{
 # Generate some data
 n <- 500
-x1 <- runif(n)*2
+x1 <- runif(n) * 2
 x2 <- runif(n)
 y <- x1^3 + x2 + rnorm(n)
 
@@ -32,14 +32,14 @@ dd <- datadist(x1, x2, y)
 org.op <- options(datadist = "dd")
 
 # Main function
-f    <- ols(y ~ rcs(x1, 3) + x2)
+f <- ols(y ~ rcs(x1, 3) + x2)
 
 # Check the bread
 bread(f)
 # Check the HC-matrix
-vcovHC(f, type="HC4m")
+vcovHC(f, type = "HC4m")
 # Adjust the model so that it uses the HC4m variance
-f_rob <- robcov_alt(f, type="HC4m")
+f_rob <- robcov_alt(f, type = "HC4m")
 # Get the new HC4m-matrix
 # - this function just returns the f_rob$var matrix
 vcov(f_rob)

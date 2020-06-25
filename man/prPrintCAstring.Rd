@@ -4,20 +4,17 @@
 \alias{prPrintCAstring}
 \title{Prep for printing}
 \usage{
-prPrintCAstring(x, css.rgroup, ...)
+prPrintCAstring(x, ...)
 }
 \arguments{
-\item{x}{The output object from the printCrudeAndAdjustedModel function}
+\item{x}{The output object from the \code{printCrudeAndAdjustedModel} function}
 
-\item{css.rgroup}{Css style for the rgorup, if different styles are wanted for each of the
-rgroups you can just specify a vector with the number of elements. Passed on to \code{\link{htmlTable}()}.}
-
-\item{...}{outputs from printCrudeAndAdjusted. If mixed then it defaults to rbind.data.frame}
+\item{...}{outputs from \code{printCrudeAndAdjusted}. If mixed then it defaults to rbind.data.frame}
 }
 \description{
 Since we have both the \code{\link[base]{print}()} and the
 \code{\link[knitr]{knit_print}()} that we need to call it is
-useful to have a common string preparer.
+useful to have a common string preparation.
 \emph{Note:} Currently knit_print doesn't work as expected...
 }
 \keyword{internal}

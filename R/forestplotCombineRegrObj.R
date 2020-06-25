@@ -10,7 +10,7 @@
 #'   that are of interest of comparing. For instance it can be "(score|index|measure)"
 #'   that finds scores in different models that should be compared.
 #' @param reference.names Additional reference names to be added to each model
-#' @param rowname.fn A function that takes a rowname and sees if it needs
+#' @param rowname.fn A function that takes a row name and sees if it needs
 #'   beautifying. The function has only one parameter the coefficients name and should
 #'   return a string or expression.
 #' @param estimate.txt The text of the estimate, usually HR for hazard ratio, OR for

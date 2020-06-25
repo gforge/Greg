@@ -17,21 +17,21 @@ prCaAddUserReferences(
 
 \item{var_order}{The output from the \code{\link{prMapVariable2Name}}}
 
-\item{add_references}{True if it should use the data set to look for 
-references, otherwise supply the function with a vector with names. 
-Sometimes you want to indicate the reference row for each group. 
-This needs to be just as many as the  groups as the order identified. 
+\item{add_references}{True if it should use the data set to look for
+references, otherwise supply the function with a vector with names.
+Sometimes you want to indicate the reference row for each group.
+This needs to be just as many as the  groups as the order identified.
 Use NA if you don't want to have a reference for that particular group.}
 
-\item{add_references_pos}{The position where a reference should be added. 
-Sometimes you don't want the reference to be at the top, for instance 
+\item{add_references_pos}{The position where a reference should be added.
+Sometimes you don't want the reference to be at the top, for instance
 if you have age groups then you may have < 25, 25-39, 40-55, > 55 and
-you have the reference to be 25-39 then you should set the reference 
+you have the reference to be 25-39 then you should set the reference
 list for \code{age_groups} as \code{add_references_pos = list(age_groups = 2)}
 so that you have the second group as the position for the reference.}
 
-\item{reference_zero_effect}{Used with references, tells if zero effect 
-is in exponential form, i.e. \code{exp(0) = 1}, or in regular format, 
+\item{reference_zero_effect}{Used with references, tells if zero effect
+is in exponential form, i.e. \code{exp(0) = 1}, or in regular format,
 i.e. \code{0 = 0} (can be set to any value)}
 }
 \value{

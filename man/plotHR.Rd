@@ -65,10 +65,10 @@ mountain. Use "density" for the mountain view and "ticks" for the jitter format.
 
 \item{ylim}{A vector with 2 elements containing the upper & the lower bound of the y-axis}
 
-\item{col.term}{The color of the estimate line. If multiple lines you can have 
+\item{col.term}{The color of the estimate line. If multiple lines you can have
 different colors by giving a vector.}
 
-\item{col.se}{The color of the confidence interval. If multiple lines you can have 
+\item{col.se}{The color of the confidence interval. If multiple lines you can have
 different colors by giving a vector.}
 
 \item{col.dens}{The color of the density plot. Ignored if you're using jitter}
@@ -77,7 +77,7 @@ different colors by giving a vector.}
 provide the function with a vector if you want to have different lines for
 different width for each model.}
 
-\item{lty.term}{The typeof the estimated line, see lty. If you have more than one model 
+\item{lty.term}{The typeof the estimated line, see lty. If you have more than one model
 then provide the function with a vector if you want to have different line types for
 for each model.}
 
@@ -91,7 +91,7 @@ polygons for all the confidence intervals.}
 
 \item{y.ticks}{The ticks for the y-axis if you desire other than the default.}
 
-\item{ylog}{Show a logarithmic y-axis. Not having a logarithmic axis might seem easier 
+\item{ylog}{Show a logarithmic y-axis. Not having a logarithmic axis might seem easier
 to understand but it's actually not really a good idea. The distance between HR 0.5 and
 2.0 should be the same. This will only show on a logarithmic scale and therefore it is
 strongly recommended to use the logarithmic scale.}
@@ -100,9 +100,9 @@ strongly recommended to use the logarithmic scale.}
 
 \item{y_axis_side}{The side that the y axis is to be plotted, see axis() for details}
 
-\item{plot.bty}{Type of box that you want. See the bty description in 
-graphical parameters (par). If bty is one of "o" (the default), 
-"l", "7", "c", "u", or "]" the resulting box resembles the corresponding 
+\item{plot.bty}{Type of box that you want. See the bty description in
+graphical parameters (par). If bty is one of "o" (the default),
+"l", "7", "c", "u", or "]" the resulting box resembles the corresponding
 upper case letter. A value of "n" suppresses the box.}
 
 \item{axes}{A boolean that is used to identify if axes are to be plotted}
@@ -116,19 +116,19 @@ The function does not return anything
 }
 \description{
 This function is a more specialized version of the \code{\link{termplot}()} function. It
-creates a plot with the spline against hazard ratio. The plot can additianally have 
+creates a plot with the spline against hazard ratio. The plot can additianally have
 indicator of variable density and have multiple lines.
 }
 \section{Multiple models in one plot}{
 
 
-The function allows for plotting multiple splines in one graph. Sometimes you 
-might want to show more than one spline for the same variable. This allows 
-you to create that comparison. 
+The function allows for plotting multiple splines in one graph. Sometimes you
+might want to show more than one spline for the same variable. This allows
+you to create that comparison.
 
-Examples of a situation where I've used multiple splines in one plot is when 
+Examples of a situation where I've used multiple splines in one plot is when
 I want to look at a variables behavior in different time periods. This is another
-way of looking at the proportional hazards assumption. The Schoenfeld residuals 
+way of looking at the proportional hazards assumption. The Schoenfeld residuals
 can be a little tricky to look at when you have the splines.
 
 Another example of when I've used this is when I've wanted to plot adjusted and
@@ -146,58 +146,79 @@ library(rms)
 n <- 1000
 set.seed(731)
 
-age <- round(50 + 12*rnorm(n), 1)
+age <- round(50 + 12 * rnorm(n), 1)
 label(age) <- "Age"
 
-sex <- factor(sample(c('Male','Female'), n, 
-    rep=TRUE, prob=c(.6, .4)))
-cens <- 15*runif(n)
+sex <- factor(sample(c("Male", "Female"), n,
+  rep = TRUE, prob = c(.6, .4)
+))
+cens <- 15 * runif(n)
 
-smoking <- factor(sample(c('Yes','No'), n, 
-    rep=TRUE, prob=c(.2, .75)))
+smoking <- factor(sample(c("Yes", "No"), n,
+  rep = TRUE, prob = c(.2, .75)
+))
 
-h <- .02*exp(.02*(age-50)+.1*((age-50)/10)^3+.8*(sex=='Female')+2*(smoking=='Yes'))
-dt <- -log(runif(n))/h
-label(dt) <- 'Follow-up Time'
+# Build outcome
+h <- .02 * exp(.02 * 
+                 (age - 50) + .1 * 
+                 ((age - 50) / 10)^3 + .8 * 
+                 (sex == "Female") + 2 * 
+                 (smoking == "Yes"))
+dt <- -log(runif(n)) / h
+label(dt) <- "Follow-up Time"
 
-e <- ifelse(dt <= cens,1,0)
+e <- ifelse(dt <= cens, 1, 0)
 dt <- pmin(dt, cens)
 units(dt) <- "Year"
 
 # Add missing data to smoking
-smoking[sample(1:n, round(n*0.05))] <- NA
+smoking[sample(1:n, round(n * 0.05))] <- NA
 
 # Create a data frame since plotHR will otherwise
 # have a hard time getting the names of the variables
 ds <- data.frame(
   dt = dt,
   e = e,
-  age=age, 
-  smoking=smoking,
-  sex=sex)
+  age = age,
+  smoking = smoking,
+  sex = sex
+)
 
 library(splines)
-Srv <- Surv(dt,e)
-fit.coxph <- coxph(Srv ~ bs(age, 3) + sex + smoking, data=ds)
+Srv <- Surv(dt, e)
+fit.coxph <- coxph(Srv ~ bs(age, 3) + sex + smoking, data = ds)
 
-org_par <- par(xaxs="i", ask=TRUE)
-plotHR(fit.coxph, term="age", plot.bty="o", xlim=c(30, 70), xlab="Age")
+org_par <- par(xaxs = "i", ask = TRUE)
+plotHR(fit.coxph, term = "age", plot.bty = "o", xlim = c(30, 70), xlab = "Age")
 
 dd <- datadist(ds)
-options(datadist='dd')
-fit.cph <- cph(Srv ~ rcs(age,4) + sex + smoking, data=ds, x=TRUE, y=TRUE)
+options(datadist = "dd")
+fit.cph <- cph(Srv ~ rcs(age, 4) + sex + smoking, data = ds, x = TRUE, y = TRUE)
 
-plotHR(fit.cph, term=1, plot.bty="l", xlim=c(30, 70), xlab="Age")
+plotHR(fit.cph,
+       term = 1,
+       plot.bty = "l",
+       xlim = c(30, 70),
+       xlab = "Age")
 
-plotHR(fit.cph, term="age", plot.bty="l", xlim=c(30, 70), ylog=FALSE, rug="ticks", xlab="Age")
+plotHR(fit.cph, 
+       term = "age", 
+       plot.bty = "l", 
+       xlim = c(30, 70),
+       ylog = FALSE,
+       rug = "ticks",
+       xlab = "Age")
 
-unadjusted_fit <- cph(Srv ~ rcs(age,4), data=ds, x=TRUE, y=TRUE)
-plotHR(list(fit.cph, unadjusted_fit), term="age", xlab="Age",
-		polygon_ci=c(TRUE, FALSE), 
-		col.term = c("#08519C", "#77777799"),
-		col.se = c("#DEEBF7BB", grey(0.6)),
-		lty.term = c(1, 2),
-		plot.bty="l", xlim=c(30, 70))
+unadjusted_fit <- cph(Srv ~ rcs(age, 4), data = ds, x = TRUE, y = TRUE)
+plotHR(list(fit.cph, unadjusted_fit),
+  term = "age", 
+  xlab = "Age",
+  polygon_ci = c(TRUE, FALSE),
+  col.term = c("#08519C", "#77777799"),
+  col.se = c("#DEEBF7BB", grey(0.6)),
+  lty.term = c(1, 2),
+  plot.bty = "l", xlim = c(30, 70)
+)
 par(org_par)
 }
 \author{

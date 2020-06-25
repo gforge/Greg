@@ -22,7 +22,7 @@ columns.}
 \code{void} The function performs the print
 }
 \description{
-Uses \code{\link[graphics]{polygon}()} or 
+Uses \code{\link[graphics]{polygon}()} or
 \code{\link[graphics]{lines}()} to plot confidence
 intervals.
 }

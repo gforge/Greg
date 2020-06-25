@@ -17,7 +17,7 @@ prEnvModelCall(model, what, ...)
 \description{
 Sometimes the function can't find some of the variables that
 were available when running the original variable. This function
-uses the \code{\link[stats]{as.formula}()} together with
+uses the \code{\link[stats:formula]{as.formula}()} together with
 \code{\link[base]{environment}()} in order to get the environment
 that the original code used.
 }

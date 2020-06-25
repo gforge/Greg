@@ -32,7 +32,7 @@ that finds scores in different models that should be compared.}
 
 \item{reference.names}{Additional reference names to be added to each model}
 
-\item{rowname.fn}{A function that takes a rowname and sees if it needs
+\item{rowname.fn}{A function that takes a row name and sees if it needs
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
 
@@ -79,44 +79,49 @@ to get an overview and easier comparison.
 \examples{
 org.par <- par("ask" = TRUE)
 
-# simulated data to test 
+# simulated data to test
 set.seed(10)
 ftime <- rexp(200)
-fstatus <- sample(0:1,200,replace=TRUE)
+fstatus <- sample(0:1, 200, replace = TRUE)
 cov <- data.frame(
   x1 = runif(200),
   x2 = runif(200),
-  x3 = runif(200))
+  x3 = runif(200)
+)
 
 library(rms)
 ddist <- datadist(cov)
 options(datadist = "ddist")
 
-fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data=cov)
-fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data=cov)
+fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
+fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
-forestplotCombineRegrObj (
+forestplotCombineRegrObj(
   regr.obj = list(fit1, fit2),
   variablesOfInterest.regexp = "(x2|x3)",
   reference.names = c("First model", "Second model"),
-  new_page = TRUE)
+  new_page = TRUE
+)
 
-modifyNameFunction <- function(x){
-  if (x == "x1")
-    return ("Covariate A")
-  
-  if (x == "x2")
-    return (expression(paste("My ", beta[2])))
-  
-  return (x)
+modifyNameFunction <- function(x) {
+  if (x == "x1") {
+    return("Covariate A")
+  }
+
+  if (x == "x2") {
+    return(expression(paste("My ", beta[2])))
+  }
+
+  return(x)
 }
 
-forestplotCombineRegrObj (
+forestplotCombineRegrObj(
   regr.obj = list(fit1, fit2),
   variablesOfInterest.regexp = "(x2|x3)",
   reference.names = c("First model", "Second model"),
   rowname.fn = modifyNameFunction,
-  new_page = TRUE)
+  new_page = TRUE
+)
 
 par(org.par)
 }

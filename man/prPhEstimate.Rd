@@ -28,7 +28,7 @@ i.e. median for continuous and mode for factors.}
 }
 \description{
 The function uses predict if not specified contrast
-in order to attain the estimate, upper, and lower 
+in order to attain the estimate, upper, and lower
 confidence interval
 }
 \keyword{internal}

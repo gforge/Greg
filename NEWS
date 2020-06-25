@@ -1,5 +1,9 @@
 NEWS for the Greg package
 
+Changes for 1.3.4
+-----------------
+* Fix for htmlTable 2.0 which means that the css.group option has been dropped in favor of the new theming & addHtmlTableStyle function. See example and vignette for instructions on how-to.
+
 Changes for 1.3.3
 -----------------
 * Fix for new handling of data.frames in next R version

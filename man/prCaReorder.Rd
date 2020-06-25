@@ -9,18 +9,18 @@ prCaReorder(mtrx2reorder, var_order, order)
 \arguments{
 \item{mtrx2reorder}{The matrix to reorder}
 
-\item{var_order}{The variables representing different rows 
+\item{var_order}{The variables representing different rows
 \code{\link{prMapVariable2Name}}}
 
 \item{order}{A vector of strings used for \code{\link{prCaSelectAndOrderVars}}}
 }
 \value{
-\code{matrix} Returns the \code{mtrx2reorder} rearranged with the 
+\code{matrix} Returns the \code{mtrx2reorder} rearranged with the
  attribute "greps" for the greps from \code{\link{prCaSelectAndOrderVars}}
  and the attribute "var_order" for the new var_order
 }
 \description{
-Uses the \code{\link{prCaSelectAndOrderVars}} for finding the 
+Uses the \code{\link{prCaSelectAndOrderVars}} for finding the
 orders according to the \code{order} argument.
 }
 \seealso{
