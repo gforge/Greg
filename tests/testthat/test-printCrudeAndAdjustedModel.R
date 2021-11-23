@@ -1,4 +1,3 @@
-context("printCrudeAndAdjustedModel")
 test_that("Check position of reference", {
   set.seed(10)
   n <- 500
@@ -253,3 +252,4 @@ test_that("Errors for printCrudeAndJust", {
     desc_args = "wrong argument"
   ))
 })
+

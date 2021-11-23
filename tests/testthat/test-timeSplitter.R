@@ -1,6 +1,4 @@
 library(testthat)
-
-context("Test timeSplitter")
 library(magrittr)
 library(dplyr)
 
@@ -31,8 +29,8 @@ test_that("Check the number of events and rows are correct",{
                sum(test_data$event == "dead"))
   expect_equal(sum(split_data$event == "censored"), 
                sum(test_data$event == "censored"))
-  expect_more_than(sum(split_data$event == "alive"), 
-                   sum(test_data$event == "alive"))
+  expect_gt(sum(split_data$event == "alive"), 
+            sum(test_data$event == "alive"))
 })
 
 
@@ -90,7 +88,7 @@ test_that("Check that age and calendar time is updated",{
                  time_related_vars = c("age", "date"))  
   test_data <- cal.yr(test_data)
   library(dplyr)
-  for (i in 1:nrow(test_data)){
+  for (i in 1:nrow(test_data)) {
     row <- test_data[i,]
     last_age <- row$age + (ceil(row$time/2) - 1)*2
     age <- split_data[split_data$id == row$id, "age"]

@@ -52,8 +52,7 @@ Other printCrudeAndAdjusted functions:
 \code{\link{prCaReorderReferenceDescribe}()},
 \code{\link{prCaReorder}()},
 \code{\link{prCaSelectAndOrderVars}()},
-\code{\link{prCaSetRownames}()},
-\code{\link{printCrudeAndAdjustedModel}()}
+\code{\link{prCaSetRownames}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

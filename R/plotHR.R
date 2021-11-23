@@ -102,7 +102,9 @@
 #' @importFrom grDevices grey
 #' @importFrom graphics axTicks axis box lines par plot polygon
 #' @author Reinhard Seifert, Max Gordon
+#' 
 #' @export
+#' @rdname plotHR
 plotHR <- function(models,
                    term = 1,
                    se = TRUE,
@@ -141,13 +143,18 @@ plotHR <- function(models,
 
   # Create vectors of the colors, line types etc to
   # allow for specific settings for each model
-  col.se <- rep(col.se, length.out = length(models))
-  col.term <- rep(col.term, length.out = length(models))
-  polygon_ci <- rep(polygon_ci, length.out = length(models))
-  lty.term <- rep(lty.term, length.out = length(models))
-  lwd.term <- rep(lwd.term, length.out = length(models))
-  lty.se <- rep(lty.se, length.out = length(models))
-  lwd.se <- rep(lwd.se, length.out = length(models))
+  confint_style <- lapply(1:length(models),
+                          function(i) {
+                            ret <- expand.grid(c("col", "lty", "lwd"), c("term", "se")) |> 
+                              apply(FUN = paste, MARGIN = 1, collapse = ".") |>
+                              c("polygon_ci") |>
+                              sapply(function(x) {
+                                var <- get(x)
+                                if (length(var) == 1) return(var)
+                                if (length(var) == length(models)) return(var[[i]])
+                                stop("Invalid length of ", x, ": ", length(var), " - should be 1 or 0")
+                              }, simplify = FALSE)
+                          })
 
   # set plotting parameters
   par(las = 1, cex = cex)
@@ -185,9 +192,10 @@ plotHR <- function(models,
     ylim <- NULL
   }
 
-  plot_boundaries.y <- NULL
+  boundaries <- list()
+  boundaries$y <- NULL
   if (length(ylim) == 2) {
-    plot_boundaries.y <- c(min(ylim), max(ylim))
+    boundaries$y <- c(min(ylim), max(ylim))
   }
 
   # Just add the boundary values
@@ -237,50 +245,25 @@ plotHR <- function(models,
     multi_data <- append(multi_data, list(line_data))
 
     # Update the plot boundaries to the new fit
-    plot_boundaries.y <- getYBoundaries(
+    boundaries$y <- getYBoundaries(
       ylim = ylim,
-      current_limits = plot_boundaries.y,
+      current_limits = boundaries$y,
       variable = line_data$estimate
     )
 
     # Add 10 % to make room for the ticks rug
     if (rug == "ticks") {
-      plot_boundaries.y[1] <-
-        min(plot_boundaries.y) -
-        (plot_boundaries.y[2] - plot_boundaries.y[1]) * .1
+      boundaries$y[1] <-
+        min(boundaries$y) -
+        (boundaries$y[2] - boundaries$y[1]) * .1
     }
   }
 
-  # plot empty plot with coordinatesystem and labels
-  plot_boundaries.x <- range(xvalues[])
-  plot(
-    y = plot_boundaries.y,
-    x = plot_boundaries.x,
-    xlab = xlab,
-    ylab = ylab,
-    main = main,
-    type = "n",
-    axes = FALSE,
-    ...
-  )
-
-  # plot CI as polygon shade - if 'se = TRUE' (default)
-  if (se) {
-    # Plot the last on top
-    for (i in length(models):1) {
-      prPhConfIntPlot(
-        model_data = multi_data[[i]],
-        color = col.se[[i]],
-        polygon = polygon_ci[[i]],
-        lwd = lwd.se[i],
-        lty = lty.se[i]
-      )
-    }
-  }
-
+  # plot empty plot with coordinate system and labels
+  boundaries$x <- range(xvalues[])
   if (!tolower(rug) %in% c("density", "ticks")
-  && rug != FALSE
-  && !is.null(rug)) {
+      && rug != FALSE
+      && !is.null(rug)) {
     warning("Currently the rug option only supports 'density' or 'ticks'")
   }
 
@@ -300,70 +283,128 @@ plotHR <- function(models,
         xvalues_4_density <= max(xlim)]
   }
 
-  if (rug == "density") {
-    prPhDensityPlot(xvalues_4_density,
-      color = col.dens
+  structure(list(models = models,
+                 multi_data = multi_data,
+                 main = main,
+                 boundaries = boundaries,
+                 se = se,
+                 confint_style = confint_style,
+                 xlab = xlab, 
+                 ylab = ylab,
+                 ylog = ylog,
+                 col.dens = col.dens,
+                 quantiles = quantiles,
+                 rug = rug,
+                 xvalues_4_density = xvalues_4_density,
+                 ticks = list(x = x.ticks,
+                              y = y.ticks,
+                              y_axis_side = y_axis_side),
+                 axes = axes),
+            class = "plotHR")
+}
+
+#' @exportS3Method 
+#' @rdname plotHR
+#' @param x Sent the `plotHR` object to plot
+print.plotHR <- function(x, ...) {
+  plot(x, ...)
+}
+
+#' @exportS3Method 
+#' @rdname plotHR
+#' @param y Ignored in plot
+plot.plotHR <- function(x, y, ...) {
+  if (!missing(y)) stop("Unexpected y parameter")
+  plot(
+    y = x$boundaries$y,
+    x = x$boundaries$x,
+    xlab = x$xlab,
+    ylab = x$ylab,
+    main = x$main,
+    type = "n",
+    axes = FALSE,
+    ...
+  )
+  
+  # plot CI as polygon shade - if 'se = TRUE' (default)
+  if (x$se) {
+    # Plot the last on top
+    for (i in length(x$models):1) {
+      prPhConfIntPlot(
+        model_data = x$multi_data[[i]],
+        color = x$confint_style[[i]]$col.se,
+        polygon = x$confint_style[[i]]$polygon_ci,
+        lwd = x$confint_style[[i]]$lwd.se,
+        lty = x$confint_style[[i]]$lty.se
+      )
+    }
+  }
+  
+  if (x$rug == "density") {
+    prPhDensityPlot(x$xvalues_4_density,
+                    color = x$col.dens
     )
   }
-
+  
   # plot white lines (background color) for:
   # 2.5%tile, 1Q, median, 3Q and 97.5%tile
   # through confidence shade and density plot
   axis(
     side = 1,
-    at = quantiles,
+    at = x$quantiles,
     labels = FALSE,
     lwd = 0,
     col.ticks = "white",
     lwd.ticks = 1,
     tck = 1
   )
-
-  if (rug == "ticks") {
-    prPhRugPlot(xvalues = xvalues_4_density)
+  
+  if (x$rug == "ticks") {
+    prPhRugPlot(xvalues = x$xvalues_4_density)
   }
-
-
+  
+  
   # Plot the last fit on top, therefore use the reverse
-  for (i in length(models):1) {
-    current_i.forw <- order(multi_data[[i]]$xvalues)
-
+  for (i in length(x$models):1) {
+    current_i.forw <- order(x$multi_data[[i]]$xvalues)
+    
     # Plots the actual regression line
-    lines(multi_data[[i]]$xvalues[current_i.forw],
-      multi_data[[i]]$estimate[current_i.forw],
-      col = col.term[[i]],
-      lwd = lwd.term[[i]],
-      lty = lty.term[[i]]
+    lines(x = x$multi_data[[i]]$xvalues[current_i.forw],
+          y = x$multi_data[[i]]$estimate[current_i.forw],
+          col = x$confint_style[[i]]$col.term,
+          lwd = x$confint_style[[i]]$lwd.term,
+          lty = x$confint_style[[i]]$lty.term
     )
   }
-
+  
   # plot the axes
-  if (axes) {
-    axis(side = 1, at = x.ticks)
-    if (is.null(y.ticks)) {
-      y.ticks <- axTicks(2)
-    } else if (ylog == TRUE) {
+  if (x$axes) {
+    axis(side = 1, at = x$ticks$x)
+    if (is.null(x$ticks$y)) {
+      x$ticks$y <- axTicks(2)
+    } else if (x$ylog == TRUE) {
       # This is an assumption that the ticks
       # aren't provided in log
-      y.ticks <- log(y.ticks)
+      x$ticks$y <- log(x$ticks$y)
     }
-
-
-    if (ylog == TRUE) {
-      y.ticks_labels <- ifelse(exp(y.ticks) >= 1,
-        sprintf("%0.1f", exp(y.ticks)),
-        sprintf("%0.2f", exp(y.ticks))
-      )
+    
+    
+    if (x$ylog == TRUE) {
+      y.ticks_labels <- ifelse(exp(x$ticks$y) >= 1,
+                               sprintf("%0.1f", exp(x$ticks$y)),
+                               sprintf("%0.2f", exp(x$ticks$y)))
+      
       # Get familiar y-axis instead of the log
       axis(
-        side = y_axis_side, at = y.ticks,
+        side = x$ticks$y_axis_side,
+        at = x$ticks$y,
         labels = y.ticks_labels
       )
     } else {
-      axis(side = y_axis_side, at = y.ticks)
+      axis(side = x$ticks$y_axis_side, at = x$ticks$y)
     }
   }
-
+  
   # plot a box around plotting panel if specified - not plotted by default
-  box(bty = plot.bty)
+  box(bty = x$plot.bty)
 }

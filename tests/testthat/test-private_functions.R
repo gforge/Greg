@@ -202,7 +202,6 @@ test_that("Check how well variables are identified and stratification, etc are r
   )
 })
 
-context("prMapVariable2Name")
 test_that("Check how the mapping of rows work", {
   set.seed(10)
   n <- 500

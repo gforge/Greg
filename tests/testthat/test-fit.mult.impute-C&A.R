@@ -5,8 +5,6 @@
 # issues                   #
 ############################
 
-context("Tests for fit.mult.impute")
-
 suppressMessages(library("rms"))
 
 test_that("Check regular linear regression with getC&A", {
@@ -46,15 +44,11 @@ test_that("Check regular linear regression with getC&A", {
   ddist <<- datadist(ds)
   options(datadist = "ddist")
 
-  fit_ols <- ols(y ~ x1 + x2 + x3 +
-    missing_var_1 + missing_var_2, data = ds)
-  impute_formula <-
-    as.formula(paste(
-      "~",
-      paste(all.vars(as.formula(fit_ols)),
-        collapse = "+"
-      )
-    ))
+  fit_ols <- ols(y ~ x1 + x2 + x3 + missing_var_1 + missing_var_2, data = ds)
+  impute_formula <- as.formula(paste("~",
+                                     paste(all.vars(as.formula(fit_ols)),
+                                           collapse = "+"
+                                     )))
 
   sink(file = ifelse(Sys.info()["sysname"] == "Windows",
     "NUL",

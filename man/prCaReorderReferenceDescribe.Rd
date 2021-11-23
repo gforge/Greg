@@ -74,8 +74,7 @@ Other printCrudeAndAdjusted functions:
 \code{\link{prCaPrepareCrudeAndAdjusted}()},
 \code{\link{prCaReorder}()},
 \code{\link{prCaSelectAndOrderVars}()},
-\code{\link{prCaSetRownames}()},
-\code{\link{printCrudeAndAdjustedModel}()}
+\code{\link{prCaSetRownames}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

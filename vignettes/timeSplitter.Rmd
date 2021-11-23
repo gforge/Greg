@@ -114,7 +114,7 @@ models <-
 
 ### Other options
 
-These approaches are probably just a subset of possible approaches. I know of the [timereg](https://github.com/scheike/timereg) package that has some very fancy time coefficient handling. My personal experience with the package is limited and I've been discouraged by the visually less appealing graphs provided in the examples and there isn't a proper vignette explaining the details (Last checked v 1.8.9). Similarly the [flexsurv](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0047804) should be able to deal with the proportional hazards assumption. If you know any other then please send me an e-mail.
+These approaches are probably just a subset of possible approaches. I know of the [timereg](https://github.com/scheike/timereg) package that has some very fancy time coefficient handling. My personal experience with the package is limited and I've been discouraged by the visually less appealing graphs provided in the examples and there isn't a proper vignette explaining the details (Last checked v 1.8.9). Similarly the [flexsurv](https://doi.org/10.1371/journal.pone.0047804) should be able to deal with the proportional hazards assumption. If you know any other then please send me an e-mail.
 
 How the timeSplitter works
 ==========================

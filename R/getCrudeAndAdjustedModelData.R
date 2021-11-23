@@ -48,9 +48,11 @@
 #' @importFrom stringr str_split
 #' @import stats
 #'
+#' @family crudeAndAdjusted functions
 #' @rdname getCrudeAndAdjustedModelData
 #' @export
-getCrudeAndAdjustedModelData <- function(model, level = .95,
+getCrudeAndAdjustedModelData <- function(model,
+                                         level = .95,
                                          remove_interaction_vars = TRUE,
                                          remove_strata = FALSE,
                                          remove_cluster = FALSE,
@@ -61,7 +63,8 @@ getCrudeAndAdjustedModelData <- function(model, level = .95,
 
 #' @export
 #' @keywords internal
-getCrudeAndAdjustedModelData.default <- function(model, level = .95,
+getCrudeAndAdjustedModelData.default <- function(model,
+                                                 level = .95,
                                                  remove_interaction_vars = TRUE,
                                                  remove_strata = FALSE,
                                                  remove_cluster = FALSE,
@@ -129,7 +132,7 @@ getCrudeAndAdjustedModelData.default <- function(model, level = .95,
 
   # Sort in order to keep the order
   adjusted <- adjusted[sort(keep), , drop = FALSE]
-
+  
   model_list <- list()
   unadjusted <- c()
   for (variable in var_names) {
@@ -211,10 +214,10 @@ getCrudeAndAdjustedModelData.default <- function(model, level = .95,
     "Adjusted", levels_str
   )
 
-  attr(both, "model") <- model
-  attr(both, "crude_models") <- model_list
-  class(both) <- c("getCrudeAndAdjustedModelData", class(both))
-  return(both)
+  structure(both,
+            model = model,
+            crude_models = model_list,
+            class = c("getCrudeAndAdjustedModelData", class(both)))
 }
 
 #' @rdname getCrudeAndAdjustedModelData

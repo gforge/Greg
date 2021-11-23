@@ -1,5 +1,9 @@
 NEWS for the **Greg** package
 
+Changes for 1.4.0
+-----------------
+* The plotHR has now a more elegant `plot` S3-function separating the preparing of the plot and the actual output (*Note*: if called within a loop you now need to call `print`/`plot` on the returned object)
+
 Changes for 1.3.4
 -----------------
 * Fix for `htmlTable` 2.0 which means that the css.group option has been dropped in favor of the new theming & `addHtmlTableStyle` function. See example and vignette for instructions on how-to.

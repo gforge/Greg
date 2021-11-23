@@ -18,7 +18,6 @@ library(rms)
 ddist <<- datadist(ds)
 options(datadist = "ddist")
 
-context("getCrudeAndAdjustedModelData")
 test_that("Correct number of rows and columns", {
   fit1 <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + x2 + x3, data = ds)
 
@@ -279,10 +278,10 @@ test_that("Strata and clusters should be still present in the crude format coxph
 
   fit <- coxph(Surv(time, status) ~ x1 + x2 + cluster(sex), data = test1)
   x <- getCrudeAndAdjustedModelData(fit, remove_cluster = FALSE)
-  fit <- update(fit, . ~ x1 + cluster(sex))
+  fit <- suppressWarnings(update(fit, . ~ x1 + cluster(sex)))
   expect_true(all(x["x1", 2:3] - exp(confint(fit)) < .Machine$double.eps))
 
-  fit <- update(fit, . ~ x2 + cluster(sex))
+  fit <- suppressWarnings(update(fit, . ~ x2 + cluster(sex)))
   expect_true(all(x["x2", 2:3] - exp(confint(fit)) < .Machine$double.eps))
 
   fit <- coxph(Surv(time, status) ~ x1 + x2 + cluster(sex), data = test1)

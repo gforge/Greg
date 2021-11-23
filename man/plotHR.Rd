@@ -2,6 +2,8 @@
 % Please edit documentation in R/plotHR.R
 \name{plotHR}
 \alias{plotHR}
+\alias{print.plotHR}
+\alias{plot.plotHR}
 \title{Plot a spline in a Cox regression model}
 \usage{
 plotHR(
@@ -33,6 +35,10 @@ plotHR(
   alpha = 0.05,
   ...
 )
+
+\method{print}{plotHR}(x, ...)
+
+\method{plot}{plotHR}(x, y, ...)
 }
 \arguments{
 \item{models}{A single model or a list() with several models}
@@ -110,6 +116,10 @@ upper case letter. A value of "n" suppresses the box.}
 \item{alpha}{The alpha level for the confidence intervals}
 
 \item{...}{Any additional values that are to be sent to the plot() function}
+
+\item{x}{Sent the `plotHR` object to plot}
+
+\item{y}{Ignored in plot}
 }
 \value{
 The function does not return anything

@@ -1,8 +1,6 @@
-context("plotHR private functions")
-
 test_that("Check the prPhNewData function", {
-  set.seed(10)
-  n <- 11
+  set.seed(1000)
+  n <- 110
   ds <- data.frame(
     ftime = rexp(n),
     fstatus = sample(0:1, size = n, replace = TRUE),
@@ -97,11 +95,10 @@ test_that("Check the prPhEstimate function", {
     dt = dt
   )
 
-  ds$S <- with(ds, Surv(dt, e))
   dd <<- datadist(ds)
   options(datadist = "dd")
 
-  fit <- cph(S ~ age + sex, x = TRUE, y = TRUE, data = ds)
+  fit <- cph(Surv(dt, e) ~ age + sex, x = TRUE, y = TRUE, data = ds)
   est <- prPhEstimate(fit,
     alpha = .05,
     term.label = "age",
@@ -178,7 +175,7 @@ test_that("Check the prPhEstimate function", {
   expect_true(all(est$xvalues <= max(age)))
   expect_true(all(est$xvalues >= min(age)))
 
-  fit <- cph(S ~ rcs(age, 3) + sex, x = TRUE, y = TRUE, data = ds)
+  fit <- cph(Surv(dt, e) ~ rcs(age, 3) + sex, x = TRUE, y = TRUE, data = ds)
   est <- prPhEstimate(fit,
     alpha = .05,
     term.label = "age",
@@ -193,7 +190,7 @@ test_that("Check the prPhEstimate function", {
     )
   )
 
-  fit <- coxph(S ~ pspline(age, 3) + sex, data = ds)
+  fit <- coxph(Surv(dt, e) ~ pspline(age, 3) + sex, data = ds)
   est <- prPhEstimate(fit,
     alpha = .05,
     term.label = "age",
@@ -249,31 +246,31 @@ test_that("General plotting funcitonality of plotHR", {
     smoking = smoking,
     sex = sex
   )
-  ds$S <- with(ds, Surv(dt, e))
 
   library(splines)
   dd <<- datadist(ds)
   options(datadist = "dd")
-  fit.coxph <- coxph(S ~ bs(age, 3) + sex + smoking, data = ds)
+  fit.coxph <- coxph(Surv(dt, e) ~ bs(age, 3) + sex + smoking, data = ds)
 
   org_par <- par(xaxs = "i")
   plotHR(fit.coxph, term = "age", plot.bty = "o", xlim = c(30, 70), xlab = "Age")
 
   dd <- datadist(ds)
   options(datadist = "dd")
-  fit.cph <- cph(S ~ rcs(age, 4) + sex + smoking, data = ds, x = TRUE, y = TRUE)
+  fit.cph <- cph(Surv(dt, e) ~ rcs(age, 4) + sex + smoking, data = ds, x = TRUE, y = TRUE)
 
   plotHR(fit.cph, term = 1, plot.bty = "l", xlim = c(30, 70), xlab = "Age")
 
   plotHR(fit.cph, term = "age", plot.bty = "l", xlim = c(30, 70), ylog = FALSE, rug = "ticks", xlab = "Age")
 
-  unadjusted_fit <- cph(S ~ rcs(age, 4), data = ds, x = TRUE, y = TRUE)
-  plotHR(list(fit.cph, unadjusted_fit),
-    term = "age", xlab = "Age",
-    polygon_ci = c(TRUE, FALSE),
-    col.term = c("#08519C", "#77777799"),
-    col.se = c("#DEEBF7BB", grey(0.6)),
-    lty.term = c(1, 2),
-    plot.bty = "l", xlim = c(30, 70)
+  unadjusted_fit <- cph(Surv(dt, e) ~ rcs(age, 4), data = ds, x = TRUE, y = TRUE)
+  out <- plotHR(list(fit.cph, unadjusted_fit),
+                term = "age", xlab = "Age",
+                polygon_ci = c(TRUE, FALSE),
+                col.term = c("#08519C", "#77777799"),
+                col.se = c("#DEEBF7BB", grey(0.6)),
+                lty.term = c(1, 2),
+                plot.bty = "l", xlim = c(30, 70)
   )
+  expect_class(out, "plotHR")
 })

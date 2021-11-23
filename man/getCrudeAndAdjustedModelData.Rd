@@ -102,5 +102,9 @@ print(data_matrix)
 }
 \seealso{
 \code{\link{printCrudeAndAdjustedModel}()}
+
+Other crudeAndAdjusted functions: 
+\code{\link{printCrudeAndAdjustedModel}()}
 }
+\concept{crudeAndAdjusted functions}
 \keyword{internal}

@@ -34,8 +34,7 @@ Other printCrudeAndAdjusted functions:
 \code{\link{prCaPrepareCrudeAndAdjusted}()},
 \code{\link{prCaReorderReferenceDescribe}()},
 \code{\link{prCaReorder}()},
-\code{\link{prCaSelectAndOrderVars}()},
-\code{\link{printCrudeAndAdjustedModel}()}
+\code{\link{prCaSelectAndOrderVars}()}
 }
 \concept{printCrudeAndAdjusted functions}
 \keyword{internal}

@@ -317,18 +317,8 @@ rbind(Miles = mpg_model, Weight = wt_model) \%>\%
 \seealso{
 \code{\link[Hmisc]{latex}()} for details.
 
-Other printCrudeAndAdjusted functions: 
-\code{\link{prCaAddRefAndStat}()},
-\code{\link{prCaAddReference}()},
-\code{\link{prCaAddUserReferences}()},
-\code{\link{prCaGetImputationCols}()},
-\code{\link{prCaGetRowname}()},
-\code{\link{prCaGetVnStats}()},
-\code{\link{prCaPrepareCrudeAndAdjusted}()},
-\code{\link{prCaReorderReferenceDescribe}()},
-\code{\link{prCaReorder}()},
-\code{\link{prCaSelectAndOrderVars}()},
-\code{\link{prCaSetRownames}()}
+Other crudeAndAdjusted functions: 
+\code{\link{getCrudeAndAdjustedModelData}()}
 }
-\concept{printCrudeAndAdjusted functions}
+\concept{crudeAndAdjusted functions}
 \keyword{internal}

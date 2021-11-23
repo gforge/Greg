@@ -90,7 +90,7 @@
 #'
 #' @example inst/examples/printCrudeAndAdjustedModel_example.R
 #'
-#' @family printCrudeAndAdjusted functions
+#' @family crudeAndAdjusted functions
 #' @rdname printCrudeAndAdjustedModel
 #' @export
 printCrudeAndAdjustedModel <- function(model,
@@ -109,6 +109,32 @@ printCrudeAndAdjustedModel <- function(model,
                                        impute_args,
                                        ...) {
   dot_args <- list(...)
+  
+  if (is.null(model)) {
+    stop("The model argument that you've provided is null. Expecting output from
+         getCrudeAndAdjustedModelData or a plain regression model")
+  }
+  
+  if (!"matrix" %in% class(model)) {
+    # Convert the model that should be a model into a matrix that
+    # originally was expected
+    gca_args <- list(model = model)
+    if (!missing(order)) {
+      gca_args$var_select <- order
+    }
+    
+    for (n in names(dot_args)[names(dot_args) %in%
+                              names(formals(getCrudeAndAdjustedModelData))]) {
+      gca_args[[n]] <- dot_args[[n]]
+      dot_args[[n]] <- NULL
+    }
+    
+    x <- fastDoCall(getCrudeAndAdjustedModelData, gca_args)
+  } else {
+    x <- model
+    model <- attr(model, "model")
+  }
+  ds <- prGetModelData(model)
   
   if (missing(reference_zero_effect)) {
     reference_zero_effect <- ifelse(all("lm" %in% class(model)) ||
@@ -135,32 +161,6 @@ printCrudeAndAdjustedModel <- function(model,
   if (!inherits(desc_args, "desc_list")) {
     stop("You need to use the caDescribeOpts() for the desc_args argument!")
   }
-
-  if (is.null(model)) {
-    stop("The model argument that you've provided is null. Expecting output from
-         getCrudeAndAdjustedModelData or a plain regression model")
-  }
-
-  if (!"matrix" %in% class(model)) {
-    # Convert the model that should be a model into a matrix that
-    # originally was expected
-    gca_args <- list(model = model)
-    if (!missing(order)) {
-      gca_args$var_select <- order
-    }
-
-    for (n in names(dot_args)[names(dot_args) %in%
-      names(formals(getCrudeAndAdjustedModelData))]) {
-      gca_args[[n]] <- dot_args[[n]]
-      dot_args[[n]] <- NULL
-    }
-
-    x <- fastDoCall(getCrudeAndAdjustedModelData, gca_args)
-  } else {
-    x <- model
-    model <- attr(model, "model")
-  }
-  ds <- prGetModelData(model)
 
   if (!missing(impute_args) &&
     !inherits(model, "fit.mult.impute")) {
@@ -364,16 +364,12 @@ printCrudeAndAdjustedModel <- function(model,
     attr(reordered_groups, "n.rgroup") <- n.rgroup
   }
 
-  class(reordered_groups) <- c("printCrudeAndAdjusted", class(reordered_groups))
-
-  attr(reordered_groups, "header") <- sub(
-    "(Crude|Adjusted)",
-    coef_name, colnames(reordered_groups)
-  )
-  attr(reordered_groups, "rowlabel.just") <- "l"
-  attr(reordered_groups, "rowlabel") <- "Variable"
-  attr(reordered_groups, "other") <- dot_args
-  return(reordered_groups)
+  structure(reordered_groups,
+            class = c("printCrudeAndAdjusted", class(reordered_groups)),
+            header = sub("(Crude|Adjusted)", coef_name, colnames(reordered_groups)),
+            rowlabel.just = "l",
+            rowlabel = "Variable",
+            other = dot_args)
 }
 
 setClass("printCrudeAndAdjusted", contains = "matrix")
