@@ -41,31 +41,31 @@ prPhEstimate <- function(model,
         term.label = term.label,
         xlim = xlim
       )
-
+    
     # Add these variables
     add_vars <- colnames(tmp)[!colnames(tmp) %in% colnames(new_data) &
-      colnames(tmp) != term.label]
+                                colnames(tmp) != term.label]
     for (dv in add_vars) {
       # Copy the element to the previous new_data
       # Note that the value is the same for the
       # entire column and hence we only need the first value
       new_data[[dv]] <- tmp[1, dv]
     }
-
+    
     # Remove these variables
     rm_vars <- colnames(new_data)[!colnames(new_data) %in% colnames(tmp) &
-      colnames(new_data) != term.label]
+                                    colnames(new_data) != term.label]
     for (r in rm_vars) {
       new_data[[r]] <- NULL
     }
   }
-
+  
   if (inherits(model, "cph")) {
     if (cntrst) {
       a <- list(new_data[, term.label])
       b <- list(attr(new_data, "median"))
       names(b) <- names(a) <- term.label
-
+      
       for (n in names(new_data)) {
         if (!n %in% names(a)) {
           a[[n]] <- new_data[1, n]
@@ -73,8 +73,8 @@ prPhEstimate <- function(model,
         }
       }
       cntr <- contrast(model,
-        a = a,
-        b = b
+                       a = a,
+                       b = b
       )
       df <- as.data.frame(cntr[c(
         "Contrast",
@@ -83,10 +83,10 @@ prPhEstimate <- function(model,
       )])
     } else {
       pred <- predict(model,
-        newdata = new_data,
-        conf.int = 1 - alpha,
-        expand.na = FALSE,
-        na.action = na.pass
+                      newdata = new_data,
+                      conf.int = 1 - alpha,
+                      expand.na = FALSE,
+                      na.action = na.pass
       )
       df <- as.data.frame(pred[c("linear.predictors", "lower", "upper")])
     }
@@ -114,26 +114,26 @@ prPhEstimate <- function(model,
         rm(tmp)
       }
       pred <- predict(model,
-        newdata = new_data, type = "terms",
-        se.fit = TRUE, terms = alt_label
+                      newdata = new_data, type = "terms",
+                      se.fit = TRUE, terms = alt_label
       )
       pred$upper <- as.double(pred$fit + qnorm(1 - alpha / 2) * pred$se.fit)
       pred$lower <- as.double(pred$fit - qnorm(1 - alpha / 2) * pred$se.fit)
       df <- as.data.frame(pred[c("fit", "lower", "upper")])
     }
   }
-
+  
   colnames(df) <- c(
     "estimate",
     "lower",
     "upper"
   )
-
+  
   df <- cbind(
     xvalues = new_data[, term.label],
     df
   )
-
+  
   # Change to exponential form
   if (ylog == FALSE) {
     for (n in names(df)) {
@@ -142,7 +142,7 @@ prPhEstimate <- function(model,
       }
     }
   }
-
+  
   attr(df, "new_data") <- new_data
   return(df)
 }
@@ -159,20 +159,19 @@ prPhEstimate <- function(model,
 prPhNewData <- function(model, term.label, xlim) {
   # Get new data to use as basis for the prediction
   new_data <- prGetModelData(model, terms_only = TRUE, term.label = term.label)
-
+  
   # Remove any Surv class variable as this is not
   # part of the predictors
   new_data <-
     new_data[, sapply(new_data, function(x) !inherits(x, "Surv")),
-      drop = FALSE
-    ]
-
+             drop = FALSE]
+  
   getMode <- function(x) {
     tbl <- table(x)
     ret <- names(tbl)[which.max(tbl)]
     factor(ret, levels = names(tbl))
   }
-
+  
   # Set all other but the variable of interest to the
   # mode or the median
   for (variable in colnames(new_data)) {
@@ -189,27 +188,27 @@ prPhNewData <- function(model, term.label, xlim) {
   } else {
     nd_median <- getMode(new_data[, term.label])
   }
-
+  
   new_data <- new_data[!duplicated(new_data[, term.label]), , drop = FALSE]
-
+  
   if (!missing(xlim)) {
     if (NCOL(new_data) == 1) {
       new_data <- as.data.frame(
         matrix(
           new_data[new_data >= min(xlim) &
-            new_data <= max(xlim)],
+                     new_data <= max(xlim)],
           ncol = 1,
           dimnames = list(NULL, c(term.label))
         )
       )
     } else {
       new_data <- new_data[new_data[, term.label] >= min(xlim) &
-        new_data[, term.label] <= max(xlim), ,
-      drop = FALSE
+                             new_data[, term.label] <= max(xlim), ,
+                           drop = FALSE
       ]
     }
   }
-
+  
   attr(new_data, "median") <- nd_median
   return(new_data)
 }
@@ -232,7 +231,7 @@ prPhNewData <- function(model, term.label, xlim) {
 prPhConfIntPlot <- function(model_data, color, polygon, lwd, lty) {
   current_i.backw <- order(model_data$xvalues, decreasing = TRUE)
   current_i.forw <- order(model_data$xvalues)
-
+  
   if (polygon) {
     # The x-axel is always the same
     x.poly <- c(model_data$xvalues[current_i.forw], model_data$xvalues[current_i.backw])
@@ -241,13 +240,13 @@ prPhConfIntPlot <- function(model_data, color, polygon, lwd, lty) {
     polygon(x.poly, y.poly, col = color, border = NA)
   } else {
     lines(model_data$xvalues[current_i.forw], model_data$upper[current_i.forw],
-      col = color,
-      lwd = lwd, lty = lty
+          col = color,
+          lwd = lwd, lty = lty
     )
     lines(model_data$xvalues[current_i.forw],
-      model_data$lower[current_i.forw],
-      col = color,
-      lwd = lwd, lty = lty
+          model_data$lower[current_i.forw],
+          col = color,
+          lwd = lwd, lty = lty
     )
   }
 }
@@ -261,7 +260,7 @@ prPhRugPlot <- function(xvalues) {
   # rugs at datapoints
   axis(
     side = 1,
-    line = -1.2,
+    line = 0,
     at = jitter(xvalues),
     labels = FALSE,
     tick = TRUE,
@@ -269,11 +268,11 @@ prPhRugPlot <- function(xvalues) {
     lwd.ticks = 0.1,
     lwd = 0
   )
-
+  
   # rugs and labels at 1Q, median and 3Q
   axis(
     side = 1,
-    line = -1.0,
+    line = -1.5,
     at = fivenum(xvalues)[2:4],
     lwd = 0,
     tick = TRUE,
@@ -309,20 +308,20 @@ prPhDensityPlot <- function(xvalues, color) {
   density <- density(xvalues)
   # the height of the densityity curve
   max.density <- max(density$y)
-
+  
   # Get the boundaries of the plot to
   # put the density polygon at the x-line
   plot_coordinates <- par("usr")
-
+  
   # get the "length" and range of the y-axis
   y.scale <- plot_coordinates[4] - plot_coordinates[3]
-
+  
   # transform the y-coordinates of the density
   # to the lower 10% of the plotting panel
   density$y <- (0.1 * y.scale / max.density) * density$y + plot_coordinates[3]
-
+  
   ## plot the polygon
   polygon(density$x, density$y,
-    border = FALSE, col = color
+          border = FALSE, col = color
   )
 }

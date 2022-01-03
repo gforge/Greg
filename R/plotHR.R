@@ -292,6 +292,9 @@ plotHR <- function(models,
                  xlab = xlab, 
                  ylab = ylab,
                  ylog = ylog,
+                 xlim = xlim,
+                 ylim = ylim,
+                 plot.bty = plot.bty,
                  col.dens = col.dens,
                  quantiles = quantiles,
                  rug = rug,
@@ -321,6 +324,8 @@ plot.plotHR <- function(x, y, ...) {
     xlab = x$xlab,
     ylab = x$ylab,
     main = x$main,
+    xaxs = "i",
+    yaxs = "i",
     type = "n",
     axes = FALSE,
     ...
@@ -339,8 +344,8 @@ plot.plotHR <- function(x, y, ...) {
       )
     }
   }
-  
-  if (x$rug == "density") {
+
+    if (x$rug == "density") {
     prPhDensityPlot(x$xvalues_4_density,
                     color = x$col.dens
     )
@@ -362,7 +367,6 @@ plot.plotHR <- function(x, y, ...) {
   if (x$rug == "ticks") {
     prPhRugPlot(xvalues = x$xvalues_4_density)
   }
-  
   
   # Plot the last fit on top, therefore use the reverse
   for (i in length(x$models):1) {
