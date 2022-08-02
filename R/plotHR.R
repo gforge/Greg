@@ -137,7 +137,7 @@ plotHR <- function(models,
   # If the user wants to compare different models the same graph
   # the first dataset is then choosen as the default dataset
   # for getting the rug data.
-  if (length(class(models)) != 1 || class(models) != "list") {
+  if (length(class(models)) != 1 || !inherits(models, "list")) {
     models <- list(models)
   }
 
@@ -160,9 +160,7 @@ plotHR <- function(models,
   par(las = 1, cex = cex)
 
   # Get the term number and it's label
-  all.labels <- prGetModelVariables(models[[1]],
-    remove_splines = FALSE
-  )
+  all.labels <- prGetModelVariables(models[[1]], remove_splines = FALSE)
 
   # Allow the term searched for be a string
   if (is.character(term)) {
