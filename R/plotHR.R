@@ -137,7 +137,7 @@ plotHR <- function(models,
   # If the user wants to compare different models the same graph
   # the first dataset is then choosen as the default dataset
   # for getting the rug data.
-  if (length(class(models)) != 1 || class(models) != "list") {
+  if (length(class(models)) != 1 || inherits(models, "list")) {
     models <- list(models)
   }
 

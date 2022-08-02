@@ -26,7 +26,7 @@ The `plotHR` function was my first attempt at doing something more advanced vers
 
 ## Modeling helpers
 
-Much of our modeling ends up a little repetitive and this package contains a set of functions that I've found useful. The approach that I have for modeling regressions is heavily influenced by [Frank Harrell](https://hbiostat.org/)'s [regression modeling strategies](http://www.springer.com/us/book/9783319194240#aboutBook). The core idea consist of:
+Much of our modeling ends up a little repetitive and this package contains a set of functions that I've found useful. The approach that I have for modeling regressions is heavily influenced by [Frank Harrell](https://hbiostat.org/)'s [regression modeling strategies](https://link.springer.com/book/10.1007/978-3-319-19425-7#aboutBook). The core idea consist of:
 
 - Choose the variables that should be in the model (for this I often use DAG diagrams drawn with [dagitty.net](http://dagitty.net))
 - I build the basic model and then test the [continuous variables](https://discourse.datamethods.org/t/categorizing-continuous-variables/3402) for non-linearity using the `addNonLinearity` function. The function tests using [ANOVA](https://en.wikipedia.org/wiki/Analysis_of_variance) for non-linearity and if such is found it maps a set of knots, e.g. 2-7 knots, of a spline function and then checks for the model with the lowest AIC/BIC value. If it is the main variable I do this by hand to avoid choosing a too complex model when the AIC/BIC values are very similar but for confounders I've found this a handy approach.
