@@ -187,7 +187,7 @@ addNonlinearity.coxph <- function(model,
     print(anova_rslt)
   }
 
-  pvalue_column <- grep("Pr(", names(anova_rslt), fixed = TRUE)
+  pvalue_column <- grep("Pr{0,1}\\(", names(anova_rslt))
   stopifnot(length(pvalue_column) == 1)
 
   # No evidence for non-linearity
