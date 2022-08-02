@@ -1,5 +1,9 @@
 NEWS for the **Greg** package
 
+Changes for 1.4.2
+-----------------
+* Fix for updated survival package with a more consistent naming (3.4-0)
+
 Changes for 1.4.1
 -----------------
 * Fix for plotHR axes & bty and improved example with dplyr syntax

@@ -116,8 +116,11 @@ addNonlinearity.glm <- function(model,
     print(anova_rslt)
   }
 
+  pvalue_column <- grep("Pr(", names(anova_rslt), fixed = TRUE)
+  stopifnot(length(pvalue_column) == 1)
+  
   # No evidence for non-linearity
-  if (tail(anova_rslt[grep("Pr(", names(anova_rslt), fixed = TRUE)], 1) > sig_level) {
+  if (tail(anova_rslt[pvalue_column], 1) > sig_level) {
     return(model)
   }
 
@@ -184,8 +187,11 @@ addNonlinearity.coxph <- function(model,
     print(anova_rslt)
   }
 
+  pvalue_column <- grep("Pr(", names(anova_rslt), fixed = TRUE)
+  stopifnot(length(pvalue_column) == 1)
+
   # No evidence for non-linearity
-  if (tail(anova_rslt[grep("P(", names(anova_rslt), fixed = TRUE)], 1) > sig_level) {
+  if (tail(anova_rslt[pvalue_column], 1) > sig_level) {
     if (verbal) {
       cat("\nNo support for nonlinearity for variable: '", variable, "' as defined by the criteria",
         sep = ""
