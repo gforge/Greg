@@ -77,7 +77,6 @@ getCrudeAndAdjustedModelData.rms <- function(model,
   unadjusted <- c()
 
   for (variable in var_names) {
-
     # We should keep any strata information when running the models
     # TODO: Add the nlmn | options
     vars_4_frml <- variable
@@ -92,7 +91,9 @@ getCrudeAndAdjustedModelData.rms <- function(model,
     }
 
     frml_4_single_var <-
-      paste(".~", paste(vars_4_frml, collapse = "+"))
+      paste(".~", paste(vars_4_frml, collapse = "+")) |> 
+      c(prGetFormulaOffset(model)) |> 
+      paste(collapse = " + ")
 
     # Run the same model but with only one variable
     model_only1 <- prEnvModelCall(model, update, frml_4_single_var)

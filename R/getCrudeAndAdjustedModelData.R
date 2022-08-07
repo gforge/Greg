@@ -136,9 +136,7 @@ getCrudeAndAdjustedModelData.default <- function(model,
   model_list <- list()
   unadjusted <- c()
   for (variable in var_names) {
-    if (!grepl("intercept", variable,
-      ignore.case = TRUE
-    )) {
+    if (!grepl("intercept", variable, ignore.case = TRUE)) {
 
       # We should keep any strata information when running the models
       # TODO: Add the nlmn | options
@@ -153,8 +151,11 @@ getCrudeAndAdjustedModelData.default <- function(model,
         vars_4_frml <- c(vars_4_frml, attr(var_names, "cluster"))
       }
 
-      frml_4_single_var <-
-        paste(".~", paste(vars_4_frml, collapse = "+"))
+      # We must keep the offset as this is not a real variable and part of the core model
+      frml_4_single_var <- paste(".~", 
+                                 paste(vars_4_frml, collapse = "+")) |> 
+        c(prGetFormulaOffset(model)) |> 
+        paste(collapse = " + ")
 
       # Run the same model but with only one variable
       model_only1 <- prEnvModelCall(model, update, frml_4_single_var)
@@ -169,7 +170,10 @@ getCrudeAndAdjustedModelData.default <- function(model,
       unadjusted <- rbind(unadjusted, new_vars)
     } else {
       # Run the same model but without any variables
-      model_only1 <- prEnvModelCall(model, update, ".~1")
+      intercept_formula <- c(".~1", prGetFormulaOffset(model)) |> 
+        paste(collapse = " + ")
+      
+      model_only1 <- prEnvModelCall(model, update, intercept_formula)
 
       # Get the coefficients
       new_vars <- prCaDefaultGetCoefAndCI(model_only1,
@@ -218,6 +222,16 @@ getCrudeAndAdjustedModelData.default <- function(model,
             model = model,
             crude_models = model_list,
             class = c("getCrudeAndAdjustedModelData", class(both)))
+}
+
+prGetFormulaOffset <- function(x) {
+  if (!inherits(x, "formula")) {
+    x <- formula(x)
+  }
+  
+  x[[3]] |> 
+    as.character() |> 
+    Filter(f = \(x) startsWith(x, "offset("), x = _)
 }
 
 #' @rdname getCrudeAndAdjustedModelData

@@ -10,3 +10,4 @@
 ^CONDUCT\.md$
 ^.vscode
 ^revdep
+^CRAN-SUBMISSION$

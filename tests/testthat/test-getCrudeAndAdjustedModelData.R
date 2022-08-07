@@ -344,3 +344,20 @@ test_that("Strata and clusters should be still present in the crude format cph",
   fit <- update(fit, . ~ x2 + cluster(sex))
   expect_true(all(x["x2", 2:3] - exp(confint(fit)) < .Machine$double.eps))
 })
+
+
+test_that("Check offset handling", {
+  test1 <- data.frame(time = c(4, 3, 1, 1, 2, 2, 3),
+                      status = c(1, 1, 1, 0, 1, 1, 0),
+                      x1 = c(0, 2, 1, 1, 1, 0, 0),
+                      x2 = c(1, 3, 5, 2, 0, 9, 1))
+  pfit <- glm(status ~ x1 + x2 + offset(log(time)),
+              data = test1,
+              family = poisson)
+  x <- getCrudeAndAdjustedModelData(pfit)
+  unadjusted_pfit <- update(pfit, . ~ x1 + offset(log(time)))
+  expect_equivalent(x["x1", "Crude"] |> as.numeric(), exp(coef(unadjusted_pfit))["x1"], tolerance = .Machine$double.eps)
+
+  unadjusted_pfit <- update(pfit, . ~ x2 + offset(log(time)))
+  expect_equivalent(x["x2", "Crude"] |> as.numeric(), exp(coef(unadjusted_pfit))["x2"], tolerance = .Machine$double.eps)
+})

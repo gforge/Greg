@@ -1,12 +1,10 @@
 NEWS for the **Greg** package
 
-Changes for 1.4.2
------------------
-* Fix for updated survival package with a more consistent naming (3.4-0)
-
 Changes for 1.4.1
 -----------------
+* Fix for updated survival package with a more consistent naming (3.4-0)
 * Fix for plotHR axes & bty and improved example with dplyr syntax
+* Fix for bad offset() handling, was ignored in getCrudeAndAdjusted unless presented as an `offset=` parameter.
 
 Changes for 1.4.0
 -----------------
