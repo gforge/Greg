@@ -229,9 +229,7 @@ prGetFormulaOffset <- function(x) {
     x <- formula(x)
   }
   
-  x[[3]] |> 
-    as.character() |> 
-    Filter(f = \(x) startsWith(x, "offset("), x = _)
+  Filter(f = \(x) startsWith(x, "offset("), x = x[[3]] |> as.character())
 }
 
 #' @rdname getCrudeAndAdjustedModelData
