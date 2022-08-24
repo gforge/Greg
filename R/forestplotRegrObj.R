@@ -39,8 +39,8 @@
 #' @rdname forestplotRegrObj
 #' @import forestplot
 #' @export
-forestplotRegrObj <- function(
-                              regr.obj,
+#' @exportS3Method 
+forestplotRegrObj <- function(regr.obj,
                               skip.variables,
                               add.empty_row,
                               order.regexps,
@@ -53,103 +53,124 @@ forestplotRegrObj <- function(
                               estimate.txt = xlab,
                               zero,
                               get_box_size = fpBoxSize,
-                              ...) {
-  # Treat always as multiple regression object fits
-  # is.list might seem more intuitive but it turns out
-  # that objects are lists but lists are not objects
-  if (is.object(regr.obj) == TRUE) {
-    regr.obj <- list(regr.obj)
-  }
+                              ...) 
+{
+  UseMethod("forestplotRegrObj")
+}
 
-  # Initiate some standard values if the user
-  # hasn't supplied any
+#' @rdname forestplotRegrObj
+#' @export
+forestplotRegrObj.default <- function(regr.obj,
+                                      skip.variables,
+                                      add.empty_row,
+                                      order.regexps,
+                                      order.addrows,
+                                      box.default.size,
+                                      rowname.fn,
+                                      xlab,
+                                      xlog,
+                                      exp,
+                                      estimate.txt = xlab,
+                                      zero,
+                                      get_box_size = fpBoxSize,
+                                      ...) {
+  stop("Method not implemented for this class: ", class(regr.obj))
+}
+
+
+#' @rdname forestplotRegrObj
+#' @export
+forestplotRegrObj.coxph <- function(regr.obj,
+                                    xlab = "Hazard Ratio",
+                                    estimate.txt = "HR",
+                                    xlog = TRUE,
+                                    zero = 1,
+                                    exp = TRUE,
+                                    ...) {
+  do.call(prForestPlotPrep, mget(names(formals()),sys.frame(sys.nframe())))
+}
+
+
+#' @rdname forestplotRegrObj
+#' @export
+forestplotRegrObj.lrm <- function(regr.obj,
+                                  xlab = "Odds ratio",
+                                  estimate.txt = "HR",
+                                  xlog = TRUE,
+                                  zero = 1,
+                                  exp = TRUE,
+                                  ...) {
+  do.call(prForestPlotPrep, mget(names(formals()),sys.frame(sys.nframe())))
+}
+
+#' @rdname forestplotRegrObj
+#' @export
+forestplotRegrObj.glm <- function(regr.obj,
+                                  xlab,
+                                  xlog,
+                                  zero,
+                                  estimate.txt,
+                                  exp,
+                                  ...) {
   if (missing(xlab)) {
-    if (isFitCoxPH(regr.obj[[1]])) {
-      xlab <- "Hazard Ratio"
-    } else if (isFitLogit(regr.obj[[1]])) {
-      xlab <- "Odds Ratio"
+    if (isFitLogit(regr.obj)) {
+      xlab <- "Odds ratio"
+    } else if (family(regr.obj)$family == "poisson" && !is.null(model.offset(regr.obj))) {
+      xlab <- "Relative risk"
     }
   }
-
+  
   if (missing(estimate.txt)) {
-    if (isFitCoxPH(regr.obj[[1]])) {
-      estimate.txt <- "HR"
-    } else if (isFitLogit(regr.obj[[1]])) {
-      estimate.txt <- "OR"
+    if (isFitLogit(regr.obj)) {
+      xlab <- "OR"
+    } else if (family(regr.obj)$family == "poisson" && !is.null(model.offset(regr.obj))) {
+      xlab <- "RR"
     }
   }
 
+  exponential <- isFitLogit(regr.obj) || family(regr.obj)$family == "poisson"
   if (missing(xlog)) {
-    if (isFitCoxPH(regr.obj[[1]]) ||
-      isFitLogit(regr.obj[[1]])) {
+    if (exponential) {
       xlog <- TRUE
-      if (missing(zero)) {
-        zero <- 1
-      }
-      if (missing(exp)) {
-        exp <- TRUE
-      }
-    } else {
-      xlog <- FALSE
-      if (missing(zero)) {
-        zero <- 0
-      }
-      if (missing(exp)) {
-        exp <- FALSE
-      }
-    }
-  } else {
-    if (xlog) {
-      if (missing(zero)) {
-        zero <- 1
-      }
-      if (missing(exp)) {
-        exp <- TRUE
-      }
-    } else {
-      if (missing(zero)) {
-        zero <- 0
-      }
-      if (missing(exp)) {
-        exp <- FALSE
-      }
     }
   }
 
-
-  if (is.null(zero)) {
-    if (isFitCoxPH(regr.obj[[1]]) ||
-      isFitLogit(regr.obj[[1]])) {
+  if (missing(zero)) {
+    if (exponential) {
       zero <- 1
-    } else {
-      zero <- 0
     }
   }
 
-  checkValidRegrObject <- function(fit) {
-    if (!is.object(fit)) {
-      stop("You must provide a valid model fit of either Cox PH, CRR or GLM type")
+  if (missing(exp)) {
+    if (exponential) {
+      exp <- TRUE
     }
-
-    if (any(
-      c(
-        class(fit) %in% "glm",
-        class(fit) %in% "crr",
-        class(fit) %in% "coxph"
-      )
-    ) == FALSE) {
-      stop("Object not of Cox PH type, Comp. Risk Regression or GLM")
-    }
-
-    return(TRUE)
   }
+  
+  prForestPlotPrep(regr.obj = regr.obj,
+                   xlab = xlab,
+                   xlog = xlog,
+                   zero = zero,
+                   estimate.txt = estimate.txt,
+                   exp = exp,
+                   ...)
+}
 
-  # Validate that all fits are OK objects that
-  # this function can handle
-  for (i in 1:length(regr.obj)) {
-    checkValidRegrObject(regr.obj[[i]])
-  }
 
+prForestPlotPrep <- function(regr.obj,
+                             skip.variables,
+                             add.empty_row,
+                             order.regexps,
+                             order.addrows,
+                             box.default.size,
+                             rowname.fn,
+                             xlab,
+                             xlog,
+                             exp,
+                             estimate.txt = xlab,
+                             zero,
+                             get_box_size = fpBoxSize,
+                             ...) {
   checkIfCompatibleFits <- function(sd1, sd2) {
     checkEqualNames <- function(base_names, cmpr_names) {
       # A function for checking that the labels/row names of

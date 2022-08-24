@@ -2,6 +2,8 @@
 % Please edit documentation in R/forestplotRegrObj.R
 \name{forestplotRegrObj}
 \alias{forestplotRegrObj}
+\alias{forestplotRegrObj.default}
+\alias{forestplotRegrObj.coxph}
 \alias{fpBoxSize}
 \title{Forest plot for multiple models}
 \usage{
@@ -18,6 +20,40 @@ forestplotRegrObj(
   exp,
   estimate.txt = xlab,
   zero,
+  get_box_size = fpBoxSize,
+  ...
+)
+
+\method{forestplotRegrObj}{default}(
+  regr.obj,
+  skip.variables,
+  add.empty_row,
+  order.regexps,
+  order.addrows,
+  box.default.size,
+  rowname.fn,
+  xlab,
+  xlog,
+  exp,
+  estimate.txt = xlab,
+  zero,
+  get_box_size = fpBoxSize,
+  ...
+)
+
+\method{forestplotRegrObj}{coxph}(
+  regr.obj,
+  skip.variables,
+  add.empty_row,
+  order.regexps,
+  order.addrows,
+  box.default.size,
+  rowname.fn,
+  xlab = "Hazard Ratio",
+  xlog = TRUE,
+  exp,
+  estimate.txt = xlab,
+  zero = 1,
   get_box_size = fpBoxSize,
   ...
 )

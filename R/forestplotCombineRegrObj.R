@@ -65,25 +65,25 @@ forestplotCombineRegrObj <- function(
 
   # Initiate some standard values if the user
   # hasn't supplied any
-  if (missing(xlab)){
-    if (isFitCoxPH(regr.obj[[1]])){
+  if (missing(xlab)) {
+    if (isFitCoxPH(regr.obj[[1]])) {
       xlab <- "Hazard Ratio"
-    }else if(isFitLogit(regr.obj[[1]])){
+    } else if (isFitLogit(regr.obj[[1]])) {
       xlab <- "Odds Ratio"
     }
   }
 
-  if (missing(estimate.txt)){
-    if (isFitCoxPH(regr.obj[[1]])){
+  if (missing(estimate.txt)) {
+    if (isFitCoxPH(regr.obj[[1]])) {
       estimate.txt <- "HR"
-    }else if(isFitLogit(regr.obj[[1]])){
+    } else if (isFitLogit(regr.obj[[1]])) {
       estimate.txt <- "OR"
     }
   }
 
-  if (missing(xlog)){
+  if (missing(xlog)) {
     if (isFitCoxPH(regr.obj[[1]]) ||
-          isFitLogit(regr.obj[[1]])){
+          isFitLogit(regr.obj[[1]])) {
       xlog <- TRUE
       if (missing(zero))
         zero <- 1
@@ -109,27 +109,28 @@ forestplotCombineRegrObj <- function(
   t.low <- c(NA)
   t.high <- c(NA)
   t.is_ref <- c(NA)
-  for(i in 1:length(models_fit_fp_data)){
-    if (length(rn) > 0){
+  for (i in 1:length(models_fit_fp_data)) {
+    if (length(rn) > 0) {
       rn <- append(rn, NA)
       t.coef <- append(t.coef, NA)
       t.low <- append(t.low, NA)
       t.high <- append(t.high, NA)
       t.is_ref <- append(t.is_ref, FALSE)
     }
-    if (!missing(reference.names)){
+    if (!missing(reference.names)) {
       rn <- append(rn, reference.names[i])
       t.coef <- append(t.coef, NA)
       t.low <- append(t.low, NA)
       t.high <- append(t.high, NA)
     }
     raw_row_names <- as.list(rownames(models_fit_fp_data[[i]]))
-    if (!missing(rowname.fn)){
+    if (!missing(rowname.fn)) {
       if (is.character(rowname.fn))
         rowname.fn <- get(rowname.fn)
 
-      for(c in 1:length(raw_row_names))
+      for (c in 1:length(raw_row_names)) {
         raw_row_names[[c]] <- rowname.fn(raw_row_names[[c]])
+      }
     }
     rn <- append(rn, raw_row_names)
     t.coef <- append(t.coef, models_fit_fp_data[[i]][, "beta"])
@@ -150,12 +151,11 @@ forestplotCombineRegrObj <- function(
   if (add_first_as_ref)
     col2[t.is_ref] <- ref_txt
 
-  rn <- list(
-    rn,
-    col2)
+  rn <- list(rn, col2)
 
-  if (missing(is.summary))
-    is.summary <- c(TRUE, rep(FALSE, length(t.coef)-1))
+  if (missing(is.summary)) {
+    is.summary <- c(TRUE, rep(FALSE, length(t.coef) - 1))
+  }
 
   forestplot(rn,
     xlim       = c(0,10),

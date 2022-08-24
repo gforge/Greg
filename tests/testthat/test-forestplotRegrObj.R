@@ -1,5 +1,4 @@
 library("testthat")
-context("forestplotRegrObj")
 
 # simulated data to test
 set.seed(1000)
