@@ -1,5 +1,5 @@
 Package: Greg
-Version: 1.4.1
+Version: 2.0.0
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -15,20 +15,22 @@ URL: http://gforge.se
 Biarch: yes
 Encoding: UTF-8
 Imports:
+    broom,
+    Epi,
+    graphics,
+    grDevices,
+    htmlTable (>= 2.0.0),
     Hmisc,
-    stringr,
+    knitr,
+    magrittr,
+    methods,
+    nlme,
     rms,
     sandwich,
     stats,
-    nlme,
-    methods,
-    htmlTable (>= 2.0.0),
-    magrittr,
-    knitr,
-    Epi,
+    stringr,
     utils,
-    graphics,
-    grDevices
+    purrr
 Depends:
     forestplot,
     Gmisc (>= 1.0.3)

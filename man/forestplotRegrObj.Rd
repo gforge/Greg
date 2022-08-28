@@ -4,17 +4,16 @@
 \alias{forestplotRegrObj}
 \alias{forestplotRegrObj.default}
 \alias{forestplotRegrObj.coxph}
+\alias{forestplotRegrObj.lrm}
+\alias{forestplotRegrObj.lm}
+\alias{forestplotRegrObj.glm}
 \alias{fpBoxSize}
 \title{Forest plot for multiple models}
 \usage{
 forestplotRegrObj(
   regr.obj,
-  skip.variables,
-  add.empty_row,
-  order.regexps,
-  order.addrows,
   box.default.size,
-  rowname.fn,
+  postprocess_estimates.fn = NULL,
   xlab,
   xlog,
   exp,
@@ -43,20 +42,35 @@ forestplotRegrObj(
 
 \method{forestplotRegrObj}{coxph}(
   regr.obj,
-  skip.variables,
-  add.empty_row,
-  order.regexps,
-  order.addrows,
-  box.default.size,
-  rowname.fn,
   xlab = "Hazard Ratio",
+  estimate.txt = "HR",
   xlog = TRUE,
-  exp,
-  estimate.txt = xlab,
   zero = 1,
-  get_box_size = fpBoxSize,
+  exp = TRUE,
   ...
 )
+
+\method{forestplotRegrObj}{lrm}(
+  regr.obj,
+  xlab = "Odds ratio",
+  estimate.txt = "HR",
+  xlog = TRUE,
+  zero = 1,
+  exp = TRUE,
+  ...
+)
+
+\method{forestplotRegrObj}{lm}(
+  regr.obj,
+  xlab = "Effect",
+  estimate.txt = "Coef",
+  xlog = FALSE,
+  zero = 0,
+  exp = FALSE,
+  ...
+)
+
+\method{forestplotRegrObj}{glm}(regr.obj, xlab, xlog, zero, estimate.txt, exp, ...)
 
 fpBoxSize(p_values, variable_count, box.default.size, significant = 0.05)
 }
@@ -64,32 +78,16 @@ fpBoxSize(p_values, variable_count, box.default.size, significant = 0.05)
 \item{regr.obj}{A regression model object. It should be of coxph, crr or glm class.
 Warning: The glm is not fully tested.}
 
-\item{skip.variables}{Which variables to use. The variables should be the
-names of the fit output and not the true output names if you're using
-the rowname_translate_function.}
-
-\item{add.empty_row}{Add empty rows. This can either be a
-vector or a list.
-When you have a vector the number indicates the row number where
-the empty row should be added, the format is: c(3, 5).
-If you give a list you have the option of specifying the name of the
-row, the format is: \code{list(list(3, "my rowname"), list(5, "my other rowname"))}.
-The rows will be added at the 3rd row and 5th row from the original
-position. Ie you don't have take into account that the 5:th row will be
-at the 6:th position after adding the 3rd row.}
-
-\item{order.regexps}{A regexp vector that searches for matches along the original
-rownames and reorders according to those.}
-
-\item{order.addrows}{If there are ordered groups then often you want empty rows
-that separate the different groups. Set this to true if you want to add these
-empty rows between groups.}
-
 \item{box.default.size}{The default box size}
 
-\item{rowname.fn}{A function that takes a row name and sees if it needs
-beautifying. The function has only one parameter the coefficients name and should
-return a string or expression.}
+\item{postprocess_estimates.fn}{A function that takes the regression outputs and returns
+the same data with modifications. The input columns are:
+
+* `Rowname`
+* `Coef`
+* `Lower`
+* `Upper`
+* `Sort`}
 
 \item{xlab}{x-axis label}
 
@@ -112,6 +110,10 @@ odds ratio}
 \item{get_box_size}{A function for extracting the box sizes}
 
 \item{...}{Passed to \code{\link[forestplot]{forestplot}()}}
+
+\item{rowname.fn}{A function that takes a row name and sees if it needs
+beautifying. The function has only one parameter the coefficients name and should
+return a string or expression.}
 
 \item{p_values}{The p-values that will work as the foundation for the box size}
 

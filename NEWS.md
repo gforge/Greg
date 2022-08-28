@@ -1,5 +1,9 @@
 NEWS for the **Greg** package
 
+Changes for 2.0.0
+-----------------
+* BREAKING: Refactored the forestplogRegrObj function to S3-format
+
 Changes for 1.4.1
 -----------------
 * Fix for updated survival package with a more consistent naming (3.4-0)
