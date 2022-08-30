@@ -7,17 +7,22 @@
 \alias{forestplotRegrObj.lrm}
 \alias{forestplotRegrObj.lm}
 \alias{forestplotRegrObj.glm}
+\alias{forestplotRegrObj.list}
 \alias{fpBoxSize}
 \title{Forest plot for multiple models}
 \usage{
 forestplotRegrObj(
   regr.obj,
-  box.default.size,
-  postprocess_estimates.fn = NULL,
+  boxsize,
+  postprocess_estimates.fn = function(x) x,
   xlab,
   xlog,
   exp,
   estimate.txt = xlab,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
   zero,
   get_box_size = fpBoxSize,
   ...
@@ -29,7 +34,7 @@ forestplotRegrObj(
   add.empty_row,
   order.regexps,
   order.addrows,
-  box.default.size,
+  boxsize,
   rowname.fn,
   xlab,
   xlog,
@@ -70,15 +75,33 @@ forestplotRegrObj(
   ...
 )
 
-\method{forestplotRegrObj}{glm}(regr.obj, xlab, xlog, zero, estimate.txt, exp, ...)
+\method{forestplotRegrObj}{glm}(
+  regr.obj,
+  xlab = NULL,
+  xlog = NULL,
+  zero = NULL,
+  estimate.txt = NULL,
+  exp = NULL,
+  ...
+)
 
-fpBoxSize(p_values, variable_count, box.default.size, significant = 0.05)
+\method{forestplotRegrObj}{list}(
+  regr.obj,
+  xlab = NULL,
+  xlog = NULL,
+  zero = NULL,
+  estimate.txt = NULL,
+  exp = NULL,
+  ...
+)
+
+fpBoxSize(p_values, variable_count, boxsize, significant = 0.05)
 }
 \arguments{
 \item{regr.obj}{A regression model object. It should be of coxph, crr or glm class.
 Warning: The glm is not fully tested.}
 
-\item{box.default.size}{The default box size}
+\item{boxsize}{The default box size}
 
 \item{postprocess_estimates.fn}{A function that takes the regression outputs and returns
 the same data with modifications. The input columns are:
@@ -101,8 +124,16 @@ the tick marks properly.}
 \item{exp}{Report in exponential form. Default true since the function was built for
 use with survival models.}
 
-\item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
-odds ratio}
+\item{estimate.txt}{The text above the estimate, e.g. Est, HR}
+
+\item{rowname}{The name of the variables}
+
+\item{ci.txt}{The text above the confidence interval, defaults to `"CI"`}
+
+\item{ci.glue}{The string used for [glue::glue()] the `lower` and `higher`
+confidence intervals together.}
+
+\item{digits}{The number of digits to round presented values to}
 
 \item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
 1 while in most other cases it's 0.}

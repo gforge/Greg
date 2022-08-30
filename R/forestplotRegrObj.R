@@ -18,6 +18,12 @@
 #'   * `Upper`
 #'   * `Sort`
 #' @param get_box_size A function for extracting the box sizes
+#' @param rowname The name of the variables
+#' @param estimate.txt The text above the estimate, e.g. Est, HR
+#' @param ci.txt The text above the confidence interval, defaults to `"CI"`
+#' @param ci.glue The string used for [glue::glue()] the `lower` and `higher`
+#'  confidence intervals together.
+#' @param digits The number of digits to round presented values to
 #'
 #' @example inst/examples/forestplotRegrObj_example.R
 #'
@@ -31,12 +37,16 @@
 #' @import forestplot
 #' @export
 forestplotRegrObj <- function(regr.obj,
-                              box.default.size,
-                              postprocess_estimates.fn = NULL,
+                              boxsize,
+                              postprocess_estimates.fn = \(x) x,
                               xlab,
                               xlog,
                               exp,
                               estimate.txt = xlab,
+                              rowname = "Variable",
+                              ci.txt = "CI",
+                              ci.glue = "{lower} to {higher}",
+                              digits = 1,
                               zero,
                               get_box_size = fpBoxSize,
                               ...) 
@@ -51,7 +61,7 @@ forestplotRegrObj.default <- function(regr.obj,
                                       add.empty_row,
                                       order.regexps,
                                       order.addrows,
-                                      box.default.size,
+                                      boxsize,
                                       rowname.fn,
                                       xlab,
                                       xlog,
@@ -63,12 +73,25 @@ forestplotRegrObj.default <- function(regr.obj,
   stop("Method not implemented for this class: ", class(regr.obj))
 }
 
-prFixForestplotArgs <- function(regr.obj, args, extra) {
+prFixForestplotArgs <- function(regr.obj, args, extra, already_as_list = FALSE) {
   args$regr.obj <- NULL
-  args$regressions <- list(regr.obj)
+  if (already_as_list) {
+    args$regressions <- regr.obj
+  } else {
+    args$regressions <- list(regr.obj)
+  }
   args[["..."]] <- NULL
   for (n in names(extra)) {
     args[[n]] <- extra[[n]]
+  }
+  
+  # Add original defaults so we don't have to add them to each S3 manually
+  org_defaults <- formals(forestplotRegrObj)[sapply(formals(forestplotRegrObj), 
+                                                    Negate(\(x) is.symbol(x) || is.null(x)))]
+  for (n in names(org_defaults)) {
+    if (is.null(args[[n]])) {
+      args[[n]] <- org_defaults[[n]]
+    }
   }
   do.call(prForestPlotPrep, args)
 }
@@ -120,13 +143,13 @@ forestplotRegrObj.lm <- function(regr.obj,
 #' @rdname forestplotRegrObj
 #' @export
 forestplotRegrObj.glm <- function(regr.obj,
-                                  xlab,
-                                  xlog,
-                                  zero,
-                                  estimate.txt,
-                                  exp,
+                                  xlab = NULL,
+                                  xlog = NULL,
+                                  zero = NULL,
+                                  estimate.txt = NULL,
+                                  exp = NULL,
                                   ...) {
-  defaults <- prGetModelDefaults4Foresplot(regr.obj = regr.obj,
+  defaults <- prGetModelDefaults4foresplot(regr.obj = regr.obj,
                                            xlab = xlab,
                                            xlog = xlog,
                                            zero = zero,
@@ -135,7 +158,7 @@ forestplotRegrObj.glm <- function(regr.obj,
 
   args <- mget(names(formals()), sys.frame(sys.nframe()))
   for (n in names(defaults)) {
-    if (is.symbol(args[[n]])) {
+    if (is.symbol(args[[n]]) || is.null(args[[n]])) {
       args[[n]] <- defaults[[n]]
     }
   }
@@ -145,17 +168,46 @@ forestplotRegrObj.glm <- function(regr.obj,
                       extra = list(...))
 }
 
+#' @rdname forestplotRegrObj
+#' @export
+forestplotRegrObj.list <- function(regr.obj,
+                                   xlab = NULL,
+                                   xlog = NULL,
+                                   zero = NULL,
+                                   estimate.txt = NULL,
+                                   exp = NULL,
+                                   ...) {
+  defaults <- prGetModelDefaults4foresplot(regr.obj = regr.obj[[1]],
+                                           xlab = xlab,
+                                           xlog = xlog,
+                                           zero = zero,
+                                           estimate.txt = estimate.txt,
+                                           exp = exp)
+  
+  args <- mget(names(formals()), sys.frame(sys.nframe()))
+  for (n in names(defaults)) {
+    if (is.symbol(args[[n]]) || is.null(args[[n]])) {
+      args[[n]] <- defaults[[n]]
+    }
+  }
+  
+  prFixForestplotArgs(regr.obj = regr.obj,
+                      args = args,
+                      extra = list(...),
+                      already_as_list = TRUE)
+}
+
 #' @param p_values The p-values that will work as the foundation for the box size
 #' @param variable_count The number of variables
-#' @param box.default.size The default box size
+#' @param boxsize The default box size
 #' @param significant Level of significance .05
 #' @rdname forestplotRegrObj
 #' @export
 fpBoxSize <- function(p_values,
                       variable_count,
-                      box.default.size,
+                      boxsize,
                       significant = .05) {
-  b_size <- c(NA, rep(box.default.size, variable_count))
-  b_size[p_values < significant] <- box.default.size * 1.5
+  b_size <- c(NA, rep(boxsize, variable_count))
+  b_size[p_values < significant] <- boxsize * 1.5
   return(b_size)
 }

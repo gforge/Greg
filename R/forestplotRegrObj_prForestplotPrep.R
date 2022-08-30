@@ -1,27 +1,54 @@
 
-#' @importFrom dplyr bind_rows mutate filter
+#' @importFrom dplyr bind_rows mutate filter group_by case_when row_number if_else across
+#' @importFrom tidyselect starts_with
 #' @importFrom broom tidy
 #' @importFrom purrr pluck
+#' @importFrom tibble tibble
+#' @importFrom stringr str_detect
+#' @importFrom htmlTable txtRound
+#' @importFrom glue glue
 prForestPlotPrep <- function(regressions,
                              skip.variables,
                              add.empty_row,
-                             box.default.size,
-                             postprocess_estimates.fn = \(x) x,
+                             boxsize,
+                             postprocess_estimates.fn,
                              xlab,
                              exp,
+                             rowname,
                              estimate.txt = xlab,
+                             ci.txt,
+                             ci.glue,
                              get_box_size = fpBoxSize,
+                             digits,
                              ...) {
+  header <- tibble(rowname = rowname, is_summary = TRUE)
   fit_data <- sapply(regressions,
-                     FUN = function(regression, ...) {
+                     FUN = function(regression, ...) 
+                     {
                        estimates <- tidy(regression, ...)
+                       
                        labels <- sapply(model.frame(regression), label)
-                       bind_rows(tibble(rowname = estimate.txt),
+                       estimates <- mutate(
+                         estimates,
+                         rowname = labels[term],
+                         rowname = case_when(is.na(rowname) ~ term,
+                                             rowname == '' ~ term,
+                                             TRUE ~ rowname),
+                         is_summary = FALSE,
+                         across(.cols = c(estimate, starts_with("conf.")), 
+                                txtRound, 
+                                digits = digits, .names = "txt_{.col}"),
+                         est_txt = if_else(row_number() == 1,
+                                           estimate.txt,
+                                           txt_estimate),
+                         ci = if_else(row_number() == 1,
+                                      ci.txt,
+                                      glue(ci.glue,
+                                           lower = txt_conf.low,
+                                           higher = txt_conf.high) |> 
+                                        as.character()))
+                       bind_rows(header,
                                  estimates |> 
-                                   mutate(rowname = labels[term],
-                                          rowname = case_when(is.na(rowname) ~ term,
-                                                              rowname == '' ~ term,
-                                                              TRUE ~ rowname)) |> 
                                    filter(!str_detect(term, "Intercept")) |> 
                                    postprocess_estimates.fn())
                      },
@@ -30,16 +57,12 @@ prForestPlotPrep <- function(regressions,
                      conf.level = 0.95,
                      exponentiate = exp) |> 
     bind_rows(.id = "Model") |> 
-    mutate(model_no = as.numeric(factor(Model))) |> 
-    group_by(Model)
-
-  # The top is the header and should be bold
-  is.summary <- c(TRUE, rep(FALSE, fit_data |> filter(model_no == 1) |> nrow() - 1))
+    mutate(model_no = as.numeric(factor(Model)))
   
   # Make the box smaller if there are many
   # models that share the same space
-  if (missing(box.default.size)) {
-    box.default.size <- .75 / length(regressions)
+  if (missing(boxsize)) {
+    boxsize <- .4 / length(regressions)
   }
   
   # if (length(regressions) == 1) {
@@ -60,13 +83,60 @@ prForestPlotPrep <- function(regressions,
   #   rn <- list(col1, col2)
   # }
   
-  fit_data |> 
-    forestplot(labeltext = rowname,
-               mean = estimate,
-               lower = conf.low,
-               upper = conf.high,
-               boxsize = box.default.size,
-               xlab = xlab,
-               is.summary = is.summary,
-               ...)
+  args <- list(...)
+  args$boxsize <- boxsize
+  args$xlab <- xlab
+  
+  if (max(fit_data$model_no) > 1) {
+    ret <- fit_data |> 
+      group_by(Model)
+    class_id <- "forestplotRegrObj.grouped"
+  } else {
+    ret <- fit_data
+    class_id <- "forestplotRegrObj.single"
+  }
+  
+  structure(
+    ret,
+    args = args,
+    class = c(class_id, class(ret))
+  )
+}
+
+#' @export
+#' @importFrom rlang as_name
+print.forestplotRegrObj.grouped <- function(x, ...) {
+  args <- list(x = tibble::tibble(x),
+               ...,
+               align = c("l", "c", "c")) |> 
+    append(attr(x, "args"))
+  args <- args[!duplicated(names(args))]
+  
+  args$labeltext <- as_name(quote(rowname))
+  args$mean <- as_name(quote(estimate))
+  args$lower <- as_name(quote(conf.low))
+  args$upper <- as_name(quote(conf.high))
+  args$is.summary <- as_name(quote(is_summary))
+  
+  do.call(forestplot, args) |> 
+    print()
+}
+
+#' @export
+#' @importFrom rlang as_name
+print.forestplotRegrObj.single <- function(x, ...) {
+  args <- list(x = tibble::tibble(x),
+               ...,
+               align = c("l", "c", "c")) |> 
+    append(attr(x, "args"))
+  args <- args[!duplicated(names(args))]
+  
+  args$labeltext <- c(quote(rowname), quote(est_txt), quote(ci)) |> sapply(as_name)
+  args$mean <- as_name(quote(estimate))
+  args$lower <- as_name(quote(conf.low))
+  args$upper <- as_name(quote(conf.high))
+  args$is.summary <- as_name(quote(is_summary))
+  
+  do.call(forestplot, args) |> 
+    print()
 }

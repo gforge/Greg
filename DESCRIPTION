@@ -17,6 +17,8 @@ Encoding: UTF-8
 Imports:
     broom,
     Epi,
+    dplyr,
+    glue,
     graphics,
     grDevices,
     htmlTable (>= 2.0.0),
@@ -25,10 +27,14 @@ Imports:
     magrittr,
     methods,
     nlme,
+    purrr,
+    rlang,
     rms,
     sandwich,
     stats,
     stringr,
+    tibble,
+    tidyselect,
     utils,
     purrr
 Depends:

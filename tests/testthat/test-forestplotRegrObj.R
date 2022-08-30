@@ -15,54 +15,35 @@ library(rms)
 dd <<- datadist(cov)
 options(datadist = "dd")
 
-test_that("Linear regression test for coverage for forestplotRegrObj", {
-  # TODO: Add more specific tests
-  
+test_that("Simple linear regression", {
   fit <- mtcars |> 
     set_column_labels(cyl = "Number of cylinders",
                       hp = "Gross horsepower") |> 
     lm(mpg ~ cyl + disp + hp, data = _)
+
+  expect_s3_class(forestplotRegrObj(regr.obj = fit),
+                  "forestplotRegrObj.single")
+})
+
+test_that("Simple linear regression", {
+  fit <- mtcars |> 
+    set_column_labels(cyl = "Number of cylinders",
+                      hp = "Gross horsepower") |> 
+    glm(mpg ~ cyl + disp + hp, data = _, family = gaussian())
   
-  forestplotRegrObj(regr.obj = fit, new_page = TRUE)
+  expect_s3_class(forestplotRegrObj(regr.obj = fit),
+                  "forestplotRegrObj.single")
+})
 
-  library(forestplot)
-  forestplotRegrObj(
-    regr.obj = list(fit1, fit2),
-    legend = c("Status = 1", "Status = 2"),
-    legend_args = fpLegend(title = "Type of regression"),
-    new_page = TRUE
-  )
-
-  modifyNameFunction <- function(x) {
-    if (x == "x1") {
-      return("Covariate A")
-    }
-
-    if (x == "x2") {
-      return(expression(paste("My ", beta[2])))
-    }
-
-    return(x)
-  }
-
-  forestplotRegrObj(
-    regr.obj = list(fit1, fit2),
-    col = fpColors(box = c("darkblue", "darkred")),
-    variablesOfInterest.regexp = "(x2|x3)",
-    legend = c("First model", "Second model"),
-    legend_args = fpLegend(title = "Models"),
-    rowname.fn = modifyNameFunction, new_page = TRUE
-  )
-
-  forestplotRegrObj(
-    regr.obj = list(fit1, fit2),
-    col = fpColors(box = c("darkblue", "darkred")),
-    variablesOfInterest.regexp = "(x2|x3)",
-    order.regexps = c("x3", "x2"),
-    legend = c("First model", "Second model"),
-    legend_args = fpLegend(title = "Models"),
-    rowname.fn = modifyNameFunction, new_page = TRUE
-  )
+test_that("Simple linear regression", {
+  data <- mtcars |> 
+    set_column_labels(cyl = "Number of cylinders",
+                      hp = "Gross horsepower")
+  fit1 <- lm(mpg ~ cyl + disp + hp, data = data)
+  fit2 <- lm(mpg ~ cyl + disp + gear, data = data)
+  
+  expect_s3_class(forestplotRegrObj(regr.obj = list(fit1, fit2)),
+                  "forestplotRegrObj.group")
 })
 
 test_that("Basic test for coverage for forestplotRegrObj", {
