@@ -102,7 +102,7 @@
 #' @importFrom grDevices grey
 #' @importFrom graphics axTicks axis box lines par plot polygon
 #' @author Reinhard Seifert, Max Gordon
-#' 
+#'
 #' @export
 #' @rdname plotHR
 plotHR <- function(models,
@@ -143,18 +143,24 @@ plotHR <- function(models,
 
   # Create vectors of the colors, line types etc to
   # allow for specific settings for each model
-  confint_style <- lapply(1:length(models),
-                          function(i) {
-                            ret <- expand.grid(c("col", "lty", "lwd"), c("term", "se")) %>% 
-                              apply(FUN = paste, MARGIN = 1, collapse = ".") %>% 
-                              c("polygon_ci") %>% 
-                              sapply(function(x) {
-                                var <- get(x)
-                                if (length(var) == 1) return(var)
-                                if (length(var) == length(models)) return(var[[i]])
-                                stop("Invalid length of ", x, ": ", length(var), " - should be 1 or 0")
-                              }, simplify = FALSE)
-                          })
+  confint_style <- lapply(
+    1:length(models),
+    function(i) {
+      ret <- expand.grid(c("col", "lty", "lwd"), c("term", "se")) |>
+      apply(FUN = paste, MARGIN = 1, collapse = ".") |>
+      c("polygon_ci") |>
+      sapply(function(x) {
+        var <- get(x)
+        if (length(var) == 1) {
+          return(var)
+        }
+        if (length(var) == length(models)) {
+          return(var[[i]])
+        }
+        stop("Invalid length of ", x, ": ", length(var), " - should be 1 or 0")
+      }, simplify = FALSE)
+    }
+  )
 
   # set plotting parameters
   par(las = 1, cex = cex)
@@ -176,8 +182,8 @@ plotHR <- function(models,
   # pick the name of the main term which is going to be plotted
   term.label <- all.labels[term]
 
-  if (length(ylim) == 2
-  && is.vector(ylim)) {
+  if (length(ylim) == 2 &&
+    is.vector(ylim)) {
     if (ylog == TRUE) {
       ylim <- log(ylim)
     }
@@ -259,9 +265,9 @@ plotHR <- function(models,
 
   # plot empty plot with coordinate system and labels
   boundaries$x <- range(xvalues[])
-  if (!tolower(rug) %in% c("density", "ticks")
-      && rug != FALSE
-      && !is.null(rug)) {
+  if (!tolower(rug) %in% c("density", "ticks") &&
+    rug != FALSE &&
+    !is.null(rug)) {
     warning("Currently the rug option only supports 'density' or 'ticks'")
   }
 
@@ -281,37 +287,42 @@ plotHR <- function(models,
         xvalues_4_density <= max(xlim)]
   }
 
-  structure(list(models = models,
-                 multi_data = multi_data,
-                 main = main,
-                 boundaries = boundaries,
-                 se = se,
-                 confint_style = confint_style,
-                 xlab = xlab, 
-                 ylab = ylab,
-                 ylog = ylog,
-                 xlim = xlim,
-                 ylim = ylim,
-                 plot.bty = plot.bty,
-                 col.dens = col.dens,
-                 quantiles = quantiles,
-                 rug = rug,
-                 xvalues_4_density = xvalues_4_density,
-                 ticks = list(x = x.ticks,
-                              y = y.ticks,
-                              y_axis_side = y_axis_side),
-                 axes = axes),
-            class = "plotHR")
+  structure(list(
+    models = models,
+    multi_data = multi_data,
+    main = main,
+    boundaries = boundaries,
+    se = se,
+    confint_style = confint_style,
+    xlab = xlab,
+    ylab = ylab,
+    ylog = ylog,
+    xlim = xlim,
+    ylim = ylim,
+    plot.bty = plot.bty,
+    col.dens = col.dens,
+    quantiles = quantiles,
+    rug = rug,
+    xvalues_4_density = xvalues_4_density,
+    ticks = list(
+      x = x.ticks,
+      y = y.ticks,
+      y_axis_side = y_axis_side
+    ),
+    axes = axes
+  ),
+  class = "plotHR"
+  )
 }
 
-#' @exportS3Method 
+#' @exportS3Method
 #' @rdname plotHR
 #' @param x Sent the `plotHR` object to plot
 print.plotHR <- function(x, ...) {
   plot(x, ...)
 }
 
-#' @exportS3Method 
+#' @exportS3Method
 #' @rdname plotHR
 #' @param y Ignored in plot
 plot.plotHR <- function(x, y, ...) {
@@ -328,7 +339,7 @@ plot.plotHR <- function(x, y, ...) {
     axes = FALSE,
     ...
   )
-  
+
   # plot CI as polygon shade - if 'se = TRUE' (default)
   if (x$se) {
     # Plot the last on top
@@ -343,12 +354,12 @@ plot.plotHR <- function(x, y, ...) {
     }
   }
 
-    if (x$rug == "density") {
+  if (x$rug == "density") {
     prPhDensityPlot(x$xvalues_4_density,
-                    color = x$col.dens
+      color = x$col.dens
     )
   }
-  
+
   # plot white lines (background color) for:
   # 2.5%tile, 1Q, median, 3Q and 97.5%tile
   # through confidence shade and density plot
@@ -361,24 +372,25 @@ plot.plotHR <- function(x, y, ...) {
     lwd.ticks = 1,
     tck = 1
   )
-  
+
   if (x$rug == "ticks") {
     prPhRugPlot(xvalues = x$xvalues_4_density)
   }
-  
+
   # Plot the last fit on top, therefore use the reverse
   for (i in length(x$models):1) {
     current_i.forw <- order(x$multi_data[[i]]$xvalues)
-    
+
     # Plots the actual regression line
-    lines(x = x$multi_data[[i]]$xvalues[current_i.forw],
-          y = x$multi_data[[i]]$estimate[current_i.forw],
-          col = x$confint_style[[i]]$col.term,
-          lwd = x$confint_style[[i]]$lwd.term,
-          lty = x$confint_style[[i]]$lty.term
+    lines(
+      x = x$multi_data[[i]]$xvalues[current_i.forw],
+      y = x$multi_data[[i]]$estimate[current_i.forw],
+      col = x$confint_style[[i]]$col.term,
+      lwd = x$confint_style[[i]]$lwd.term,
+      lty = x$confint_style[[i]]$lty.term
     )
   }
-  
+
   # plot the axes
   if (x$axes) {
     axis(side = 1, at = x$ticks$x)
@@ -389,13 +401,14 @@ plot.plotHR <- function(x, y, ...) {
       # aren't provided in log
       x$ticks$y <- log(x$ticks$y)
     }
-    
-    
+
+
     if (x$ylog == TRUE) {
       y.ticks_labels <- ifelse(exp(x$ticks$y) >= 1,
-                               sprintf("%0.1f", exp(x$ticks$y)),
-                               sprintf("%0.2f", exp(x$ticks$y)))
-      
+        sprintf("%0.1f", exp(x$ticks$y)),
+        sprintf("%0.2f", exp(x$ticks$y))
+      )
+
       # Get familiar y-axis instead of the log
       axis(
         side = x$ticks$y_axis_side,
@@ -406,7 +419,7 @@ plot.plotHR <- function(x, y, ...) {
       axis(side = x$ticks$y_axis_side, at = x$ticks$y)
     }
   }
-  
+
   # plot a box around plotting panel if specified - not plotted by default
   box(bty = x$plot.bty)
 }

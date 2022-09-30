@@ -24,7 +24,6 @@ Imports:
     htmlTable (>= 2.0.0),
     Hmisc,
     knitr,
-    magrittr,
     methods,
     nlme,
     purrr,

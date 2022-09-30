@@ -314,8 +314,7 @@ prNlChooseDf <- function(model,
     # Load libraries necessary into the workers
     if (!missing(libraries)) {
       for (l in libraries) {
-        tmp <- sprintf("clusterEvalQ(workers, library(%s))", l) %>%
-          parse(text = .) %>%
+        tmp <- parse(text = sprintf("clusterEvalQ(workers, library(%s))", l)) |>
           eval()
       }
     }

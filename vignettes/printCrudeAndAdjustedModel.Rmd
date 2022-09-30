@@ -9,16 +9,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-How to output crude and adjusted models
-=======================================
+# How to output crude and adjusted models
 
-Background
-----------
+## Background
 
 It is a common practice in epidemiological papers to present regression estimates in both adjusted and unadjusted format. The unadjusted format is just that particular variable without any of the covariates and is often referred to as the **crude** estimate. The advantage with the two is that you provide the reader with a better understanding of how much the variables affect each other and also a sense of how much confounding is present in the model.
 
-The `printCrudeAndAdjusted` function
-------------------------------------
+## The `printCrudeAndAdjusted` function
 
 The `printCrudeAndAdjusted` was designed for this purpose. It provides a table with the `coef` and `confint` estimates for the full model, then reruns for each variable through an `update` call on the model providing `outcome ~ variable` as input. Below is a basic example:
 
@@ -34,8 +31,8 @@ printCrudeAndAdjustedModel(fit)
 As the variable names often aren't that pretty you can use the `rowname.fn` in order to get the row names desired. Here's a simple substitution example together with some limits to the digits, and a reference group:
 
 ```{r}
-printCrudeAndAdjustedModel(fit, 
-                           digits = 1, 
+printCrudeAndAdjustedModel(fit,
+                           digits = 1,
                            add_references = TRUE,
                            rowname.fn = function(n){
   if (n == "disp")
@@ -59,8 +56,8 @@ label(mtcars$cyl) <- "No. cylinders"
 label(mtcars$hp) <- "Gross horsepower"
 label(mtcars$am) <- "Transmission"
 
-printCrudeAndAdjustedModel(fit, 
-                           digits = 1, 
+printCrudeAndAdjustedModel(fit,
+                           digits = 1,
                            add_references = TRUE)
 ```
 
@@ -69,9 +66,9 @@ If we want to style the table we can use `htmlTable::addHtmlTableStyle`
 ```{r styling_with_addHtmlTableStyle}
 library(htmlTable)
 
-printCrudeAndAdjustedModel(fit, 
-                           digits = 1, 
-                           add_references = TRUE) %>% 
+printCrudeAndAdjustedModel(fit,
+                           digits = 1,
+                           add_references = TRUE) |>
   # We can also style the output as shown here
   addHtmlTableStyle(css.rgroup = "")
 ```
@@ -82,8 +79,7 @@ The style can be added to all the tables by setting a theme option and activatin
 setHtmlTableTheme(css.rgroup = "")
 ```
 
-Binding columns/rows
---------------------
+## Binding columns/rows
 
 The returned variable from `printCrudeAndAdjustedModel` works just like any matrix, i.e. you can bind it both on rows and on columns:
 
@@ -92,16 +88,15 @@ fit_mpg <- lm(mpg ~ cyl + disp + hp + am, data = mtcars)
 fit_weight <- lm(wt ~ cyl + disp + hp + am, data = mtcars)
 p_mpg <- printCrudeAndAdjustedModel(fit_mpg, digits = 1, add_references = TRUE)
 p_weight <- printCrudeAndAdjustedModel(fit_weight, digits = 1, add_references = TRUE)
-rbind("Miles per gallon" = p_mpg, 
+rbind("Miles per gallon" = p_mpg,
       "Weight (1000 lbs)" = p_weight)
 
-cbind("Miles per gallon" = p_mpg, 
+cbind("Miles per gallon" = p_mpg,
       "Weight (1000 lbs)" = p_weight)
 
 ```
 
-Selecting column/rows using `[`
--------------------------------
+## Selecting column/rows using `[`
 
 It is also possible to select individual rows/columns if so desired using the `[` operator:
 
@@ -111,10 +106,9 @@ p_mpg[,1:2]
 p_mpg[1:2,]
 ```
 
-More advanced models
---------------------
+## More advanced models
 
-The function is prepared for use with splines and strata but is currently *not* tested for mixed models. As the spline estimates are best interpreted in a graph they are omitted from the output.
+The function is prepared for use with splines and strata but is currently _not_ tested for mixed models. As the spline estimates are best interpreted in a graph they are omitted from the output.
 
 ```{r}
 library("survival")
@@ -138,10 +132,8 @@ fit <- coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x1 + ns(x2, 4) + x3 + strata(x4),
 printCrudeAndAdjustedModel(fit, add_references = TRUE)
 ```
 
-
 ```{r}
 # Note that the crude is with the strata
 a <- getCrudeAndAdjustedModelData(fit)
 a["x3", "Crude"] == exp(coef(coxph(Surv(ds$ftime, ds$fstatus == 1) ~ x3 + strata(x4), data = ds)))
 ```
-
