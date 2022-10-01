@@ -2,11 +2,12 @@
 #'
 #' A helper function for \code{\link{forestplotCombineRegrObj}()}. Extracts
 #' the data from the regression model fits and returns a \code{list}
-#' with model data gathered by the function \code{\link{prGetFpDataFromFit}()}
+#' with model data gathered by the function [broom::tidy()]
 #'
 #' @inheritParams forestplotCombineRegrObj
 #' @example inst/examples/forestplotCombineRegrObj_example.R
 #' @keywords internal
+#' @importFrom broom tidy
 getModelData4Forestplot <- function(regr.obj,
                                     exp = TRUE,
                                     variablesOfInterest.regexp,
@@ -14,10 +15,10 @@ getModelData4Forestplot <- function(regr.obj,
                                     add_first_as_ref) {
   models_fit_fp_data <- list()
   for (i in 1:length(regr.obj)) {
-    bound <- prGetFpDataFromFit(regr.obj[[i]],
-      conf.int = 0.95,
-      exp = exp
-    )
+    bound <- broom::tidy(regr.obj[[i]], 
+                         conf.int = TRUE,
+                         conf.level = 0.95,
+                         exponentiate = exp)
     models_fit_fp_data <- append(models_fit_fp_data, list(bound))
     if (is.null(names(regr.obj)) == FALSE &&
       names(regr.obj)[[i]] != "") {
