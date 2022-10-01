@@ -1,5 +1,4 @@
 library(testthat)
-library(magrittr)
 library(dplyr)
 
 test_that("Check the number of events and rows are correct", {

@@ -13,7 +13,6 @@ editor_options:
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-library(magrittr)
 ```
 
 # Background
@@ -94,7 +93,6 @@ An alternative is to split the data into a few intervals, select one interval at
 
 ```{r eval=FALSE}
 library(plyr)
-library(magrittr)
 models <-
   timeSplitter(your_data,
                by = 4,
@@ -118,6 +116,7 @@ First we generate a short survival dataset with 4 observations.
 
 ```{r}
 library(Greg)
+library(tidyverse)
 test_data <- data.frame(
   id = 1:4,
   time = c(4, 3.5, 1, 5),
@@ -138,7 +137,6 @@ Using some grid-graphics we can illustrate the dataset graphically:
 
 ```{r Display_data, echo=FALSE, fig.height=4, fig.width=7}
 library(grid)
-library(magrittr)
 getMaxWidth <- function(vars){
   sapply(vars,
          USE.NAMES = FALSE,
@@ -335,7 +333,6 @@ data("melanoma", package = "boot")
 
 # Then we munge it according to ?boot::melanoma
 library(dplyr)
-library(magrittr)
 melanoma <- mutate(
   melanoma,
   status = factor(status,
@@ -398,7 +395,7 @@ Now we can look for time varying coefficients using the `survival::cox.zph()` fu
 
 ```{r}
 cox.zph(regular_model) |>
-  extract2("table") |>
+  pluck("table") |>
   txtRound(digits = 2) |>
   knitr::kable(align = "r")
 ```

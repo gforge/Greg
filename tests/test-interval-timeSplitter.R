@@ -1,5 +1,4 @@
 library(Greg)
-library(magrittr)
 library(dplyr)
 data("melanoma", package = "boot")
 melanoma <- melanoma  |>

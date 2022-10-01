@@ -382,7 +382,6 @@ setClass("printCrudeAndAdjusted", contains = "matrix")
 #'
 #' @rdname printCrudeAndAdjustedModel
 #' @export
-#' @import magrittr
 #' @keywords internal
 rbind.printCrudeAndAdjusted <-
   function(..., alt.names, deparse.level = 1) {
@@ -439,7 +438,6 @@ rbind.printCrudeAndAdjusted <-
 #' @param x The output object from the \code{printCrudeAndAdjustedModel} function
 #' @rdname printCrudeAndAdjustedModel
 #' @export
-#' @import magrittr
 #' @keywords internal
 print.printCrudeAndAdjusted <- function(x, ...) {
   prPrintCAstring(x, ...) |>
@@ -561,7 +559,6 @@ prClearPCAclass <- function(pca) {
 
 #' @rdname printCrudeAndAdjustedModel
 #' @export
-#' @import magrittr
 #' @importFrom knitr knit_print
 #' @importFrom knitr asis_output
 #'

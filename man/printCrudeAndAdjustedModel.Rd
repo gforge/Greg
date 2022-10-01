@@ -310,7 +310,6 @@ wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data = mtcars),
   )
 )
 
-library(magrittr)
 library(htmlTable)
 rbind(Miles = mpg_model, Weight = wt_model) |>
 addHtmlTableStyle(pos.caption = "bottom") |>
