@@ -34,7 +34,7 @@
 #'
 #' @example inst/examples/addNonlinearity_example.R
 #' @rdname addNonlinearity
-#' @import stats
+#' @importFrom stats AIC update
 #' @export
 addNonlinearity <-
   function(model,

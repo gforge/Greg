@@ -34,8 +34,7 @@ Imports:
     stringr,
     tibble,
     tidyselect,
-    utils,
-    purrr
+    utils
 Depends:
     forestplot,
     Gmisc (>= 1.0.3)
@@ -44,10 +43,10 @@ Suggests:
     testthat,
     cmprsk,
     survival,
-    dplyr,
     ggplot2,
     parallel,
     rmarkdown,
-    rmeta
+    rmeta,
+    tidyverse
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1

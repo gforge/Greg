@@ -1,3 +1,4 @@
+#' @importFrom stats model.offset family
 prGetModelDefaults4foresplot <- function(regr.obj,
                                          xlab = NULL,
                                          xlog = NULL,

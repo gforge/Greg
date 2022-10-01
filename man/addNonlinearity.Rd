@@ -63,11 +63,9 @@ that is automatically evaluated for non-linearity).
 }
 \examples{
 library(Greg)
-library(magrittr)
+library(dplyr)
 data("melanoma", package = "boot", envir = environment())
 
-library(dplyr)
-library(magrittr)
 melanoma <- mutate(
   melanoma,
   status = factor(status,

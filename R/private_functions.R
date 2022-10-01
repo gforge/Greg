@@ -62,6 +62,7 @@ prFindRownameMatches <- function(rnames, vn, vars) {
 #'  length issues as there may be variables that are excluded from the
 #'  model for different reasons.
 #' @return vector
+#' @importFrom stats as.formula 
 #'
 #' @keywords internal
 prExtractOutcomeFromModel <- function(model, mf) {
@@ -96,9 +97,11 @@ prExtractOutcomeFromModel <- function(model, mf) {
 #' @param x The fitted model.
 #' @param terms_only Only use the right side of the equation by selecting the terms
 #' @param term.label Sometimes need to retrieve specific spline labels that are not among
-#'  the labels(terms(x))
+#'  the `labels(terms(x))`
 #' @return data.frame
+#' @importFrom stats get_all_vars
 #'
+#' @importFrom stats terms
 #' @keywords internal
 prGetModelData <- function(x, terms_only = FALSE, term.label) {
   # Extract the variable names

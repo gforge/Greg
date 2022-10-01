@@ -46,7 +46,7 @@
 #' @example inst/examples/getCrudeAndAdjustedModelData_example.R
 #'
 #' @importFrom stringr str_split
-#' @import stats
+#' @importFrom stats anova
 #'
 #' @family crudeAndAdjusted functions
 #' @rdname getCrudeAndAdjustedModelData
@@ -224,6 +224,7 @@ getCrudeAndAdjustedModelData.default <- function(model,
             class = c("getCrudeAndAdjustedModelData", class(both)))
 }
 
+#' @importFrom stats formula
 prGetFormulaOffset <- function(x) {
   if (!inherits(x, "formula")) {
     x <- formula(x)

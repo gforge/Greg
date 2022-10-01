@@ -101,6 +101,7 @@
 #' @importFrom Gmisc fastDoCall
 #' @importFrom grDevices grey
 #' @importFrom graphics axTicks axis box lines par plot polygon
+#' @importFrom stats quantile
 #' @author Reinhard Seifert, Max Gordon
 #'
 #' @export

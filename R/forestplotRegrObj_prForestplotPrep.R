@@ -1,3 +1,4 @@
+utils::globalVariables(c("txt_estimate", "txt_conf.low", "txt_conf.high", "estimate", "term"))
 
 #' @importFrom dplyr bind_rows mutate filter group_by case_when row_number if_else across
 #' @importFrom tidyselect starts_with
@@ -7,6 +8,7 @@
 #' @importFrom stringr str_detect
 #' @importFrom htmlTable txtRound
 #' @importFrom glue glue
+#' @importFrom stats model.frame
 prForestPlotPrep <- function(regressions,
                              skip.variables,
                              add.empty_row,
@@ -102,6 +104,8 @@ prForestPlotPrep <- function(regressions,
     class = c(class_id, class(ret))
   )
 }
+
+utils::globalVariables(c("Model"))
 
 #' @export
 #' @importFrom rlang as_name
