@@ -13,40 +13,34 @@
 \usage{
 forestplotRegrObj(
   regr.obj,
-  boxsize,
   postprocess_estimates.fn = function(x) x,
-  xlab,
-  xlog,
-  exp,
-  estimate.txt = xlab,
   rowname = "Variable",
   ci.txt = "CI",
   ci.glue = "{lower} to {higher}",
   digits = 1,
-  zero,
   get_box_size = fpBoxSize,
   ...
 )
 
 \method{forestplotRegrObj}{default}(
   regr.obj,
-  skip.variables,
-  add.empty_row,
-  order.regexps,
-  order.addrows,
-  boxsize,
-  rowname.fn,
-  xlab,
-  xlog,
-  exp,
-  estimate.txt = xlab,
-  zero,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
   get_box_size = fpBoxSize,
   ...
 )
 
 \method{forestplotRegrObj}{coxph}(
   regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
   xlab = "Hazard Ratio",
   estimate.txt = "HR",
   xlog = TRUE,
@@ -57,6 +51,12 @@ forestplotRegrObj(
 
 \method{forestplotRegrObj}{lrm}(
   regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
   xlab = "Odds ratio",
   estimate.txt = "HR",
   xlog = TRUE,
@@ -67,6 +67,12 @@ forestplotRegrObj(
 
 \method{forestplotRegrObj}{lm}(
   regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
   xlab = "Effect",
   estimate.txt = "Coef",
   xlog = FALSE,
@@ -77,6 +83,12 @@ forestplotRegrObj(
 
 \method{forestplotRegrObj}{glm}(
   regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
   xlab = NULL,
   xlog = NULL,
   zero = NULL,
@@ -87,6 +99,12 @@ forestplotRegrObj(
 
 \method{forestplotRegrObj}{list}(
   regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
   xlab = NULL,
   xlog = NULL,
   zero = NULL,
@@ -101,8 +119,6 @@ fpBoxSize(p_values, variable_count, boxsize, significant = 0.05)
 \item{regr.obj}{A regression model object. It should be of coxph, crr or glm class.
 Warning: The glm is not fully tested.}
 
-\item{boxsize}{The default box size}
-
 \item{postprocess_estimates.fn}{A function that takes the regression outputs and returns
 the same data with modifications. The input columns are:
 
@@ -111,20 +127,6 @@ the same data with modifications. The input columns are:
 * `Lower`
 * `Upper`
 * `Sort`}
-
-\item{xlab}{x-axis label}
-
-\item{xlog}{If TRUE, x-axis tick marks are to follow a logarithmic scale, e.g. for
-logistic regression (OR), survival estimates (HR), Poisson regression etc.
-\emph{Note:} This is an intentional break with the original \code{forestplot}
-function as I've found that exponentiated ticks/clips/zero effect are more
-difficult to for non-statisticians and there are sometimes issues with rounding
-the tick marks properly.}
-
-\item{exp}{Report in exponential form. Default true since the function was built for
-use with survival models.}
-
-\item{estimate.txt}{The text above the estimate, e.g. Est, HR}
 
 \item{rowname}{The name of the variables}
 
@@ -135,20 +137,32 @@ confidence intervals together.}
 
 \item{digits}{The number of digits to round presented values to}
 
-\item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
-1 while in most other cases it's 0.}
-
 \item{get_box_size}{A function for extracting the box sizes}
 
 \item{...}{Passed to \code{\link[forestplot]{forestplot}()}}
 
-\item{rowname.fn}{A function that takes a row name and sees if it needs
-beautifying. The function has only one parameter the coefficients name and should
-return a string or expression.}
+\item{xlab}{x-axis label}
+
+\item{estimate.txt}{The text above the estimate, e.g. Est, HR}
+
+\item{xlog}{If TRUE, x-axis tick marks are to follow a logarithmic scale, e.g. for
+logistic regression (OR), survival estimates (HR), Poisson regression etc.
+\emph{Note:} This is an intentional break with the original \code{forestplot}
+function as I've found that exponentiated ticks/clips/zero effect are more
+difficult to for non-statisticians and there are sometimes issues with rounding
+the tick marks properly.}
+
+\item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
+1 while in most other cases it's 0.}
+
+\item{exp}{Report in exponential form. Default true since the function was built for
+use with survival models.}
 
 \item{p_values}{The p-values that will work as the foundation for the box size}
 
 \item{variable_count}{The number of variables}
+
+\item{boxsize}{The default box size}
 
 \item{significant}{Level of significance .05}
 }
