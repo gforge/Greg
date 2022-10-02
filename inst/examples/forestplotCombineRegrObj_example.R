@@ -18,9 +18,9 @@ fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
 forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
+  regr.obj = list(`First model` = fit1, 
+                  `Seconf model` = fit2),
   variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
   new_page = TRUE
 )
 

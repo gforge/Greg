@@ -6,19 +6,17 @@
 \usage{
 forestplotCombineRegrObj(
   regr.obj,
-  variablesOfInterest.regexp,
-  reference.names,
-  rowname.fn,
-  estimate.txt,
-  exp = xlog,
+  variablesOfInterest.regexp = NULL,
+  rowname.fn = function(x) x,
+  estimate.txt = NULL,
   add_first_as_ref = FALSE,
   ref_txt = "ref.",
-  ref_labels = c(),
   digits = 1,
   is.summary,
-  xlab,
-  zero,
-  xlog,
+  xlab = NULL,
+  zero = NULL,
+  xlog = NULL,
+  exp = xlog,
   ...
 )
 }
@@ -30,8 +28,6 @@ be identified through the regular expression}
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
 
-\item{reference.names}{Additional reference names to be added to each model}
-
 \item{rowname.fn}{A function that takes a row name and sees if it needs
 beautifying. The function has only one parameter the coefficients name and should
 return a string or expression.}
@@ -39,17 +35,11 @@ return a string or expression.}
 \item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
 odds ratio}
 
-\item{exp}{Report in exponential form. Default true since the function was built for
-use with survival models.}
-
 \item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
 if exp() and the confidence interval 0.}
 
 \item{ref_txt}{Text instead of estimate number}
-
-\item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
-fits.}
 
 \item{digits}{Number of digits to use for the estimate output}
 
@@ -68,6 +58,9 @@ logistic regression (OR), survival estimates (HR), Poisson regression etc.
 function as I've found that exponentiated ticks/clips/zero effect are more
 difficult to for non-statisticians and there are sometimes issues with rounding
 the tick marks properly.}
+
+\item{exp}{Report in exponential form. Default true since the function was built for
+use with survival models.}
 
 \item{...}{Passed to \code{\link[forestplot]{forestplot}()}}
 }
@@ -97,9 +90,9 @@ fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
 forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
+  regr.obj = list(`First model` = fit1, 
+                  `Seconf model` = fit2),
   variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
   new_page = TRUE
 )
 

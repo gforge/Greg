@@ -7,9 +7,8 @@
 getModelData4Forestplot(
   regr.obj,
   exp = TRUE,
-  variablesOfInterest.regexp,
-  ref_labels,
-  add_first_as_ref
+  variablesOfInterest.regexp = NULL,
+  add_first_as_ref = FALSE
 )
 }
 \arguments{
@@ -22,9 +21,6 @@ use with survival models.}
 \item{variablesOfInterest.regexp}{A regular expression identifying the variables
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
-
-\item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
-fits.}
 
 \item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
@@ -56,9 +52,9 @@ fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
 forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
+  regr.obj = list(`First model` = fit1, 
+                  `Seconf model` = fit2),
   variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
   new_page = TRUE
 )
 
