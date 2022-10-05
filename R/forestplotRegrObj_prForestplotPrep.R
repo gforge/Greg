@@ -23,6 +23,9 @@ prForestPlotPrep <- function(regressions,
                              get_box_size = fpBoxSize,
                              digits,
                              ...) {
+  if (is.null(estimate.txt)) {
+    estimate.txt = xlab
+  }
   header <- tibble(rowname = rowname, is_summary = TRUE)
   fit_data <- sapply(regressions,
                      FUN = function(regression, ...) 
@@ -105,7 +108,7 @@ prForestPlotPrep <- function(regressions,
   )
 }
 
-utils::globalVariables(c("Model"))
+utils::globalVariables(c("Model", "est_txt"))
 
 #' @export
 #' @importFrom rlang as_name
@@ -121,7 +124,7 @@ print.forestplotRegrObj.grouped <- function(x, ...) {
   args$lower <- as_name(quote(conf.low))
   args$upper <- as_name(quote(conf.high))
   args$is.summary <- as_name(quote(is_summary))
-  
+
   do.call(forestplot, args) |> 
     print()
 }

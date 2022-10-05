@@ -101,5 +101,5 @@ forestplotCombineRegrObj <- function(
                            xlog = xlog,
                            xlab = xlab,
                            ...) |> 
-    forestplot:::fp_add_header(est_txt = estimate.txt)
+    forestplot::fp_add_header(est_txt = estimate.txt)
 }

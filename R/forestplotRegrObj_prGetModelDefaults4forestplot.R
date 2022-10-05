@@ -17,6 +17,8 @@ prGetModelDefaults4foresplot <- function(regr.obj,
   if (is.null(ret$xlab)) {
     if (isFitLogit(regr.obj)) {
       ret$xlab <- "Odds ratio"
+    } else if (inherits(regr.obj, "coxph") ) {
+      ret$xlab <- "Hazard ratio"
     } else if (family(regr.obj)$family == "poisson" && !is.null(model.offset(regr.obj))) {
       ret$xlab <- "Relative risk"
     } else {
@@ -27,6 +29,8 @@ prGetModelDefaults4foresplot <- function(regr.obj,
   if (is.null(estimate.txt)) {
     if (isFitLogit(regr.obj)) {
       ret$estimate.txt <- "OR"
+    } else if (inherits(regr.obj, "coxph")) {
+      ret$xlab <- "HR"
     } else if (family(regr.obj)$family == "poisson" && !is.null(model.offset(regr.obj))) {
       ret$estimate.txt <- "RR"
     } else {
@@ -34,7 +38,9 @@ prGetModelDefaults4foresplot <- function(regr.obj,
     }
   }
   
-  exponential <- isFitLogit(regr.obj) || family(regr.obj)$family == "poisson"
+  exponential <- isFitLogit(regr.obj) || 
+    inherits(regr.obj, "coxph") ||
+    family(regr.obj)$family == "poisson"
   if (is.null(ret$xlog)) {
     if (exponential) {
       ret$xlog <- TRUE
