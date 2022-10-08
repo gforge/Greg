@@ -40,6 +40,9 @@ timeSplitter <- function(data, by, time_var,
                          event_var,
                          event_start_status,
                          time_related_vars, time_offset) {
+  if (tibble::is_tibble(data)) {
+    data <- data.frame(data)
+  }
   # Save the original order of the names for restoring at the end
   # Also save the labels if any
   org_names <- names(data)
@@ -217,13 +220,12 @@ timeSplitter <- function(data, by, time_var,
   # This is necessary as the Lexis uses substitute
   # with the data as a co-argument and thus very
   # complex to handle with parse()/deparse()/expression()
-  lxs_data <-
-    paste0("Lexis(entry = list(u___timeband__ = Start_time),
-                    exit = ", exit_list, ",
-                    exit.status = ", event_var, ",
-                    entry.status = Entry,
-                    data = data)") %>%
-    parse(text = .) %>%
+  raw <- paste0("Lexis(entry = list(u___timeband__ = Start_time),
+                       exit = ", exit_list, ",
+                       exit.status = ", event_var, ",
+                       entry.status = Entry,
+                       data = data)")
+  lxs_data <- parse(text = raw) |>
     eval()
 
   if (length(by) == 1) {

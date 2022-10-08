@@ -137,6 +137,6 @@ print.simpleRmsAnova <- function(x, html = TRUE, ...) {
     }
   }
 
-  fastDoCall(ifelse(html, "htmlTable", "latex"), call_list) %>%
+  fastDoCall(ifelse(html, "htmlTable", "latex"), call_list) |>
     print()
 }

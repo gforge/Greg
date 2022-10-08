@@ -266,7 +266,7 @@ printCrudeAndAdjustedModel(fit_mtcar,
   desc_args = caDescribeOpts(
     digits = 1,
     colnames = c("Avg.")
-  )) \%>\% 
+  )) |> 
   htmlTable::addHtmlTableStyle(css.rgroup = "",
                                css.header = "font-weight: normal")
 
@@ -307,10 +307,9 @@ wt_model <- printCrudeAndAdjustedModel(lm(wt ~ mpg + gear + col, data = mtcars),
   )
 )
 
-library(magrittr)
 library(htmlTable)
-rbind(Miles = mpg_model, Weight = wt_model) \%>\%
-  addHtmlTableStyle(pos.caption = "bottom") \%>\% 
+rbind(Miles = mpg_model, Weight = wt_model) |>
+  addHtmlTableStyle(pos.caption = "bottom") |> 
   htmlTable(caption = paste("Combining models together with a table spanner element", 
                             "separating each model"))
 }

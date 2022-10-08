@@ -11,7 +11,6 @@ vignette: >
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
-library(magrittr)
 ```
 
 
@@ -97,14 +96,13 @@ An alternative is to split the data into a few intervals, select one interval at
 
 ```{r eval=FALSE}
 library(plyr)
-library(magrittr)
 models <- 
   timeSplitter(your_data, 
                by = 4,
                event_var = "status",
                time_var = "years",
                event_start_status = "alive",
-               time_related_vars = c("age", "date")) %>% 
+               time_related_vars = c("age", "date")) |> 
   dlply("Start_time",
         function(data){
           coxph(Surv(Start_time, End_time, status) ~ age + sex + treatment, data = data)
@@ -122,36 +120,34 @@ How the timeSplitter works
 First we generate a short survival dataset with 4 observations.
 
 ```{r}
+library(tidyverse)
 library(Greg)
-test_data <- data.frame(
-  id = 1:4,
-  time = c(4, 3.5, 1, 5),
-  event = c("censored", "dead", "alive", "dead"),
-  age = c(62.2, 55.3, 73.7, 46.3),
-  date = as.Date(
-    c("2003-01-01", 
-      "2010-04-01", 
-      "2013-09-20",
-      "2002-02-23")),
-  stringsAsFactors = TRUE
-)
 
-test_data$time_str <- sprintf("0 to %.1f", test_data$time)
+test_data <- tibble(id = 1:4,
+                    time = c(4, 3.5, 1, 5),
+                    event = c("censored", "dead", "alive", "dead"),
+                    age = c(62.2, 55.3, 73.7, 46.3),
+                    date = as.Date(
+                      c("2003-01-01", 
+                        "2010-04-01", 
+                        "2013-09-20",
+                        "2002-02-23")),
+                    stringsAsFactors = TRUE) |> 
+  mutate(time_str = sprintf("0 to %.1f", time))
 ```
 
 Using some grid-graphics we can illustrate the dataset graphically:
 
 ```{r Display_data, echo=FALSE, fig.height=4, fig.width=7}
 library(grid)
-library(magrittr)
 getMaxWidth <- function(vars){
   sapply(vars, 
          USE.NAMES = FALSE,
          function(v){
-           grobWidth(x = textGrob(v)) %>% 
+           grobWidth(x = textGrob(v)) |> 
              convertX(unitTo = "mm")
-         }) %>% 
-    max %>% 
+         }) |> 
+    max() |> 
     unit("mm")
 }
 plotTitleAndPushVPs <- function(title_txt){
@@ -159,8 +155,8 @@ plotTitleAndPushVPs <- function(title_txt){
                         height = unit(.9, "npc")))
   
   title <- textGrob(title_txt, gp = gpar(cex = 2))
-  title_height <- grobHeight(title) %>% 
-    convertY(unitTo = "mm", valueOnly = TRUE) * 2 %>% 
+  title_height <- grobHeight(title) |> 
+    convertY(unitTo = "mm", valueOnly = TRUE) * 2 |> 
     unit("mm")
   grid.layout(nrow = 3,
               heights = unit.c(title_height,
@@ -169,15 +165,15 @@ plotTitleAndPushVPs <- function(title_txt){
                                  title_height - 
                                  unit(.1, "npc") -
                                  unit(2, "line"),
-                               unit(2, "line"))) %>% 
-    viewport(layout = .) %>% 
+                               unit(2, "line"))) |> 
+    viewport(layout = _) |> 
     pushViewport()
-  viewport(layout.pos.row = 1) %>% 
+  viewport(layout.pos.row = 1) |> 
     pushViewport()
   grid.draw(title)
   upViewport()
   
-  viewport(layout.pos.row = 3) %>% 
+  viewport(layout.pos.row = 3) |> 
     pushViewport()
 }
 
@@ -189,7 +185,7 @@ plotLine <- function (row_no,
                       print_axis = FALSE) {
   viewport(layout.pos.row = row_no,
            layout.pos.col = 6,
-           xscale = data_range) %>% 
+           xscale = data_range) |> 
     pushViewport()
   on.exit(upViewport())
   
@@ -215,21 +211,21 @@ plotLine <- function (row_no,
 
 plotIDcell <- function(row_no, id){
   viewport(layout.pos.row = row_no,
-           layout.pos.col = 2) %>% 
+           layout.pos.col = 2) |> 
     pushViewport()
   grid.text(id)
   upViewport()
 }
 plotTimeStrcell <- function(row_no, time_str){
   viewport(layout.pos.row = row_no,
-           layout.pos.col = 4) %>% 
+           layout.pos.col = 4) |> 
     pushViewport()
   grid.text(time_str)
   upViewport()
 }
 
 plotRowColor <- function(row_no, clr = "#F6F6FF"){
-  viewport(layout.pos.row = row_no) %>% 
+  viewport(layout.pos.row = row_no) |> 
     pushViewport()
   grid.rect(gp = gpar(col = clr, fill = clr))
   upViewport()
@@ -244,15 +240,15 @@ widths <-
          getMaxWidth(test_data$id),
          unit(.1, "npc"),
          getMaxWidth(test_data$time_str),
-         unit(.1, "npc")) %>% 
-  unit.c(., 
-         unit(1, "npc") - sum(.) - unit(.1, "npc"),
-         unit(.1, "npc"))
+         unit(.1, "npc")) |> 
+  (\(x) unit.c(x, 
+               unit(1, "npc") - sum(x) - unit(.1, "npc"),
+               unit(.1, "npc")))()
 
 grid.layout(nrow = nrow(test_data),
             ncol = length(widths),
-            widths = widths) %>% 
-  viewport(layout = .) %>% 
+            widths = widths) |> 
+  viewport(layout = _) |> 
   pushViewport()
 
 
@@ -275,9 +271,9 @@ Now we apply a split that splits the data into 2 year chunks. **Note**: 2 years 
 
 ```{r Split_data}
 library(dplyr)
-split_data <- 
-  test_data %>% 
-  select(id, event, time, age, date) %>% 
+split_data <- test_data |> 
+  select(id, event, time, age, date) |> 
+  as.data.frame() |> 
   timeSplitter(by = 2, # The time that we want to split by
                event_var = "event",
                time_var = "time",
@@ -297,8 +293,8 @@ plotTitleAndPushVPs("Time spans with split")
 
 grid.layout(nrow = nrow(test_data) + nrow(split_data),
             ncol = length(widths),
-            widths = widths) %>% 
-  viewport(layout = .) %>% 
+            widths = widths) |> 
+  viewport(layout = _) |> 
   pushViewport()
 
 current_id <- NULL
@@ -344,22 +340,19 @@ I haven't found any good datasets with non-proportional hazards but the melanoma
 data("melanoma", package = "boot")
 
 # Then we munge it according to ?boot::melanoma
-library(dplyr)
-library(magrittr)
-melanoma %<>% 
-  mutate(status = factor(status,
-                        levels = 1:3,
-                        labels = c("Died from melanoma", 
-                                   "Alive", 
-                                   "Died from other causes")),
-        ulcer = factor(ulcer,
-                       levels = 0:1,
-                       labels = c("Absent", "Present")),
-        time = time/365.25, # All variables should be in the same time unit
-        sex = factor(sex,
-                     levels = 0:1,
-                     labels = c("Female", "Male")))
-
+melanoma <- mutate(melanoma,
+                   status = factor(status,
+                                   levels = 1:3,
+                                   labels = c("Died from melanoma", 
+                                              "Alive", 
+                                              "Died from other causes")),
+                   ulcer = factor(ulcer,
+                                  levels = 0:1,
+                                  labels = c("Absent", "Present")),
+                   time = time/365.25, # All variables should be in the same time unit
+                   sex = factor(sex,
+                                levels = 0:1,
+                                labels = c("Female", "Male")))
 ```
 
 Now we can fit a regular cox regression:
@@ -377,7 +370,7 @@ If we do the same with a split dataset:
 
 ```{r}
 spl_melanoma <-
-  melanoma %>% 
+  melanoma |> 
   timeSplitter(by = .5,
                event_var = "status",
                event_start_status = "Alive",
@@ -398,17 +391,17 @@ As you can see the difference between the models is negligible:
 library(htmlTable)
 cbind(Regular = coef(regular_model),
       Interval = coef(interval_model),
-      Difference = coef(regular_model) - coef(interval_model)) %>% 
-  txtRound(digits = 5) %>% 
+      Difference = coef(regular_model) - coef(interval_model)) |> 
+  txtRound(digits = 5) |> 
   knitr::kable(align = "r")
 ```
 
 Now we can look for time varying coefficients using the `survival::cox.zph()` function:
 
 ```{r}
-cox.zph(regular_model) %>% 
-  extract2("table") %>% 
-  txtRound(digits = 2) %>% 
+cox.zph(regular_model) |> 
+  purrr::pluck("table") |> 
+  txtRound(digits = 2) |> 
   knitr::kable(align = "r")
 ```
 
@@ -425,8 +418,8 @@ As suspected the thickness effect is reduced with time. A linear model is hard t
 
 ```{r}
 # First we need to manually add an interaction term
-spl_melanoma %<>% 
-  mutate(thickness_start = thickness * Start_time) 
+spl_melanoma <- mutate(spl_melanoma,
+                       thickness_start = thickness * Start_time) 
 anova(time_int_model,
       update(time_int_model, .~.+I(thickness_start^2)))
 ```
@@ -442,12 +435,12 @@ If you are only investigating confounders that you want to adjust for we are don
 ```{r}
 # Lets create an evenly distributed categorical thickness variable
 # and interactions
-spl_melanoma %<>% 
-  mutate(thickness_cat = cut(thickness,
-                             breaks = c(0, 1, 5, Inf),
-                             labels = c("less than 1.0",
-                                        "1.0 to 4.9",
-                                        "at least 5.0")))
+spl_melanoma <- mutate(spl_melanoma,
+                       thickness_cat = cut(thickness,
+                                           breaks = c(0, 1, 5, Inf),
+                                           labels = c("less than 1.0",
+                                                      "1.0 to 4.9",
+                                                      "at least 5.0")))
 # Now create interaction variables
 for (l in levels(spl_melanoma$thickness_cat)[-1]){
   spl_melanoma[[sprintf("thickness_%s_time", gsub(" ", "_", l))]] <- 
@@ -468,7 +461,7 @@ adv_int_model <-
 new_data <- data.frame(thickness_cat = rep(levels(spl_melanoma$thickness_cat)[-1],
                                            each = 100),
                        Start_time = 2^seq(-3, 3, length.out = 100),
-                       stringsAsFactors = FALSE) %>% 
+                       stringsAsFactors = FALSE) |> 
   mutate(thickness_1.0_to_4.9_time = (thickness_cat == levels(spl_melanoma$thickness_cat)[2]) *
            Start_time,
          thickness_at_least_5.0_time = (thickness_cat == levels(spl_melanoma$thickness_cat)[3]) *
@@ -487,23 +480,23 @@ adv_pred <- predict(adv_int_model,
                     se.fit = TRUE)
 
 new_data$fit <- rowSums(adv_pred$fit)
-new_data$se.fit <- apply(adv_pred$se.fit, 1, function(x) x^2) %>% 
-  colSums %>% 
-  sqrt
-new_data %<>% 
-  mutate(risk = exp(fit),
-         upper = exp(fit + 1.96*se.fit),
-         lower = exp(fit - 1.96*se.fit))
+new_data$se.fit <- apply(adv_pred$se.fit, 1, function(x) x^2) |> 
+  colSums() |> 
+  sqrt()
+new_data <- mutate(new_data,
+                   risk = exp(fit),
+                   upper = exp(fit + 1.96*se.fit),
+                   lower = exp(fit - 1.96*se.fit))
 
 ```
 
 
 ```{r fig.width=8, fig.height=6}
 library(ggplot2)
-new_data %>% 
+new_data |> 
   mutate(adapted_risk = sapply(risk, function(x) min(max(2^-4, x), 2^5)),
          adapted_upper = sapply(upper, function(x) min(max(2^-4, x), 2^5)),
-         adapted_lower = sapply(lower, function(x) min(max(2^-4, x), 2^5))) %>% 
+         adapted_lower = sapply(lower, function(x) min(max(2^-4, x), 2^5))) |> 
   ggplot(aes(y = adapted_risk, 
              x = new_data$Start_time, 
              group = thickness_cat,

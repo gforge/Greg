@@ -1,5 +1,12 @@
 NEWS for the **Greg** package
 
+Changes for 1.5.0
+-----------------
+* Added broom::tidy for rms-models
+* Updated to new forestplot API together with some general improvements to the forestplot functions
+* Dropped magrittr in favor of R native-pipe
+* Converted examples to `tidyverse` style
+
 Changes for 1.4.1
 -----------------
 * Fix for updated survival package with a more consistent naming (3.4-0)

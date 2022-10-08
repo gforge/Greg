@@ -1,5 +1,4 @@
 library(testthat)
-library(magrittr)
 library(dplyr)
 
 test_that("Check the number of events and rows are correct",{
@@ -16,8 +15,8 @@ test_that("Check the number of events and rows are correct",{
   )
   
   split_data <- 
-    test_data %>% 
-    select(id, event, time, age, date) %>% 
+    test_data |> 
+    select(id, event, time, age, date) |> 
     timeSplitter(by = 2, # The time that we want to split by
                  event_var = "event",
                  time_var = "time",
@@ -50,8 +49,8 @@ test_that("Check that labels are preserved",{
   library(Hmisc)
   label(test_data$age) <- "Age (years)"
   split_data <- 
-    test_data %>% 
-    select(id, event, time, age, date) %>% 
+    test_data |> 
+    select(id, event, time, age, date) |> 
     timeSplitter(by = 2, # The time that we want to split by
                  event_var = "event",
                  time_var = "time",
@@ -79,8 +78,8 @@ test_that("Check that age and calendar time is updated",{
   library(Hmisc)
   label(test_data$age) <- "Age (years)"
   split_data <- 
-    test_data %>% 
-    select(id, event, time, age, date) %>% 
+    test_data |> 
+    select(id, event, time, age, date) |> 
     timeSplitter(by = 2, # The time that we want to split by
                  event_var = "event",
                  time_var = "time",

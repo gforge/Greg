@@ -45,7 +45,8 @@ forestplotRegrObj(
   variablesOfInterest.regexp = "(x2|x3)",
   legend = c("First model", "Second model"),
   legend_args = fpLegend(title = "Models"),
-  rowname.fn = modifyNameFunction, new_page = TRUE
+  rowname.fn = modifyNameFunction, new_page = TRUE,
+  box.default.size = 0.1,
 )
 
 par(org.par)

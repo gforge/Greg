@@ -71,7 +71,7 @@ library(htmlTable)
 
 printCrudeAndAdjustedModel(fit, 
                            digits = 1, 
-                           add_references = TRUE) %>% 
+                           add_references = TRUE) |> 
   # We can also style the output as shown here
   addHtmlTableStyle(css.rgroup = "")
 ```

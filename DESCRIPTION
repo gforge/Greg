@@ -1,5 +1,5 @@
 Package: Greg
-Version: 1.4.1
+Version: 1.5.0
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -22,16 +22,18 @@ Imports:
     stats,
     nlme,
     methods,
-    htmlTable (>= 2.0.0),
-    magrittr,
+    htmlTable (>= 2.4.1),
     knitr,
     Epi,
     utils,
     graphics,
-    grDevices
+    grDevices,
+    tibble,
+    purrr
 Depends:
-    forestplot,
-    Gmisc (>= 1.0.3)
+    R (>= 4.2.0),
+    forestplot (>= 3.0.1),
+    Gmisc (>= 3.0.0)
 Suggests:
     boot,
     testthat,
@@ -41,6 +43,7 @@ Suggests:
     ggplot2,
     parallel,
     rmarkdown,
-    rmeta
+    rmeta,
+    tidyverse
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
