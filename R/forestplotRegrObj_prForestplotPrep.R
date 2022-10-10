@@ -113,7 +113,7 @@ utils::globalVariables(c("Model", "est_txt"))
 #' @export
 #' @importFrom rlang as_name
 print.forestplotRegrObj.grouped <- function(x, ...) {
-  args <- list(x = tibble::tibble(x),
+  args <- list(x = x,
                ...,
                align = c("l", "c", "c")) |> 
     append(attr(x, "args"))
