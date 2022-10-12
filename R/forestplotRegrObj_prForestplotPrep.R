@@ -124,6 +124,7 @@ print.forestplotRegrObj.grouped <- function(x, ...) {
   args$lower <- as_name(quote(conf.low))
   args$upper <- as_name(quote(conf.high))
   args$is.summary <- as_name(quote(is_summary))
+  args$legend <- NULL
 
   do.call(forestplot, args) |> 
     print()
