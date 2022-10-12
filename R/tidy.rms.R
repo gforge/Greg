@@ -120,8 +120,9 @@ convert_value_to_term_and_factor <- function(data, model_fit) {
                                term,
                                find_best_start_match(needle = term, haystack = colnames(mf) |> 
                                                        str_replace("[a-zA-Z]+\\(([^, ]+).+\\)", "\\1"))),
+         column_label = purrr::map_chr(column_term, \(t) if_else(is.null(Hmisc::label(mf[[t]])), t, Hmisc::label(mf[[t]]))),
          # Add the intercept if any
-         column_term = if_else(row_number() == 1 & is.na(column_term), term, column_term),
+         column_label = if_else(row_number() == 1 & is.na(column_term), term, column_term),
          factor = mapply(column_term = column_term,
                          needle = term,
                          FUN = function(needle, column_term) {
@@ -136,6 +137,22 @@ convert_value_to_term_and_factor <- function(data, model_fit) {
          factor = case_when(!is.na(factor) ~ factor,
                             !is.na(column_term) & column_term != term ~ substring(term, nchar(column_term) + 1),
                             TRUE ~ NA_character_),
+         across(where(is.character), str_trim))
+}
+
+build_column_label_from_column_term <- function(data, model_fit) {
+  mf <- model.frame(model_fit)
+  get_label <- function(varname) {
+    label <- Hmisc::label(mf[[varname]])
+    
+    if (is.null(label) || label == "") {
+      return(varname)
+    }
+    return(label)
+  }
+
+  mutate(data,
+         column_label = purrr::map_chr(column_term, get_label),
          across(where(is.character), str_trim))
 }
 

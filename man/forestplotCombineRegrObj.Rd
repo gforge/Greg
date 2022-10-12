@@ -7,12 +7,12 @@
 forestplotCombineRegrObj(
   regr.obj,
   variablesOfInterest.regexp = NULL,
-  rowname.fn = function(x) x,
   estimate.txt = NULL,
   add_first_as_ref = FALSE,
   ref_txt = "ref.",
   digits = 1,
-  is.summary,
+  post_process_data = function(x) x,
+  is.summary = NULL,
   xlab = NULL,
   zero = NULL,
   xlog = NULL,
@@ -28,10 +28,6 @@ be identified through the regular expression}
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
 
-\item{rowname.fn}{A function that takes a row name and sees if it needs
-beautifying. The function has only one parameter the coefficients name and should
-return a string or expression.}
-
 \item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
 odds ratio}
 
@@ -42,6 +38,10 @@ if exp() and the confidence interval 0.}
 \item{ref_txt}{Text instead of estimate number}
 
 \item{digits}{Number of digits to use for the estimate output}
+
+\item{post_process_data}{A function that takes the data frame just prior to calling `forestplot`
+and allows you to manipulate it. Primarily used for changing the `column_label`
+that has the names shown in the final plot.}
 
 \item{is.summary}{A vector indicating by \code{TRUE}/\code{FALSE} if
 the value is a summary value which means that it will have a different
@@ -73,14 +73,16 @@ to get an overview and easier comparison.
 org.par <- par("ask" = TRUE)
 
 # simulated data to test
+library(tidyverse)
 set.seed(10)
-ftime <- rexp(200)
-fstatus <- sample(0:1, 200, replace = TRUE)
-cov <- data.frame(
-  x1 = runif(200),
-  x2 = runif(200),
-  x3 = runif(200)
-)
+cov <- tibble(ftime = rexp(200),
+              fstatus = sample(0:1, 200, replace = TRUE),
+              x1 = runif(200),
+              x2 = runif(200),
+              x3 = runif(200)) |> 
+  # Add some column labels
+  Gmisc::set_column_labels(x1 = "First variable",
+                           x2 = "Second variable")
 
 library(rms)
 ddist <- datadist(cov)
@@ -89,32 +91,18 @@ options(datadist = "ddist")
 fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
-forestplotCombineRegrObj(
-  regr.obj = list(`First model` = fit1, 
-                  `Seconf model` = fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  new_page = TRUE
-)
+list(`First model` = fit1, 
+     `Second model` = fit2) |> 
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)")
 
-modifyNameFunction <- function(x) {
-  if (x == "x1") {
-    return("Covariate A")
-  }
-
-  if (x == "x2") {
-    return(expression(paste("My ", beta[2])))
-  }
-
-  return(x)
-}
-
-forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
-  rowname.fn = modifyNameFunction,
-  new_page = TRUE
-)
+# How to add expressions to the plot label
+list(fit1, fit2) |> 
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)",
+                           reference.names = c("First model", "Second model"),
+                           post_process_data = \(data) {
+                             data$column_label[4] <- c(rlang::expr(expression(Fever >= 38.5)))
+                             return(data)
+                           })
 
 par(org.par)
 }

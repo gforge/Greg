@@ -16,30 +16,35 @@ getModelData4Forestplot <- function(regr.obj,
     variablesOfInterest.regexp <- NULL
   }
   
+  if (is.null(names(regr.obj))) {
+    names(regr.obj) <- paste("Model", 1:length(regr.obj))
+  }
+  
   regr.obj |> 
-    sapply(simplify = FALSE,
-           FUN = \(model) broom::tidy(model,
-                                      conf.int = TRUE,
-                                      conf.level = 0.95,
-                                      exponentiate = exp) |> 
-             structure(source_model = model)) |> 
-    sapply(function(data) {
+    purrr::map(\(model) broom::tidy(model,
+                                    conf.int = TRUE,
+                                    conf.level = 0.95,
+                                    exponentiate = exp) |> 
+                 structure(source_model = model)) |> 
+    purrr::map(function(data) {
       if (!is.null(data$column_term)) {
         return(data)
       }
 
-      convert_value_to_term_and_factor(data, attr(data, "source_model")) |> 
+      convert_value_to_term_and_factor(data, model_fit = attr(data, "source_model")) |> 
         structure(source_model = attr(data, "source_model"))
-    }, simplify = FALSE) |> 
-    sapply(function(data) {
+    }) |> 
+    purrr::map(\(data) build_column_label_from_column_term(data, model_fit = attr(data, "source_model")) |> 
+             structure(source_model = attr(data, "source_model"))) |> 
+    purrr::map(function(data) {
       if (is.null(variablesOfInterest.regexp)) {
         return(data)
       }
       
       data[grep(variablesOfInterest.regexp, data$column_term), , drop = FALSE] |> 
         structure(source_model = attr(data, "source_model"))
-    }, simplify = FALSE) |> 
-    sapply(function(data) {
+    }) |> 
+    purrr::map(function(data) {
       if (!add_first_as_ref) {
         return(data)
       }
@@ -52,8 +57,15 @@ getModelData4Forestplot <- function(regr.obj,
                                             exp = exp)
       }
       return(data)
-    }, simplify = FALSE) |> 
-    dplyr::bind_rows(.id = "model_id")
+    }) |> 
+    purrr::map(function(data) {
+      bind_rows(tibble(column_label = NA_character_) |> 
+                  mutate(is.summary = TRUE),
+                data |> 
+                  mutate(is.summary = FALSE))
+    }) |> 
+    dplyr::bind_rows(.id = "model_id") |> 
+    mutate(column_label = if_else(is.na(column_label), model_id, column_label))
 }
 
 extend_with_reference_value <- function(model_tidy_data, 

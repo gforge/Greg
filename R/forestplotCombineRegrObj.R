@@ -9,9 +9,9 @@
 #' @param variablesOfInterest.regexp A regular expression identifying the variables
 #'   that are of interest of comparing. For instance it can be "(score|index|measure)"
 #'   that finds scores in different models that should be compared.
-#' @param rowname.fn A function that takes a row name and sees if it needs
-#'   beautifying. The function has only one parameter the coefficients name and should
-#'   return a string or expression.
+#' @param post_process_data A function that takes the data frame just prior to calling `forestplot`
+#'   and allows you to manipulate it. Primarily used for changing the `column_label`
+#'   that has the names shown in the final plot.
 #' @param estimate.txt The text of the estimate, usually HR for hazard ratio, OR for
 #'  odds ratio
 #' @param zero Indicates what is zero effect. For survival/logistic fits the zero is
@@ -34,12 +34,12 @@
 forestplotCombineRegrObj <- function(
   regr.obj,
   variablesOfInterest.regexp = NULL,
-  rowname.fn = \(x) x,
   estimate.txt = NULL,
   add_first_as_ref = FALSE,
   ref_txt = "ref.",
   digits = 1,
-  is.summary,
+  post_process_data = \(x) x,
+  is.summary = NULL,
   xlab = NULL,
   zero = NULL,
   xlog = NULL,
@@ -91,13 +91,19 @@ forestplotCombineRegrObj <- function(
                                                 exp = exp,
                                                 variablesOfInterest.regexp = variablesOfInterest.regexp,
                                                 add_first_as_ref = add_first_as_ref)
+  if (!is.null(is.summary)) {
+    models_fit_fp_data$is.summary <- is.summary
+  }
   
   models_fit_fp_data |> 
     mutate(est_txt = htmlTable::txtRound(estimate, digits = digits)) |> 
-    forestplot::forestplot(labeltext = c(column_term, est_txt),
+    post_process_data() |> 
+    forestplot::forestplot(labeltext = c(column_label, est_txt),
                            mean = estimate,
                            lower = conf.low,
                            upper = conf.high,
+                           # TODO: Fix this bug in forestplot
+                           is.summary = is.summary,
                            xlog = xlog,
                            xlab = xlab,
                            ...) |> 
