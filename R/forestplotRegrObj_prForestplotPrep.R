@@ -101,11 +101,9 @@ prForestPlotPrep <- function(regressions,
     class_id <- "forestplotRegrObj.single"
   }
   
-  structure(
-    ret,
-    args = args,
-    class = c(class_id, class(ret))
-  )
+  ret |> 
+    structure(args = args,
+              class = c(class_id, class(ret)))
 }
 
 utils::globalVariables(c("Model", "est_txt"))

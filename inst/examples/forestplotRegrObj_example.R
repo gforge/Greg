@@ -26,20 +26,13 @@ dd <- datadist(cov)
 options(datadist = "dd")
 
 fit1 <- cph(Surv(ftime, fstatus1 == 1) ~ x1 + x2 + x3, data = cov)
-fit2 <- cph(Surv(ftime, fstatus2 == 1) ~ x1 + x2 + x3, data = cov)
+fit1 |> 
+  forestplotRegrObj()
 
-forestplotRegrObj(regr.obj = fit1)
-
+fit2 <- update(fit1, Surv(ftime, fstatus2 == 1) ~ .)
 list("Frist model" = fit1, "Second model"  = fit2) |> 
   forestplotRegrObj(legend_args = fpLegend(title = "Type of regression"),
-                    variablesOfInterest.regexp = "(x2|x3)",
+                    postprocess_estimates.fn = \(x) filter(x, str_detect(column_term, "(x2|x3)")),
                     col = fpColors(box = c("darkblue", "darkred")))
-
-forestplotRegrObj(
-  regr.obj = list(fit1, fit2),
-  legend = c("First model", "Second model"),
-  legend_args = fpLegend(title = "Models"),
-  rowname.fn = modifyNameFunction, new_page = TRUE
-)
 
 par(org.par)

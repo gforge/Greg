@@ -109,3 +109,5 @@ forestplotCombineRegrObj <- function(
                            ...) |> 
     forestplot::fp_add_header(est_txt = estimate.txt)
 }
+
+utils::globalVariables(c("column_label", "model_id"))

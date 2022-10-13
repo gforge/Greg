@@ -1,21 +1,18 @@
 library(testthat)
 
+library(tidyverse)
 set.seed(10)
-n <- 200
-cov <- data.frame(
-  ftime = rexp(n),
-  fstatus = sample(0:1, n, replace = TRUE),
-  x1 = runif(200),
-  x2 = runif(200),
-  x3 = runif(200),
-  x_factor = sample(LETTERS[1:4], n, replace = TRUE)
-)
+cov <- tibble(ftime = rexp(200)) |> 
+  mutate(fstatus = sample(0:1, n(), replace = TRUE),
+         x1 = runif(n()),
+         x2 = runif(n()),
+         x3 = runif(n()),
+         x_factor = sample(LETTERS[1:4], n(), replace = TRUE))
 
 library(rms)
 ddist <<- datadist(cov)
 options(datadist = "ddist")
 
-context("Check fortestplotCombineRegrObj")
 test_that("Check regular lm", {
   # TODO: Add tests - current code is only for coverage reasons
 
@@ -41,13 +38,13 @@ test_that("Check regular lm", {
     return(x)
   }
 
-  forestplotCombineRegrObj(
+  ret <- forestplotCombineRegrObj(
     regr.obj = list(fit1, fit2),
     variablesOfInterest.regexp = "(x2|x3)",
     reference.names = c("First model", "Second model"),
-    rowname.fn = modifyNameFunction,
-    new_page = TRUE
-  )
+    rowname.fn = modifyNameFunction)
+  
+  expect_equal(dim(ret$estimates), c(5, 3, 1))
 })
 
 test_that("Test getModelData4Forestplot", {
@@ -84,11 +81,11 @@ test_that("Test getModelData4Forestplot", {
     add_first_as_ref = FALSE
   )
   expect_equivalent(
-    data |> filter(column_term == "x1" & model_id == "1") |> pluck("estimate"),
+    data |> filter(column_term == "x1" & model_id == "Model 1") |> pluck("estimate"),
     exp(coef(fit1)["x1"])
   )
   expect_equivalent(
-    data |> filter(column_term == "x1" & model_id == "2") |> pluck("estimate"),
+    data |> filter(column_term == "x1" & model_id == "Model 2") |> pluck("estimate"),
     exp(coef(fit2)["x1"])
   )
   expect_true("x1" %in% data$column_term)
@@ -104,36 +101,36 @@ test_that("Test getModelData4Forestplot", {
     add_first_as_ref = FALSE
   )
   expect_equivalent(
-    data |> filter(column_term == "x1" & model_id == "1") |> pluck("estimate"),
+    data |> filter(column_term == "x1" & model_id == "Model 1") |> pluck("estimate"),
     exp(coef(fit3)["x1"])
   )
   expect_equivalent(
-    data |> filter(column_term == "x1" & model_id == "2") |> pluck("estimate"),
+    data |> filter(column_term == "x1" & model_id == "Model 2") |> pluck("estimate"),
     exp(coef(fit4)["x1"])
   )
   expect_equivalent(
     data |> filter(column_term == "x_factor" & 
                      factor == "B" &
-                     model_id == "1") |> 
+                     model_id == "Model 1") |> 
       pluck("estimate"),
     exp(coef(fit3)["x_factor=B"])
   )
   expect_equivalent(
     data |> filter(column_term == "x_factor" & 
                      factor == "C" &
-                     model_id == "2") |> 
+                     model_id == "Model 2") |> 
       pluck("estimate"),
     exp(coef(fit4)["x_factor=C"])
   )
   expect_true("x1" %in% data$column_term)
   expect_false("x2" %in% data$column_term)
   expect_equivalent(
-    data |> filter(model_id == "1") |> nrow(),
-    4
+    data |> filter(model_id == "Model 1") |> nrow(),
+    4 + 1
   )
   expect_equivalent(
-    data |> filter(model_id == "2") |> nrow(),
-    4
+    data |> filter(model_id == "Model 2") |> nrow(),
+    4 + 1
   )
 
   data <- getModelData4Forestplot(
@@ -144,15 +141,15 @@ test_that("Test getModelData4Forestplot", {
   )
   expect_equivalent(
     data |> 
-      filter(model_id == "1") |>  
-      filter(row_number() == 1) |> 
+      filter(model_id == "Model 1") |>  
+      filter(row_number() == 2) |> 
       pluck("estimate"),
     1
   )
   expect_equivalent(
     data |> 
-      filter(model_id == "2") |> 
-      filter(row_number() == 1) |> 
+      filter(model_id == "Model 2") |> 
+      filter(row_number() == 2) |> 
       pluck("estimate"),
     1
   )
@@ -166,14 +163,14 @@ test_that("Test getModelData4Forestplot", {
   expect_equivalent(
     data |> 
       filter(model_id == "m1") |> 
-      filter(row_number() == 1) |> 
+      filter(row_number() == 2) |> 
       pluck("estimate"),
     0
   )
   expect_equivalent(
     data |> 
       filter(model_id == "m2") |> 
-      filter(row_number() == 1) |> 
+      filter(row_number() == 2) |> 
       pluck("estimate"),
     0
   )
