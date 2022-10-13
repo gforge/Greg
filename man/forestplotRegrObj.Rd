@@ -212,6 +212,7 @@ list("Frist model" = fit1, "Second model"  = fit2) |>
                     postprocess_estimates.fn = \(x) filter(x, str_detect(column_term, "(x2|x3)")),
                     col = fpColors(box = c("darkblue", "darkred")))
 
+
 par(org.par)
 }
 \seealso{

@@ -118,7 +118,7 @@ addNonlinearity.glm <- function(model,
 
   pvalue_column <- grep("Pr(", names(anova_rslt), fixed = TRUE)
   stopifnot(length(pvalue_column) == 1)
-  
+
   # No evidence for non-linearity
   if (tail(anova_rslt[pvalue_column], 1) > sig_level) {
     return(model)

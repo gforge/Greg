@@ -144,24 +144,18 @@ plotHR <- function(models,
 
   # Create vectors of the colors, line types etc to
   # allow for specific settings for each model
-  confint_style <- lapply(
-    1:length(models),
-    function(i) {
-      ret <- expand.grid(c("col", "lty", "lwd"), c("term", "se")) |>
-      apply(FUN = paste, MARGIN = 1, collapse = ".") |>
-      c("polygon_ci") |>
-      sapply(function(x) {
-        var <- get(x)
-        if (length(var) == 1) {
-          return(var)
-        }
-        if (length(var) == length(models)) {
-          return(var[[i]])
-        }
-        stop("Invalid length of ", x, ": ", length(var), " - should be 1 or 0")
-      }, simplify = FALSE)
-    }
-  )
+  confint_style <- lapply(1:length(models),
+                          function(i) {
+                            ret <- expand.grid(c("col", "lty", "lwd"), c("term", "se")) |>
+                              apply(FUN = paste, MARGIN = 1, collapse = ".") |>
+                              c("polygon_ci") |>
+                              sapply(function(x) {
+                                var <- get(x)
+                                if (length(var) == 1) return(var)
+                                if (length(var) == length(models)) return(var[[i]])
+                                stop("Invalid length of ", x, ": ", length(var), " - should be 1 or 0")
+                              }, simplify = FALSE)
+                          })
 
   # set plotting parameters
   par(las = 1, cex = cex)

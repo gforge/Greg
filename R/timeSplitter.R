@@ -40,6 +40,9 @@ timeSplitter <- function(data, by, time_var,
                          event_var,
                          event_start_status,
                          time_related_vars, time_offset) {
+  if (tibble::is_tibble(data)) {
+    data <- data.frame(data)
+  }
   # Save the original order of the names for restoring at the end
   # Also save the labels if any
   org_names <- names(data)

@@ -410,8 +410,7 @@ rbind.printCrudeAndAdjusted <-
       to = ret
     )
     for (n in sprintf("%srgroup", c("", "n."))) {
-      attr(ret, n) <-
-        lapply(pca, function(x) attr(x, n)) |>
+      attr(ret, n) <- lapply(pca, function(x) attr(x, n)) |>
         unlist()
     }
 
@@ -441,7 +440,7 @@ rbind.printCrudeAndAdjusted <-
 #' @keywords internal
 print.printCrudeAndAdjusted <- function(x, ...) {
   prPrintCAstring(x, ...) |>
-  print()
+    print()
 }
 
 #' @export
@@ -449,7 +448,7 @@ print.printCrudeAndAdjusted <- function(x, ...) {
 #' @rdname printCrudeAndAdjustedModel
 htmlTable.printCrudeAndAdjusted <- function(x, ...) {
   prPrintCAstring(x, ...) |>
-  print()
+    print()
 }
 
 #' @rdname printCrudeAndAdjustedModel
@@ -566,7 +565,7 @@ prClearPCAclass <- function(pca) {
 knit_print.printCrudeAndAdjusted <- function(x,
                                              ...) {
   prPrintCAstring(x, ...) |>
-  asis_output()
+    asis_output()
 }
 
 #' Prep for printing

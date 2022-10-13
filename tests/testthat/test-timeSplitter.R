@@ -20,13 +20,11 @@ test_that("Check the number of events and rows are correct", {
   split_data <-
     test_data |>
     select(id, event, time, age, date) |>
-    timeSplitter(
-      by = 2, # The time that we want to split by
-      event_var = "event",
-      time_var = "time",
-      event_start_status = "alive",
-      time_related_vars = c("age", "date")
-    )
+    timeSplitter(by = 2, # The time that we want to split by
+                 event_var = "event",
+                 time_var = "time",
+                 event_start_status = "alive",
+                 time_related_vars = c("age", "date"))
 
   expect_equal(nrow(split_data), sum(ceil(test_data$time / 2)))
   expect_equal(
@@ -65,18 +63,14 @@ test_that("Check that labels are preserved", {
   split_data <-
     test_data |>
     select(id, event, time, age, date) |>
-    timeSplitter(
-      by = 2, # The time that we want to split by
-      event_var = "event",
-      time_var = "time",
-      event_start_status = "alive",
-      time_related_vars = c("age", "date")
-    )
+    timeSplitter(by = 2, # The time that we want to split by
+                 event_var = "event",
+                 time_var = "time",
+                 event_start_status = "alive",
+                 time_related_vars = c("age", "date"))
 
-  expect_equivalent(
-    label(split_data$age),
-    label(test_data$age)
-  )
+  expect_equivalent(label(split_data$age),
+                    label(test_data$age))
 })
 
 
@@ -101,13 +95,12 @@ test_that("Check that age and calendar time is updated", {
   split_data <-
     test_data |>
     select(id, event, time, age, date) |>
-    timeSplitter(
-      by = 2, # The time that we want to split by
-      event_var = "event",
-      time_var = "time",
-      event_start_status = "alive",
-      time_related_vars = c("age", "date")
-    )
+    timeSplitter(by = 2, # The time that we want to split by
+                 event_var = "event",
+                 time_var = "time",
+                 event_start_status = "alive",
+                 time_related_vars = c("age", "date"))
+
   test_data <- cal.yr(test_data)
   library(dplyr)
   for (i in 1:nrow(test_data)) {

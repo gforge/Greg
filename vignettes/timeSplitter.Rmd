@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{How to use the timeSplitter}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -115,22 +115,20 @@ These approaches are probably just a subset of possible approaches. I know of th
 First we generate a short survival dataset with 4 observations.
 
 ```{r}
-library(Greg)
 library(tidyverse)
-test_data <- data.frame(
-  id = 1:4,
-  time = c(4, 3.5, 1, 5),
-  event = c("censored", "dead", "alive", "dead"),
-  age = c(62.2, 55.3, 73.7, 46.3),
-  date = as.Date(
-    c("2003-01-01",
-      "2010-04-01",
-      "2013-09-20",
-      "2002-02-23")),
-  stringsAsFactors = TRUE
-)
+library(Greg)
 
-test_data$time_str <- sprintf("0 to %.1f", test_data$time)
+test_data <- tibble(id = 1:4,
+                    time = c(4, 3.5, 1, 5),
+                    event = c("censored", "dead", "alive", "dead"),
+                    age = c(62.2, 55.3, 73.7, 46.3),
+                    date = as.Date(
+                      c("2003-01-01",
+                        "2010-04-01",
+                        "2013-09-20",
+                        "2002-02-23")),
+                    stringsAsFactors = TRUE) |>
+  mutate(time_str = sprintf("0 to %.1f", time))
 ```
 
 Using some grid-graphics we can illustrate the dataset graphically:
@@ -332,22 +330,19 @@ I haven't found any good datasets with non-proportional hazards but the melanoma
 data("melanoma", package = "boot")
 
 # Then we munge it according to ?boot::melanoma
-library(dplyr)
-melanoma <- mutate(
-  melanoma,
-  status = factor(status,
-                  levels = 1:3,
-                  labels = c("Died from melanoma",
-                              "Alive",
-                              "Died from other causes")),
-  ulcer = factor(ulcer,
-                  levels = 0:1,
-                  labels = c("Absent", "Present")),
-  time = time/365.25, # All variables should be in the same time unit
-  sex = factor(sex,
-                levels = 0:1,
-                labels = c("Female", "Male")))
-
+melanoma <- mutate(melanoma,
+                   status = factor(status,
+                                   levels = 1:3,
+                                   labels = c("Died from melanoma",
+                                              "Alive",
+                                              "Died from other causes")),
+                   ulcer = factor(ulcer,
+                                  levels = 0:1,
+                                  labels = c("Absent", "Present")),
+                   time = time/365.25, # All variables should be in the same time unit
+                   sex = factor(sex,
+                                levels = 0:1,
+                                labels = c("Female", "Male")))
 ```
 
 Now we can fit a regular cox regression:
@@ -395,7 +390,7 @@ Now we can look for time varying coefficients using the `survival::cox.zph()` fu
 
 ```{r}
 cox.zph(regular_model) |>
-  pluck("table") |>
+  purrr::pluck("table") |>
   txtRound(digits = 2) |>
   knitr::kable(align = "r")
 ```
@@ -432,10 +427,10 @@ If you are only investigating confounders that you want to adjust for we are don
 # and interactions
 spl_melanoma <- mutate(spl_melanoma,
                        thickness_cat = cut(thickness,
-                             breaks = c(0, 1, 5, Inf),
-                             labels = c("less than 1.0",
-                                        "1.0 to 4.9",
-                                        "at least 5.0")))
+                                           breaks = c(0, 1, 5, Inf),
+                                           labels = c("less than 1.0",
+                                                      "1.0 to 4.9",
+                                                      "at least 5.0")))
 # Now create interaction variables
 for (l in levels(spl_melanoma$thickness_cat)[-1]) {
   spl_melanoma[[sprintf("thickness_%s_time", gsub(" ", "_", l))]] <-
@@ -479,9 +474,9 @@ new_data$se.fit <- apply(adv_pred$se.fit, 1, function(x) x^2) |>
   colSums() |>
   sqrt()
 new_data <- mutate(new_data,
-risk = exp(fit),
-         upper = exp(fit + 1.96*se.fit),
-         lower = exp(fit - 1.96*se.fit))
+                   risk = exp(fit),
+                   upper = exp(fit + 1.96*se.fit),
+                   lower = exp(fit - 1.96*se.fit))
 
 ```
 

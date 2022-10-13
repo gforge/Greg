@@ -1162,8 +1162,7 @@ prCaPrepareCrudeAndAdjusted <- function(x, ci_lim, digits, sprintf_ci_str) {
     }
 
     # Remove -0.0 effect
-    x <-
-      round(x, digits) |>
+    x <- round(x, digits) |>
       as.character() |>
       as.numeric()
     return(sprintf(sprintf("%%0.%df", digits), x))
