@@ -19,7 +19,7 @@ test_that("Simple linear regression", {
   fit <- mtcars |> 
     set_column_labels(cyl = "Number of cylinders",
                       hp = "Gross horsepower") |> 
-    lm(mpg ~ cyl + disp + hp, data = _)
+    (\(x) lm(mpg ~ cyl + disp + hp, data = x))()
 
   expect_s3_class(forestplotRegrObj(regr.obj = fit),
                   "forestplotRegrObj.single")
@@ -29,7 +29,7 @@ test_that("Simple linear regression", {
   fit <- mtcars |> 
     set_column_labels(cyl = "Number of cylinders",
                       hp = "Gross horsepower") |> 
-    glm(mpg ~ cyl + disp + hp, data = _, family = gaussian())
+    (\(x) glm(mpg ~ cyl + disp + hp, data = x, family = gaussian()))()
   
   expect_s3_class(forestplotRegrObj(regr.obj = fit),
                   "forestplotRegrObj.single")
