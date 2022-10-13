@@ -12,6 +12,7 @@ Description: Methods for manipulating regression models and for describing these
   time-splitting a dataset when modeling non-proportional hazards in Cox regressions.
 License: GPL (>= 3)
 URL: http://gforge.se
+BugReports: https://github.com/gforge/Greg/issues
 Biarch: yes
 Encoding: UTF-8
 Imports:
@@ -37,8 +38,9 @@ Imports:
     tidyselect,
     utils
 Depends:
-    forestplot,
-    Gmisc (>= 1.0.3)
+    Gmisc (>= 1.0.3),
+    forestplot (>= 3.1.0),
+    R (>= 4.1.0)
 Suggests:
     boot,
     testthat,
