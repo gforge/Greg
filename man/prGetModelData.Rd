@@ -12,7 +12,7 @@ prGetModelData(x, terms_only = FALSE, term.label)
 \item{terms_only}{Only use the right side of the equation by selecting the terms}
 
 \item{term.label}{Sometimes need to retrieve specific spline labels that are not among
-the labels(terms(x))}
+the `labels(terms(x))`}
 }
 \value{
 data.frame

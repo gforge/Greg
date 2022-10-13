@@ -2,84 +2,167 @@
 % Please edit documentation in R/forestplotRegrObj.R
 \name{forestplotRegrObj}
 \alias{forestplotRegrObj}
+\alias{forestplotRegrObj.default}
+\alias{forestplotRegrObj.coxph}
+\alias{forestplotRegrObj.lrm}
+\alias{forestplotRegrObj.lm}
+\alias{forestplotRegrObj.glm}
+\alias{forestplotRegrObj.list}
 \alias{fpBoxSize}
 \title{Forest plot for multiple models}
 \usage{
 forestplotRegrObj(
   regr.obj,
-  skip.variables,
-  add.empty_row,
-  order.regexps,
-  order.addrows,
-  box.default.size,
-  rowname.fn,
-  xlab,
-  xlog,
-  exp,
-  estimate.txt = xlab,
-  zero,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
   get_box_size = fpBoxSize,
   ...
 )
 
-fpBoxSize(p_values, variable_count, box.default.size, significant = 0.05)
+\method{forestplotRegrObj}{default}(
+  regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
+  ...
+)
+
+\method{forestplotRegrObj}{coxph}(
+  regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
+  xlab = "Hazard Ratio",
+  estimate.txt = "HR",
+  xlog = TRUE,
+  zero = 1,
+  exp = TRUE,
+  ...
+)
+
+\method{forestplotRegrObj}{lrm}(
+  regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
+  xlab = "Odds ratio",
+  estimate.txt = "HR",
+  xlog = TRUE,
+  zero = 1,
+  exp = TRUE,
+  ...
+)
+
+\method{forestplotRegrObj}{lm}(
+  regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
+  xlab = "Effect",
+  estimate.txt = "Coef",
+  xlog = FALSE,
+  zero = 0,
+  exp = FALSE,
+  ...
+)
+
+\method{forestplotRegrObj}{glm}(
+  regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
+  xlab = NULL,
+  xlog = NULL,
+  zero = NULL,
+  estimate.txt = NULL,
+  exp = NULL,
+  ...
+)
+
+\method{forestplotRegrObj}{list}(
+  regr.obj,
+  postprocess_estimates.fn = function(x) x,
+  rowname = "Variable",
+  ci.txt = "CI",
+  ci.glue = "{lower} to {higher}",
+  digits = 1,
+  get_box_size = fpBoxSize,
+  xlab = NULL,
+  xlog = NULL,
+  zero = NULL,
+  estimate.txt = NULL,
+  exp = NULL,
+  ...
+)
+
+fpBoxSize(p_values, variable_count, boxsize, significant = 0.05)
 }
 \arguments{
 \item{regr.obj}{A regression model object. It should be of coxph, crr or glm class.
 Warning: The glm is not fully tested.}
 
-\item{skip.variables}{Which variables to use. The variables should be the
-names of the fit output and not the true output names if you're using
-the rowname_translate_function.}
+\item{postprocess_estimates.fn}{A function that takes the regression outputs and returns
+the same data with modifications. The input columns are:
 
-\item{add.empty_row}{Add empty rows. This can either be a
-vector or a list.
-When you have a vector the number indicates the row number where
-the empty row should be added, the format is: c(3, 5).
-If you give a list you have the option of specifying the name of the
-row, the format is: \code{list(list(3, "my rowname"), list(5, "my other rowname"))}.
-The rows will be added at the 3rd row and 5th row from the original
-position. Ie you don't have take into account that the 5:th row will be
-at the 6:th position after adding the 3rd row.}
+* `Rowname`
+* `Coef`
+* `Lower`
+* `Upper`
+* `Sort`}
 
-\item{order.regexps}{A regexp vector that searches for matches along the original
-rownames and reorders according to those.}
+\item{rowname}{The name of the variables}
 
-\item{order.addrows}{If there are ordered groups then often you want empty rows
-that separate the different groups. Set this to true if you want to add these
-empty rows between groups.}
+\item{ci.txt}{The text above the confidence interval, defaults to `"CI"`}
 
-\item{box.default.size}{The default box size}
+\item{ci.glue}{The string used for [glue::glue()] the `lower` and `higher`
+confidence intervals together.}
 
-\item{rowname.fn}{A function that takes a row name and sees if it needs
-beautifying. The function has only one parameter the coefficients name and should
-return a string or expression.}
-
-\item{xlab}{x-axis label}
-
-\item{xlog}{If TRUE, x-axis tick marks are to follow a logarithmic scale, e.g. for
-logistic regressoin (OR), survival estimates (HR), Poisson regression etc.
-\emph{Note:} This is an intentional break with the original \code{forestplot}
-function as I've found that exponentiated ticks/clips/zero effect are more
-difficult to for non-statisticians and there are sometimes issues with rounding
-the tick marks properly.}
-
-\item{exp}{Report in exponential form. Default true since the function was built for
-use with survival models.}
-
-\item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
-odds ratio}
-
-\item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
-1 while in most other cases it's 0.}
+\item{digits}{The number of digits to round presented values to}
 
 \item{get_box_size}{A function for extracting the box sizes}
 
 \item{...}{Passed to \code{\link[forestplot]{forestplot}()}}
 
+\item{xlab}{x-axis label}
+
+\item{estimate.txt}{The text above the estimate, e.g. Est, HR}
+
+\item{xlog}{If TRUE, x-axis tick marks are to follow a logarithmic scale, e.g. for
+logistic regression (OR), survival estimates (HR), Poisson regression etc.
+\emph{Note:} This is an intentional break with the original \code{forestplot}
+function as I've found that exponentiated ticks/clips/zero effect are more
+difficult to for non-statisticians and there are sometimes issues with rounding
+the tick marks properly.}
+
+\item{zero}{Indicates what is zero effect. For survival/logistic fits the zero is
+1 while in most other cases it's 0.}
+
+\item{exp}{Report in exponential form. Default true since the function was built for
+use with survival models.}
+
 \item{p_values}{The p-values that will work as the foundation for the box size}
 
 \item{variable_count}{The number of variables}
+
+\item{boxsize}{The default box size}
 
 \item{significant}{Level of significance .05}
 }
@@ -94,53 +177,40 @@ the models.
 \examples{
 org.par <- par("ask" = TRUE)
 
+library(tidyverse)
 # simulated data to test
-set.seed(10)
-ftime <- rexp(200)
-fstatus <- sample(0:2, 200, replace = TRUE)
-cov <- data.frame(
-  x1 = runif(200),
-  x2 = runif(200),
-  x3 = runif(200)
-)
+set.seed(102)
+cov <- tibble(ftime = rexp(200)) |> 
+  mutate(x1 = runif(n()),
+         x2 = runif(n()),
+         x3 = runif(n()),
+         fstatus1 = if_else(x1 * 1 + 
+                              x2 * 0.2 + 
+                              x3 * 0.5 + 
+                              runif(n()) * 0.5 > 1, 
+                            1, 0),
+         fstatus2 = if_else(x1 * 0.2 + 
+                              x2 * 0.5 + 
+                              x3 * 0.1 + 
+                              runif(n()) * 2 > 1, 
+                            1, 0)) |> 
+  # Add some column labels
+  Gmisc::set_column_labels(x1 = "First variable",
+                           x2 = "Second variable")
 
 library(rms)
 dd <- datadist(cov)
 options(datadist = "dd")
 
-fit1 <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data = cov)
-fit2 <- cph(Surv(ftime, fstatus == 2) ~ x1 + x2 + x3, data = cov)
+fit1 <- cph(Surv(ftime, fstatus1 == 1) ~ x1 + x2 + x3, data = cov)
+fit1 |> 
+  forestplotRegrObj()
 
-forestplotRegrObj(regr.obj = fit1, new_page = TRUE)
-
-library(forestplot)
-forestplotRegrObj(
-  regr.obj = list(fit1, fit2),
-  legend = c("Status = 1", "Status = 2"),
-  legend_args = fpLegend(title = "Type of regression"),
-  new_page = TRUE
-)
-
-modifyNameFunction <- function(x) {
-  if (x == "x1") {
-    return("Covariate A")
-  }
-
-  if (x == "x2") {
-    return(expression(paste("My ", beta[2])))
-  }
-
-  return(x)
-}
-
-forestplotRegrObj(
-  regr.obj = list(fit1, fit2),
-  col = fpColors(box = c("darkblue", "darkred")),
-  variablesOfInterest.regexp = "(x2|x3)",
-  legend = c("First model", "Second model"),
-  legend_args = fpLegend(title = "Models"),
-  rowname.fn = modifyNameFunction, new_page = TRUE
-)
+fit2 <- update(fit1, Surv(ftime, fstatus2 == 1) ~ .)
+list("Frist model" = fit1, "Second model"  = fit2) |> 
+  forestplotRegrObj(legend_args = fpLegend(title = "Type of regression"),
+                    postprocess_estimates.fn = \(x) filter(x, str_detect(column_term, "(x2|x3)")),
+                    col = fpColors(box = c("darkblue", "darkred")))
 
 par(org.par)
 }

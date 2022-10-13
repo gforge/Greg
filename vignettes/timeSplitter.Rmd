@@ -5,18 +5,17 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{How to use the timeSplitter}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
-knitr::opts_chunk$set(message=FALSE, warning=FALSE)
-library(magrittr)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
-
-Background
-==========
+# Background
 
 When working with **survival** data it is important to remember that the effects
 may change in time. This is rarely something you notice in datasets of a few hundreds
@@ -24,47 +23,45 @@ but as the datasets grow larger the chances of this happening increase. When doi
 simple Cox regression with the survival package this can be easily checked for using the
 `cox.zph` function.
 
-The problem with non-proportional hazards
------------------------------------------
+## The problem with non-proportional hazards
 
 The main effect of non-proportional hazards is that you will have a mean estimate over
 the study time. This mean does not distribute evenly throughout the studied time period
 but evenly according to the observed time, i.e. if you have the longest observation period
-being 20 years while > 50% of your patients have a follow-up of less than 10 years the 
+being 20 years while > 50% of your patients have a follow-up of less than 10 years the
 effect. Note that this may further depend on how the events are distributed. Thus it is useful to be able to deal with non-proportional hazards.
 
-Addressing non-proportional hazards
-----------------------------------
+## Addressing non-proportional hazards
 
 ### Using `strata`
 
 The Cox model allows you to estimate effects in different strata and then average them together. If your confounder that breaks the proportionality assumption is a
 non-continuous variable this is a convenient method that allows you to set-up the
 necessary strata. With one variable this is simple, `Surv(time, event) ~ x_1 + x_2 + strata(x_np)`, but with multiple variables you risk of ending up with small strata
-and the non-informative error: 
+and the non-informative error:
 
 > attempt to select less than one element
 
 Note that you should not multiple strata but combine the variables, e.g. if you have
-two variables called `x_np1` and `x_np2` you would set up your model with the 
+two variables called `x_np1` and `x_np2` you would set up your model with the
 strata as `strata(x_np1, x_np2)`. The strata is then handled as interactions generating
 `nlevels(x_np1) * nlevels(x_np2)` which seems also to be the core reason for why this fails.
 
 ### Using the `tt` argument
 
-The survival package has an excellent vignette om time-dependent variables and time-dependent coefficients, see `vignette("timedep", package = "survival")`. Prof. Therneau explains there common pitfalls and how to use a time-transforming option provided by the `coxph` function 
+The survival package has an excellent vignette om time-dependent variables and time-dependent coefficients, see `vignette("timedep", package = "survival")`. Prof. Therneau explains there common pitfalls and how to use a time-transforming option provided by the `coxph` function
 through the `tt` argument. It is a neat an simple solution that transforms those variables that you have indicated for transformation using the `tt` function. The vignette provides some simple approaches but it also allows for a rather sophisticated use:
 
 ```{r Coxph_tt_example, eval=FALSE}
 library(survival)
-coxph(Surv(time, event) ~ age + sex + 
-        type_of_surgery + tt(type_of_surgery) + 
+coxph(Surv(time, event) ~ age + sex +
+        type_of_surgery + tt(type_of_surgery) +
         tt(surgery_length),
       data = my_surgical_data,
       tt = list(
         function(type_of_surgery, time, ...){
           # As type_of_surgery is a categorical variable
-          # we must transform it into a design matrix that 
+          # we must transform it into a design matrix that
           # we can use for multiplication with time
           # Note: the [,-1] is for dropping the intercept
           mtrx <- model.matrix(~type_of_surgery)[,-1]
@@ -74,22 +71,21 @@ coxph(Surv(time, event) ~ age + sex +
           # Note that the surgery_length and the time
           # should probably have similar ranges. If you
           # report operating time in minutes, follow-up
-          # in years the t will be dwarfed by the 
+          # in years the t will be dwarfed by the
           pspline(surgery_length + time)
         }
       ))
 ```
 
-
 The main problem is that it doesn't scale all that well to larger datasets. A common error unless you have a large amount of memory is:
 
-> Could not allocate vector of *** MB
+> Could not allocate vector of \*\*\* MB
 
 ### Using the timeSplitter
 
-The `tt` approach is based upon the idea of time splitting. Time splitting is possible since the Cox proportional hazards model studies the derivative of the survival function, i.e. the hazard, and thus doesn't care how many observations were present before the current derivative. This allows including patients/observations after 2 years by ignoring them prior to 2 years. The method is referred to as *interval time* where the `Surv(time, event)` simply changes into `Surv(Start_time, Stop_time, event)`. 
+The `tt` approach is based upon the idea of time splitting. Time splitting is possible since the Cox proportional hazards model studies the derivative of the survival function, i.e. the hazard, and thus doesn't care how many observations were present before the current derivative. This allows including patients/observations after 2 years by ignoring them prior to 2 years. The method is referred to as _interval time_ where the `Surv(time, event)` simply changes into `Surv(Start_time, Stop_time, event)`.
 
-This allows us to adjust for time interactions as the `Start_time` is independent of the event. In our standard setting the `Start_time` is always 0 but if we split an observation into multiple time steps and use the *interval time* the variable will become meaningful in an interaction setting. Note that [!ref] suggested that one uses the `End_time` after splitting the observation time, while I've found that it in practice doesn't matter that much - it makes intuitive sense to use the `Start_time` if we make the time interval too large the `End_time` will convey information about the event status and thereby by nature become significant. The approach explained in more detail below.
+This allows us to adjust for time interactions as the `Start_time` is independent of the event. In our standard setting the `Start_time` is always 0 but if we split an observation into multiple time steps and use the _interval time_ the variable will become meaningful in an interaction setting. Note that [!ref] suggested that one uses the `End_time` after splitting the observation time, while I've found that it in practice doesn't matter that much - it makes intuitive sense to use the `Start_time` if we make the time interval too large the `End_time` will convey information about the event status and thereby by nature become significant. The approach explained in more detail below.
 
 ### Poor-mans time split
 
@@ -97,40 +93,38 @@ An alternative is to split the data into a few intervals, select one interval at
 
 ```{r eval=FALSE}
 library(plyr)
-library(magrittr)
-models <- 
-  timeSplitter(your_data, 
+models <-
+  timeSplitter(your_data,
                by = 4,
                event_var = "status",
                time_var = "years",
                event_start_status = "alive",
-               time_related_vars = c("age", "date")) %>% 
+               time_related_vars = c("age", "date")) |>
   dlply("Start_time",
         function(data){
           coxph(Surv(Start_time, End_time, status) ~ age + sex + treatment, data = data)
         })
 ```
 
-
 ### Other options
 
 These approaches are probably just a subset of possible approaches. I know of the [timereg](https://github.com/scheike/timereg) package that has some very fancy time coefficient handling. My personal experience with the package is limited and I've been discouraged by the visually less appealing graphs provided in the examples and there isn't a proper vignette explaining the details (Last checked v 1.8.9). Similarly the [flexsurv](https://doi.org/10.1371/journal.pone.0047804) should be able to deal with the proportional hazards assumption. If you know any other then please send me an e-mail.
 
-How the timeSplitter works
-==========================
+# How the timeSplitter works
 
 First we generate a short survival dataset with 4 observations.
 
 ```{r}
 library(Greg)
+library(tidyverse)
 test_data <- data.frame(
   id = 1:4,
   time = c(4, 3.5, 1, 5),
   event = c("censored", "dead", "alive", "dead"),
   age = c(62.2, 55.3, 73.7, 46.3),
   date = as.Date(
-    c("2003-01-01", 
-      "2010-04-01", 
+    c("2003-01-01",
+      "2010-04-01",
       "2013-09-20",
       "2002-02-23")),
   stringsAsFactors = TRUE
@@ -143,66 +137,64 @@ Using some grid-graphics we can illustrate the dataset graphically:
 
 ```{r Display_data, echo=FALSE, fig.height=4, fig.width=7}
 library(grid)
-library(magrittr)
 getMaxWidth <- function(vars){
-  sapply(vars, 
+  sapply(vars,
          USE.NAMES = FALSE,
          function(v){
-           grobWidth(x = textGrob(v)) %>% 
+           grobWidth(x = textGrob(v)) |>
              convertX(unitTo = "mm")
-         }) %>% 
-    max %>% 
+         }) |>
+    max() |>
     unit("mm")
 }
 plotTitleAndPushVPs <- function(title_txt){
   pushViewport(viewport(width = unit(.9, "npc"),
                         height = unit(.9, "npc")))
-  
+
   title <- textGrob(title_txt, gp = gpar(cex = 2))
-  title_height <- grobHeight(title) %>% 
-    convertY(unitTo = "mm", valueOnly = TRUE) * 2 %>% 
+  title_height <- grobHeight(title) |>
+    convertY(unitTo = "mm", valueOnly = TRUE) * 2 |>
     unit("mm")
-  grid.layout(nrow = 3,
-              heights = unit.c(title_height,
-                               unit(.1, "npc"),
-                               unit(1, "npc") - 
-                                 title_height - 
-                                 unit(.1, "npc") -
-                                 unit(2, "line"),
-                               unit(2, "line"))) %>% 
-    viewport(layout = .) %>% 
+  viewport(layout = grid.layout(nrow = 3,
+                                heights = unit.c(title_height,
+                                                 unit(.1, "npc"),
+                                                 unit(1, "npc") -
+                                                   title_height -
+                                                   unit(.1, "npc") -
+                                                   unit(2, "line"),
+                                                 unit(2, "line")))) |>
     pushViewport()
-  viewport(layout.pos.row = 1) %>% 
+  viewport(layout.pos.row = 1) |>
     pushViewport()
   grid.draw(title)
   upViewport()
-  
-  viewport(layout.pos.row = 3) %>% 
+
+  viewport(layout.pos.row = 3) |>
     pushViewport()
 }
 
-plotLine <- function (row_no,
-                      start_time,
-                      stop_time,
-                      event,
-                      data_range = c(0, max(test_data$time)),
-                      print_axis = FALSE) {
+plotLine <- function(row_no,
+                     start_time,
+                     stop_time,
+                     event,
+                     data_range = c(0, max(test_data$time)),
+                     print_axis = FALSE) {
   viewport(layout.pos.row = row_no,
            layout.pos.col = 6,
-           xscale = data_range) %>% 
+           xscale = data_range) |>
     pushViewport()
   on.exit(upViewport())
-  
-  if (event){
-    grid.lines(x = unit(c(start_time, 
-                          stop_time), "native"), 
+
+  if (event) {
+    grid.lines(x = unit(c(start_time,
+                          stop_time), "native"),
                y = rep(0.5, 2))
-    grid.points(x = unit(stop_time, "native"), y = 0.5, 
-                pch = "*", 
+    grid.points(x = unit(stop_time, "native"), y = 0.5,
+                pch = "*",
                 gp = gpar(cex = 2))
   }else{
-    grid.lines(x = unit(c(start_time, 
-                          stop_time), "native"), 
+    grid.lines(x = unit(c(start_time,
+                          stop_time), "native"),
                y = rep(0.5, 2),
                arrow = arrow(length = unit(3, "mm"),
                              type = "closed"),
@@ -215,21 +207,21 @@ plotLine <- function (row_no,
 
 plotIDcell <- function(row_no, id){
   viewport(layout.pos.row = row_no,
-           layout.pos.col = 2) %>% 
+           layout.pos.col = 2) |>
     pushViewport()
   grid.text(id)
   upViewport()
 }
 plotTimeStrcell <- function(row_no, time_str){
   viewport(layout.pos.row = row_no,
-           layout.pos.col = 4) %>% 
+           layout.pos.col = 4) |>
     pushViewport()
   grid.text(time_str)
   upViewport()
 }
 
 plotRowColor <- function(row_no, clr = "#F6F6FF"){
-  viewport(layout.pos.row = row_no) %>% 
+  viewport(layout.pos.row = row_no) |>
     pushViewport()
   grid.rect(gp = gpar(col = clr, fill = clr))
   upViewport()
@@ -239,30 +231,29 @@ plotRowColor <- function(row_no, clr = "#F6F6FF"){
 # Do the actual plot
 grid.newpage()
 plotTitleAndPushVPs("Time spans")
-widths <- 
+widths <-
   unit.c(unit(.1, "npc"),
          getMaxWidth(test_data$id),
          unit(.1, "npc"),
          getMaxWidth(test_data$time_str),
-         unit(.1, "npc")) %>% 
-  unit.c(., 
-         unit(1, "npc") - sum(.) - unit(.1, "npc"),
-         unit(.1, "npc"))
+         unit(.1, "npc")) |>
+  (\(x) unit.c(x,
+               unit(1, "npc") - sum(x) - unit(.1, "npc"),
+               unit(.1, "npc")))()
 
-grid.layout(nrow = nrow(test_data),
-            ncol = length(widths),
-            widths = widths) %>% 
-  viewport(layout = .) %>% 
+viewport(layout = grid.layout(nrow = nrow(test_data),
+                              ncol = length(widths),
+                              widths = widths)) |>
   pushViewport()
 
 
-for (i in 1:nrow(test_data)){
+for (i in 1:nrow(test_data)) {
   if (i %% 2 == 0)
     plotRowColor(i)
   plotIDcell(i, test_data$id[i])
   plotTimeStrcell(i, test_data$time_str[i])
 
-  plotLine(row_no = i, 
+  plotLine(row_no = i,
            start_time = 0,
            stop_time = test_data$time[i],
            event = test_data$event[i] == "dead",
@@ -275,9 +266,8 @@ Now we apply a split that splits the data into 2 year chunks. **Note**: 2 years 
 
 ```{r Split_data}
 library(dplyr)
-split_data <- 
-  test_data %>% 
-  select(id, event, time, age, date) %>% 
+split_data <- test_data |>
+  select(id, event, time, age, date) |>
   timeSplitter(by = 2, # The time that we want to split by
                event_var = "event",
                time_var = "time",
@@ -288,24 +278,23 @@ knitr::kable(head(split_data, 10))
 ```
 
 Now if we plot each individual's interval times below the original see multiple observation
-times where only the last observation time is related to the actual event. All prior are 
+times where only the last observation time is related to the actual event. All prior are
 assumed to have unchanged event status from the original status.
 
 ```{r Complex_split_plot, fig.height=6, fig.width=7, echo=FALSE}
 # Do the actual plot
 plotTitleAndPushVPs("Time spans with split")
 
-grid.layout(nrow = nrow(test_data) + nrow(split_data),
-            ncol = length(widths),
-            widths = widths) %>% 
-  viewport(layout = .) %>% 
+viewport(layout = grid.layout(nrow = nrow(test_data) + nrow(split_data),
+                              ncol = length(widths),
+                              widths = widths)) |>
   pushViewport()
 
 current_id <- NULL
 no_ids <- 0
-for (i in 1:nrow(split_data)){
+for (i in 1:nrow(split_data)) {
   if (is.null(current_id) ||
-      split_data$id[i] != current_id){
+      split_data$id[i] != current_id) {
     current_id <- split_data$id[i]
     subjects_splits <- subset(split_data, id == current_id)
     rowspan <- (i + no_ids):(i + no_ids + nrow(subjects_splits))
@@ -317,14 +306,14 @@ for (i in 1:nrow(split_data)){
                                                         "time_str"))
     with(subset(test_data,
                 id == current_id),
-         plotLine(row_no = i + no_ids, 
+         plotLine(row_no = i + no_ids,
                   start_time = 0,
                   stop_time = time,
                   event = event == "dead"))
     no_ids = no_ids + 1
   }
-  
-  plotLine(row_no = i + no_ids, 
+
+  plotLine(row_no = i + no_ids,
            start_time = split_data$Start_time[i],
            stop_time = split_data$Stop_time[i],
            event = split_data$event[i] == "dead",
@@ -334,8 +323,7 @@ upViewport(2)
 
 ```
 
-A real example
-==============
+# A real example
 
 I haven't found any good datasets with non-proportional hazards but the melanoma dataset is largish and allows some exploration.
 
@@ -345,20 +333,20 @@ data("melanoma", package = "boot")
 
 # Then we munge it according to ?boot::melanoma
 library(dplyr)
-library(magrittr)
-melanoma %<>% 
-  mutate(status = factor(status,
-                        levels = 1:3,
-                        labels = c("Died from melanoma", 
-                                   "Alive", 
-                                   "Died from other causes")),
-        ulcer = factor(ulcer,
-                       levels = 0:1,
-                       labels = c("Absent", "Present")),
-        time = time/365.25, # All variables should be in the same time unit
-        sex = factor(sex,
-                     levels = 0:1,
-                     labels = c("Female", "Male")))
+melanoma <- mutate(
+  melanoma,
+  status = factor(status,
+                  levels = 1:3,
+                  labels = c("Died from melanoma",
+                              "Alive",
+                              "Died from other causes")),
+  ulcer = factor(ulcer,
+                  levels = 0:1,
+                  labels = c("Absent", "Present")),
+  time = time/365.25, # All variables should be in the same time unit
+  sex = factor(sex,
+                levels = 0:1,
+                labels = c("Female", "Male")))
 
 ```
 
@@ -377,7 +365,7 @@ If we do the same with a split dataset:
 
 ```{r}
 spl_melanoma <-
-  melanoma %>% 
+  melanoma |>
   timeSplitter(by = .5,
                event_var = "status",
                event_start_status = "Alive",
@@ -385,7 +373,7 @@ spl_melanoma <-
                time_related_vars = c("age", "year"))
 
 interval_model <-
-  update(regular_model, 
+  update(regular_model,
          Surv(Start_time, Stop_time, status == "Died from melanoma") ~ .,
          data = spl_melanoma)
 
@@ -398,24 +386,24 @@ As you can see the difference between the models is negligible:
 library(htmlTable)
 cbind(Regular = coef(regular_model),
       Interval = coef(interval_model),
-      Difference = coef(regular_model) - coef(interval_model)) %>% 
-  txtRound(digits = 5) %>% 
+      Difference = coef(regular_model) - coef(interval_model)) |>
+  txtRound(digits = 5) |>
   knitr::kable(align = "r")
 ```
 
 Now we can look for time varying coefficients using the `survival::cox.zph()` function:
 
 ```{r}
-cox.zph(regular_model) %>% 
-  extract2("table") %>% 
-  txtRound(digits = 2) %>% 
+cox.zph(regular_model) |>
+  pluck("table") |>
+  txtRound(digits = 2) |>
   knitr::kable(align = "r")
 ```
 
 The two variable that give a hint of time variation are age and thickness. It seems reasonable that melanoma thickness is less important as time increases, either the tumor was adequately removed or there was some remaining piece that caused the patient to die within a few years. We will therefore add a time interaction using the `:` variant (**note** using the `*` for interactions gives a separate variable for the time and that is not of interest in this case):
 
 ```{r}
-time_int_model <- 
+time_int_model <-
   update(interval_model,
          .~.+thickness:Start_time)
 summary(time_int_model)
@@ -425,8 +413,8 @@ As suspected the thickness effect is reduced with time. A linear model is hard t
 
 ```{r}
 # First we need to manually add an interaction term
-spl_melanoma %<>% 
-  mutate(thickness_start = thickness * Start_time) 
+spl_melanoma <- mutate(spl_melanoma,
+                       thickness_start = thickness * Start_time)
 anova(time_int_model,
       update(time_int_model, .~.+I(thickness_start^2)))
 ```
@@ -442,25 +430,25 @@ If you are only investigating confounders that you want to adjust for we are don
 ```{r}
 # Lets create an evenly distributed categorical thickness variable
 # and interactions
-spl_melanoma %<>% 
-  mutate(thickness_cat = cut(thickness,
+spl_melanoma <- mutate(spl_melanoma,
+                       thickness_cat = cut(thickness,
                              breaks = c(0, 1, 5, Inf),
                              labels = c("less than 1.0",
                                         "1.0 to 4.9",
                                         "at least 5.0")))
 # Now create interaction variables
-for (l in levels(spl_melanoma$thickness_cat)[-1]){
-  spl_melanoma[[sprintf("thickness_%s_time", gsub(" ", "_", l))]] <- 
+for (l in levels(spl_melanoma$thickness_cat)[-1]) {
+  spl_melanoma[[sprintf("thickness_%s_time", gsub(" ", "_", l))]] <-
     (spl_melanoma$thickness_cat == l)*spl_melanoma$Start_time
 }
 
-# Now for the model specification where we use a 
+# Now for the model specification where we use a
 # pspline for the two interaction variables
 adv_int_model <-
-  coxph(Surv(Start_time, Stop_time, status == "Died from melanoma") ~ 
-          age + sex + year + ulcer + 
-          thickness_cat + pspline(thickness_1.0_to_4.9_time) + pspline(thickness_at_least_5.0_time), 
-        data = spl_melanoma, 
+  coxph(Surv(Start_time, Stop_time, status == "Died from melanoma") ~
+          age + sex + year + ulcer +
+          thickness_cat + pspline(thickness_1.0_to_4.9_time) + pspline(thickness_at_least_5.0_time),
+        data = spl_melanoma,
         x = TRUE, y = TRUE,
         iter.max = 1000)
 
@@ -468,7 +456,7 @@ adv_int_model <-
 new_data <- data.frame(thickness_cat = rep(levels(spl_melanoma$thickness_cat)[-1],
                                            each = 100),
                        Start_time = 2^seq(-3, 3, length.out = 100),
-                       stringsAsFactors = FALSE) %>% 
+                       stringsAsFactors = FALSE) |>
   mutate(thickness_1.0_to_4.9_time = (thickness_cat == levels(spl_melanoma$thickness_cat)[2]) *
            Start_time,
          thickness_at_least_5.0_time = (thickness_cat == levels(spl_melanoma$thickness_cat)[3]) *
@@ -481,69 +469,63 @@ new_data$ulcer = "Absent"
 adv_pred <- predict(adv_int_model,
                     newdata = new_data,
                     type = "terms",
-                    terms = c("thickness_cat", 
+                    terms = c("thickness_cat",
                               "pspline(thickness_1.0_to_4.9_time)",
                               "pspline(thickness_at_least_5.0_time)"),
                     se.fit = TRUE)
 
 new_data$fit <- rowSums(adv_pred$fit)
-new_data$se.fit <- apply(adv_pred$se.fit, 1, function(x) x^2) %>% 
-  colSums %>% 
-  sqrt
-new_data %<>% 
-  mutate(risk = exp(fit),
+new_data$se.fit <- apply(adv_pred$se.fit, 1, function(x) x^2) |>
+  colSums() |>
+  sqrt()
+new_data <- mutate(new_data,
+risk = exp(fit),
          upper = exp(fit + 1.96*se.fit),
          lower = exp(fit - 1.96*se.fit))
 
 ```
 
-
 ```{r fig.width=8, fig.height=6}
 library(ggplot2)
-new_data %>% 
+new_data |>
   mutate(adapted_risk = sapply(risk, function(x) min(max(2^-4, x), 2^5)),
          adapted_upper = sapply(upper, function(x) min(max(2^-4, x), 2^5)),
-         adapted_lower = sapply(lower, function(x) min(max(2^-4, x), 2^5))) %>% 
-  ggplot(aes(y = adapted_risk, 
-             x = new_data$Start_time, 
+         adapted_lower = sapply(lower, function(x) min(max(2^-4, x), 2^5))) |>
+  ggplot(aes(y = adapted_risk,
+             x = new_data$Start_time,
              group = thickness_cat,
              col = thickness_cat,
-             fill = thickness_cat)) + 
+             fill = thickness_cat)) +
   # The confidence intervals are too wide to display in this case
-  # geom_ribbon(aes(ymax = adapted_upper, ymin = adapted_lower), fill = "red") + 
+  # geom_ribbon(aes(ymax = adapted_upper, ymin = adapted_lower), fill = "red") +
   geom_line() +
   scale_x_log10(breaks = 2^(-3:4),
                 limits = c(2^-3, 8),
-                expand = c(0, 0)) + 
-  scale_y_log10(breaks = 2^(-4:5), 
+                expand = c(0, 0)) +
+  scale_y_log10(breaks = 2^(-4:5),
                 labels = txtRound(2^(-4:5), 2),
-                expand= c(0,0)) +
-  scale_color_brewer(type = "qual", guide = guide_legend(title = "Thickness (mm)")) + 
+                expand = c(0,0)) +
+  scale_color_brewer(type = "qual", guide = guide_legend(title = "Thickness (mm)")) +
   ylab("Hazard ratio") +
   xlab("Time (years)") +
   theme_bw()
 ```
 
-A few tips and notes
-====================
+# A few tips and notes
 
-Drop unnecessary variables
---------------------------
+## Drop unnecessary variables
 
 The main problem is the memory usage with both the `tt` and the `timeSplitter` approach. Make therefore sure to drop **all** variables that you won't be using before doing your regression. I've found that dropping variables not only limits the risk of running out of
 memory but also considerably speeds up the regressions.
 
-Choose adequate interval length
--------------------------------
+## Choose adequate interval length
 
 Longer interval lengths will reduce the size of the split dataset but will increase the risk of residual non-proportional hazards. When I consulted a statistician on a dataset containing followup 0 to 21 years, she recommended that I have ½ year intervals. I think this was slightly overdoing it, I guess an alternative would have been to simply redo the `cox.zph` call in order to see how well the new model takes care of the non-proportionality problem.
 
-Using the time-splitted model
------------------------------
+## Using the time-splitted model
 
 Explaining the time coefficient can be demanding. I often rely on the `rms::contrast` function but this can be tricky since the `Start_time` can confuse the `contrast` function.
 
-Warning: don't use the `I()` option
------------------------------------
+## Warning: don't use the `I()` option
 
 Just to be crystal clear, the `I()` option should never be used. It will provide spuriously low p-values and doesn't solve the non-proportionality issue. See Therneau's vignette for more on this.

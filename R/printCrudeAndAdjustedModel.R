@@ -109,12 +109,12 @@ printCrudeAndAdjustedModel <- function(model,
                                        impute_args,
                                        ...) {
   dot_args <- list(...)
-  
+
   if (is.null(model)) {
     stop("The model argument that you've provided is null. Expecting output from
          getCrudeAndAdjustedModelData or a plain regression model")
   }
-  
+
   if (!"matrix" %in% class(model)) {
     # Convert the model that should be a model into a matrix that
     # originally was expected
@@ -122,20 +122,20 @@ printCrudeAndAdjustedModel <- function(model,
     if (!missing(order)) {
       gca_args$var_select <- order
     }
-    
+
     for (n in names(dot_args)[names(dot_args) %in%
-                              names(formals(getCrudeAndAdjustedModelData))]) {
+      names(formals(getCrudeAndAdjustedModelData))]) {
       gca_args[[n]] <- dot_args[[n]]
       dot_args[[n]] <- NULL
     }
-    
+
     x <- fastDoCall(getCrudeAndAdjustedModelData, gca_args)
   } else {
     x <- model
     model <- attr(model, "model")
   }
   ds <- prGetModelData(model)
-  
+
   if (missing(reference_zero_effect)) {
     reference_zero_effect <- ifelse(all("lm" %in% class(model)) ||
       "ols" %in% class(model) ||
@@ -365,11 +365,12 @@ printCrudeAndAdjustedModel <- function(model,
   }
 
   structure(reordered_groups,
-            class = c("printCrudeAndAdjusted", class(reordered_groups)),
-            header = sub("(Crude|Adjusted)", coef_name, colnames(reordered_groups)),
-            rowlabel.just = "l",
-            rowlabel = "Variable",
-            other = dot_args)
+    class = c("printCrudeAndAdjusted", class(reordered_groups)),
+    header = sub("(Crude|Adjusted)", coef_name, colnames(reordered_groups)),
+    rowlabel.just = "l",
+    rowlabel = "Variable",
+    other = dot_args
+  )
 }
 
 setClass("printCrudeAndAdjusted", contains = "matrix")
@@ -381,7 +382,6 @@ setClass("printCrudeAndAdjusted", contains = "matrix")
 #'
 #' @rdname printCrudeAndAdjustedModel
 #' @export
-#' @import magrittr
 #' @keywords internal
 rbind.printCrudeAndAdjusted <-
   function(..., alt.names, deparse.level = 1) {
@@ -411,7 +411,7 @@ rbind.printCrudeAndAdjusted <-
     )
     for (n in sprintf("%srgroup", c("", "n."))) {
       attr(ret, n) <-
-        lapply(pca, function(x) attr(x, n)) %>%
+        lapply(pca, function(x) attr(x, n)) |>
         unlist()
     }
 
@@ -438,19 +438,18 @@ rbind.printCrudeAndAdjusted <-
 #' @param x The output object from the \code{printCrudeAndAdjustedModel} function
 #' @rdname printCrudeAndAdjustedModel
 #' @export
-#' @import magrittr
 #' @keywords internal
 print.printCrudeAndAdjusted <- function(x, ...) {
-  prPrintCAstring(x, ...) %>%
-    print()
+  prPrintCAstring(x, ...) |>
+  print()
 }
 
 #' @export
 #' @keywords internal
 #' @rdname printCrudeAndAdjustedModel
 htmlTable.printCrudeAndAdjusted <- function(x, ...) {
-  prPrintCAstring(x, ...) %>%
-    print()
+  prPrintCAstring(x, ...) |>
+  print()
 }
 
 #' @rdname printCrudeAndAdjustedModel
@@ -560,15 +559,14 @@ prClearPCAclass <- function(pca) {
 
 #' @rdname printCrudeAndAdjustedModel
 #' @export
-#' @import magrittr
 #' @importFrom knitr knit_print
 #' @importFrom knitr asis_output
 #'
 #' @keywords internal
 knit_print.printCrudeAndAdjusted <- function(x,
                                              ...) {
-  prPrintCAstring(x, ...) %>%
-    asis_output()
+  prPrintCAstring(x, ...) |>
+  asis_output()
 }
 
 #' Prep for printing

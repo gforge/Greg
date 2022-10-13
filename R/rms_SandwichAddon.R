@@ -55,7 +55,7 @@ robcov_alt <- function(fit, type = "HC3", ...) {
 #'
 #' @example inst/examples/rms_SandwichAddon_example.R
 #' @method confint ols
-#' @import stats
+#' @importFrom stats coef coef qt vcov
 #' @export
 confint.ols <- function(object, parm, level = 0.95, ...) {
   # TODO: Switch to the summaryrms
@@ -113,8 +113,8 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @example inst/examples/rms_SandwichAddon_example.R
 #'
 #' @importFrom rms ols.influence
+#' @importFrom stats hatvalues
 #' @method hatvalues ols
-#' @import stats
 #' @export
 #' @keywords internal
 hatvalues.ols <- function(model, ...) {
@@ -165,7 +165,7 @@ bread.ols <- function(x, ...) {
 #'
 #' @method model.matrix ols
 #' @importFrom rms ols
-#' @import stats
+#' @importFrom stats vcov model.matrix
 #' @export
 #' @keywords internal
 model.matrix.ols <- function(object, ...) {
@@ -202,7 +202,7 @@ model.matrix.ols <- function(object, ...) {
 #'
 #' @importFrom rms ols
 #' @importFrom sandwich estfun
-#' @import stats
+#' @importFrom stats naresid na.omit residuals ts weights start frequency is.ts
 #' @method estfun ols
 #' @export
 #' @keywords internal

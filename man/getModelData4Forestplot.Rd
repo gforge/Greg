@@ -7,9 +7,8 @@
 getModelData4Forestplot(
   regr.obj,
   exp = TRUE,
-  variablesOfInterest.regexp,
-  ref_labels,
-  add_first_as_ref
+  variablesOfInterest.regexp = NULL,
+  add_first_as_ref = FALSE
 )
 }
 \arguments{
@@ -23,9 +22,6 @@ use with survival models.}
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
 
-\item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
-fits.}
-
 \item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
 if exp() and the confidence interval 0.}
@@ -33,20 +29,22 @@ if exp() and the confidence interval 0.}
 \description{
 A helper function for \code{\link{forestplotCombineRegrObj}()}. Extracts
 the data from the regression model fits and returns a \code{list}
-with model data gathered by the function \code{\link{prGetFpDataFromFit}()}
+with model data gathered by the function [broom::tidy()]
 }
 \examples{
 org.par <- par("ask" = TRUE)
 
 # simulated data to test
+library(tidyverse)
 set.seed(10)
-ftime <- rexp(200)
-fstatus <- sample(0:1, 200, replace = TRUE)
-cov <- data.frame(
-  x1 = runif(200),
-  x2 = runif(200),
-  x3 = runif(200)
-)
+cov <- tibble(ftime = rexp(200),
+              fstatus = sample(0:1, 200, replace = TRUE),
+              x1 = runif(200),
+              x2 = runif(200),
+              x3 = runif(200)) |> 
+  # Add some column labels
+  Gmisc::set_column_labels(x1 = "First variable",
+                           x2 = "Second variable")
 
 library(rms)
 ddist <- datadist(cov)
@@ -55,32 +53,18 @@ options(datadist = "ddist")
 fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
-forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
-  new_page = TRUE
-)
+list(`First model` = fit1, 
+     `Second model` = fit2) |> 
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)")
 
-modifyNameFunction <- function(x) {
-  if (x == "x1") {
-    return("Covariate A")
-  }
-
-  if (x == "x2") {
-    return(expression(paste("My ", beta[2])))
-  }
-
-  return(x)
-}
-
-forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
-  rowname.fn = modifyNameFunction,
-  new_page = TRUE
-)
+# How to add expressions to the plot label
+list(fit1, fit2) |> 
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)",
+                           reference.names = c("First model", "Second model"),
+                           post_process_data = \(data) {
+                             data$column_label[4] <- c(rlang::expr(expression(Fever >= 38.5)))
+                             return(data)
+                           })
 
 par(org.par)
 }

@@ -9,10 +9,9 @@
 #' @param variablesOfInterest.regexp A regular expression identifying the variables
 #'   that are of interest of comparing. For instance it can be "(score|index|measure)"
 #'   that finds scores in different models that should be compared.
-#' @param reference.names Additional reference names to be added to each model
-#' @param rowname.fn A function that takes a row name and sees if it needs
-#'   beautifying. The function has only one parameter the coefficients name and should
-#'   return a string or expression.
+#' @param post_process_data A function that takes the data frame just prior to calling `forestplot`
+#'   and allows you to manipulate it. Primarily used for changing the `column_label`
+#'   that has the names shown in the final plot.
 #' @param estimate.txt The text of the estimate, usually HR for hazard ratio, OR for
 #'  odds ratio
 #' @param zero Indicates what is zero effect. For survival/logistic fits the zero is
@@ -22,8 +21,6 @@
 #' @param add_first_as_ref If you want that the first variable should be reference for
 #'   that group of variables. The ref is a variable with the estimate 1 or 0 depending
 #'   if exp() and the confidence interval 0.
-#' @param ref_labels If add_first_as_ref is TRUE then this vector is used for the model
-#'   fits.
 #' @param ref_txt Text instead of estimate number
 #' @param digits Number of digits to use for the estimate output
 #' @param ... Passed to \code{\link[forestplot]{forestplot}()}
@@ -36,19 +33,17 @@
 #' @export
 forestplotCombineRegrObj <- function(
   regr.obj,
-  variablesOfInterest.regexp,
-  reference.names,
-  rowname.fn,
-  estimate.txt,
-  exp              = xlog,
+  variablesOfInterest.regexp = NULL,
+  estimate.txt = NULL,
   add_first_as_ref = FALSE,
-  ref_txt          = "ref.",
-  ref_labels       = c(),
-  digits           = 1,
-  is.summary,
-  xlab,
-  zero,
-  xlog,
+  ref_txt = "ref.",
+  digits = 1,
+  post_process_data = \(x) x,
+  is.summary = NULL,
+  xlab = NULL,
+  zero = NULL,
+  xlog = NULL,
+  exp  = xlog,
   ...)
 {
   if (length(regr.obj) < 2)
@@ -57,115 +52,62 @@ forestplotCombineRegrObj <- function(
   if (is.object(regr.obj) == TRUE)
     stop("The model_fits need to be a list of fits")
 
-  if (!missing(reference.names) &&
-        length(reference.names) != length(regr.obj))
-    stop("The number or reference names need to be equal to the number of",
-         " regression model fits. You have ", length(reference.names), " references ",
-         " and ", length(regr.obj), " regression objects")
-
   # Initiate some standard values if the user
   # hasn't supplied any
-  if (missing(xlab)){
-    if (isFitCoxPH(regr.obj[[1]])){
+  if (is.null(xlab)) {
+    if (isFitCoxPH(regr.obj[[1]])) {
       xlab <- "Hazard Ratio"
-    }else if(isFitLogit(regr.obj[[1]])){
+    } else if (isFitLogit(regr.obj[[1]])) {
       xlab <- "Odds Ratio"
     }
   }
 
-  if (missing(estimate.txt)){
-    if (isFitCoxPH(regr.obj[[1]])){
+  if (is.null(estimate.txt)) {
+    if (isFitCoxPH(regr.obj[[1]])) {
       estimate.txt <- "HR"
-    }else if(isFitLogit(regr.obj[[1]])){
+    } else if (isFitLogit(regr.obj[[1]])) {
       estimate.txt <- "OR"
     }
   }
 
-  if (missing(xlog)){
+  if (is.null(xlog)) {
     if (isFitCoxPH(regr.obj[[1]]) ||
-          isFitLogit(regr.obj[[1]])){
+          isFitLogit(regr.obj[[1]])) {
       xlog <- TRUE
-      if (missing(zero))
+      if (is.null(zero))
         zero <- 1
-      if (missing(exp))
+      if (is.null(exp))
         exp <- TRUE
     }else{
       xlog <- FALSE
-      if (missing(zero))
+      if (is.null(zero))
         zero <- 0
-      if (missing(exp))
+      if (is.null(exp))
         exp <- FALSE
     }
   }
 
-  models_fit_fp_data = getModelData4Forestplot(regr.obj = regr.obj,
-                                               exp = exp,
-                                               variablesOfInterest.regexp = variablesOfInterest.regexp,
-                                               ref_labels = ref_labels,
-                                               add_first_as_ref = add_first_as_ref)
-
-  rn <- list()
-  t.coef <- c(NA)
-  t.low <- c(NA)
-  t.high <- c(NA)
-  t.is_ref <- c(NA)
-  for(i in 1:length(models_fit_fp_data)){
-    if (length(rn) > 0){
-      rn <- append(rn, NA)
-      t.coef <- append(t.coef, NA)
-      t.low <- append(t.low, NA)
-      t.high <- append(t.high, NA)
-      t.is_ref <- append(t.is_ref, FALSE)
-    }
-    if (!missing(reference.names)){
-      rn <- append(rn, reference.names[i])
-      t.coef <- append(t.coef, NA)
-      t.low <- append(t.low, NA)
-      t.high <- append(t.high, NA)
-    }
-    raw_row_names <- as.list(rownames(models_fit_fp_data[[i]]))
-    if (!missing(rowname.fn)){
-      if (is.character(rowname.fn))
-        rowname.fn <- get(rowname.fn)
-
-      for(c in 1:length(raw_row_names))
-        raw_row_names[[c]] <- rowname.fn(raw_row_names[[c]])
-    }
-    rn <- append(rn, raw_row_names)
-    t.coef <- append(t.coef, models_fit_fp_data[[i]][, "beta"])
-    t.low <- append(t.low, models_fit_fp_data[[i]][, "low"])
-    t.high <- append(t.high, models_fit_fp_data[[i]][, "high"])
-    t.is_ref <- append(t.is_ref, is.na(models_fit_fp_data[[i]][, "p_val"]))
+  models_fit_fp_data <- getModelData4Forestplot(regr.obj = regr.obj,
+                                                exp = exp,
+                                                variablesOfInterest.regexp = variablesOfInterest.regexp,
+                                                add_first_as_ref = add_first_as_ref)
+  if (!is.null(is.summary)) {
+    models_fit_fp_data$is.summary <- is.summary
   }
-
-  rn <- append("Variable", rn)
-
-  col2 <- list(estimate.txt)
-  # TODO: should probably use options("digits") but
-  # it defaults to 7 why this might be more annoying
-  # than helpful
-  for (i in 2:length(t.coef))
-    col2 <- append(col2, ifelse(is.na(t.coef[i]), "", sprintf(sprintf(" %%.%df ", digits), t.coef[i])))
-
-  if (add_first_as_ref)
-    col2[t.is_ref] <- ref_txt
-
-  rn <- list(
-    rn,
-    col2)
-
-  if (missing(is.summary))
-    is.summary <- c(TRUE, rep(FALSE, length(t.coef)-1))
-
-  forestplot(rn,
-    xlim       = c(0,10),
-    mean       = t.coef,
-    lower      = t.low,
-    upper      = t.high,
-    is.summary = is.summary,
-    zero       = zero,
-    xlab       = xlab,
-    xlog       = xlog,
-    ...)
-
+  
+  models_fit_fp_data |> 
+    mutate(est_txt = htmlTable::txtRound(estimate, digits = digits)) |> 
+    post_process_data() |> 
+    forestplot::forestplot(labeltext = c(column_label, est_txt),
+                           mean = estimate,
+                           lower = conf.low,
+                           upper = conf.high,
+                           # TODO: Fix this bug in forestplot
+                           is.summary = is.summary,
+                           xlog = xlog,
+                           xlab = xlab,
+                           ...) |> 
+    forestplot::fp_add_header(est_txt = estimate.txt)
 }
+
+utils::globalVariables(c("column_label", "model_id"))

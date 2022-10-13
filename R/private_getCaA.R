@@ -16,6 +16,7 @@
 #'  of variables.
 #'
 #' @importFrom nlme intervals
+#' @importFrom stats confint
 #' @keywords internal
 #' @rdname GetCoefAndCI
 prCaDefaultGetCoefAndCI <- function(model, level, skip_intercept = FALSE) {
@@ -79,6 +80,7 @@ prCaDefaultGetCoefAndCI <- function(model, level, skip_intercept = FALSE) {
 #' @param data The data set
 #'
 #' @importFrom Gmisc fastDoCall
+#' @importFrom stats median
 #' @rdname GetCoefAndCI
 prCaRmsGetCoefAndCI <- function(model, level, vn, data) {
   # We need to standardize the summary call so that it

@@ -13,8 +13,7 @@
 #' @family printCrudeAndAdjusted functions
 #' @inheritParams printCrudeAndAdjustedModel
 #' @keywords internal
-prCaReorderReferenceDescribe <- function(
-                                         x,
+prCaReorderReferenceDescribe <- function(x,
                                          model,
                                          order,
                                          var_order,
@@ -1164,8 +1163,8 @@ prCaPrepareCrudeAndAdjusted <- function(x, ci_lim, digits, sprintf_ci_str) {
 
     # Remove -0.0 effect
     x <-
-      round(x, digits) %>%
-      as.character() %>%
+      round(x, digits) |>
+      as.character() |>
       as.numeric()
     return(sprintf(sprintf("%%0.%df", digits), x))
   }

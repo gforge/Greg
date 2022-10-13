@@ -1,5 +1,4 @@
 library("testthat")
-context("forestplotRegrObj")
 
 # simulated data to test
 set.seed(1000)
@@ -16,49 +15,46 @@ library(rms)
 dd <<- datadist(cov)
 options(datadist = "dd")
 
+test_that("Simple linear regression", {
+  fit <- mtcars |> 
+    set_column_labels(cyl = "Number of cylinders",
+                      hp = "Gross horsepower") |> 
+    lm(mpg ~ cyl + disp + hp, data = _)
+
+  expect_s3_class(forestplotRegrObj(regr.obj = fit),
+                  "forestplotRegrObj.single")
+})
+
+test_that("Simple linear regression", {
+  fit <- mtcars |> 
+    set_column_labels(cyl = "Number of cylinders",
+                      hp = "Gross horsepower") |> 
+    glm(mpg ~ cyl + disp + hp, data = _, family = gaussian())
+  
+  expect_s3_class(forestplotRegrObj(regr.obj = fit),
+                  "forestplotRegrObj.single")
+})
+
+test_that("Simple linear regression", {
+  data <- mtcars |> 
+    set_column_labels(cyl = "Number of cylinders",
+                      hp = "Gross horsepower")
+  fit1 <- lm(mpg ~ cyl + disp + hp, data = data)
+  fit2 <- lm(mpg ~ cyl + disp + gear, data = data)
+  
+  expect_s3_class(forestplotRegrObj(regr.obj = list(fit1, fit2)),
+                  "forestplotRegrObj.grouped")
+})
+
 test_that("Basic test for coverage for forestplotRegrObj", {
-  # TODO: Add more specific tests
   fit1 <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data = cov)
   fit2 <- cph(Surv(ftime, fstatus == 2) ~ x1 + x2 + x3, data = cov)
-
-  forestplotRegrObj(regr.obj = fit1, new_page = TRUE)
-
-  library(forestplot)
-  forestplotRegrObj(
-    regr.obj = list(fit1, fit2),
-    legend = c("Status = 1", "Status = 2"),
-    legend_args = fpLegend(title = "Type of regression"),
-    new_page = TRUE
-  )
-
-  modifyNameFunction <- function(x) {
-    if (x == "x1") {
-      return("Covariate A")
-    }
-
-    if (x == "x2") {
-      return(expression(paste("My ", beta[2])))
-    }
-
-    return(x)
-  }
-
-  forestplotRegrObj(
+  
+  ret <- forestplotRegrObj(
     regr.obj = list(fit1, fit2),
     col = fpColors(box = c("darkblue", "darkred")),
-    variablesOfInterest.regexp = "(x2|x3)",
+    postprocess_estimates.fn = \(x) filter(x, str_detect(column_term, "(x2|x3)")),
     legend = c("First model", "Second model"),
-    legend_args = fpLegend(title = "Models"),
-    rowname.fn = modifyNameFunction, new_page = TRUE
-  )
-
-  forestplotRegrObj(
-    regr.obj = list(fit1, fit2),
-    col = fpColors(box = c("darkblue", "darkred")),
-    variablesOfInterest.regexp = "(x2|x3)",
-    order.regexps = c("x3", "x2"),
-    legend = c("First model", "Second model"),
-    legend_args = fpLegend(title = "Models"),
-    rowname.fn = modifyNameFunction, new_page = TRUE
-  )
+    legend_args = fpLegend(title = "Models"))
+  expect_equal(ret$is_summary, rep(c(TRUE, FALSE, FALSE), 2))
 })

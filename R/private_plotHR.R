@@ -14,8 +14,12 @@
 #' @param xlim The xlim if provided
 #' @param new_data If not provided the function looks for the most common values
 #'  i.e. median for continuous and mode for factors.
+#'  
 #' @importFrom rms contrast
+#' @importFrom stats na.pass predict
+#' 
 #' @return \code{data.frame} with the columns xvalues, fit, ucl, lcl
+#' 
 #' @keywords internal
 prPhEstimate <- function(model,
                          term.label,
@@ -256,6 +260,7 @@ prPhConfIntPlot <- function(model_data, color, polygon, lwd, lty) {
 #' @param xvalues The xvalues that are used for the density
 #' @return \code{void}
 #' @keywords internal
+#' @importFrom stats fivenum
 prPhRugPlot <- function(xvalues) {
   # rugs at datapoints
   axis(

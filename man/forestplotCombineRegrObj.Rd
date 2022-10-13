@@ -6,19 +6,17 @@
 \usage{
 forestplotCombineRegrObj(
   regr.obj,
-  variablesOfInterest.regexp,
-  reference.names,
-  rowname.fn,
-  estimate.txt,
-  exp = xlog,
+  variablesOfInterest.regexp = NULL,
+  estimate.txt = NULL,
   add_first_as_ref = FALSE,
   ref_txt = "ref.",
-  ref_labels = c(),
   digits = 1,
-  is.summary,
-  xlab,
-  zero,
-  xlog,
+  post_process_data = function(x) x,
+  is.summary = NULL,
+  xlab = NULL,
+  zero = NULL,
+  xlog = NULL,
+  exp = xlog,
   ...
 )
 }
@@ -30,17 +28,8 @@ be identified through the regular expression}
 that are of interest of comparing. For instance it can be "(score|index|measure)"
 that finds scores in different models that should be compared.}
 
-\item{reference.names}{Additional reference names to be added to each model}
-
-\item{rowname.fn}{A function that takes a row name and sees if it needs
-beautifying. The function has only one parameter the coefficients name and should
-return a string or expression.}
-
 \item{estimate.txt}{The text of the estimate, usually HR for hazard ratio, OR for
 odds ratio}
-
-\item{exp}{Report in exponential form. Default true since the function was built for
-use with survival models.}
 
 \item{add_first_as_ref}{If you want that the first variable should be reference for
 that group of variables. The ref is a variable with the estimate 1 or 0 depending
@@ -48,10 +37,11 @@ if exp() and the confidence interval 0.}
 
 \item{ref_txt}{Text instead of estimate number}
 
-\item{ref_labels}{If add_first_as_ref is TRUE then this vector is used for the model
-fits.}
-
 \item{digits}{Number of digits to use for the estimate output}
+
+\item{post_process_data}{A function that takes the data frame just prior to calling `forestplot`
+and allows you to manipulate it. Primarily used for changing the `column_label`
+that has the names shown in the final plot.}
 
 \item{is.summary}{A vector indicating by \code{TRUE}/\code{FALSE} if
 the value is a summary value which means that it will have a different
@@ -63,11 +53,14 @@ font-style}
 1 while in most other cases it's 0.}
 
 \item{xlog}{If TRUE, x-axis tick marks are to follow a logarithmic scale, e.g. for
-logistic regressoin (OR), survival estimates (HR), Poisson regression etc.
+logistic regression (OR), survival estimates (HR), Poisson regression etc.
 \emph{Note:} This is an intentional break with the original \code{forestplot}
 function as I've found that exponentiated ticks/clips/zero effect are more
 difficult to for non-statisticians and there are sometimes issues with rounding
 the tick marks properly.}
+
+\item{exp}{Report in exponential form. Default true since the function was built for
+use with survival models.}
 
 \item{...}{Passed to \code{\link[forestplot]{forestplot}()}}
 }
@@ -80,14 +73,16 @@ to get an overview and easier comparison.
 org.par <- par("ask" = TRUE)
 
 # simulated data to test
+library(tidyverse)
 set.seed(10)
-ftime <- rexp(200)
-fstatus <- sample(0:1, 200, replace = TRUE)
-cov <- data.frame(
-  x1 = runif(200),
-  x2 = runif(200),
-  x3 = runif(200)
-)
+cov <- tibble(ftime = rexp(200),
+              fstatus = sample(0:1, 200, replace = TRUE),
+              x1 = runif(200),
+              x2 = runif(200),
+              x3 = runif(200)) |> 
+  # Add some column labels
+  Gmisc::set_column_labels(x1 = "First variable",
+                           x2 = "Second variable")
 
 library(rms)
 ddist <- datadist(cov)
@@ -96,32 +91,18 @@ options(datadist = "ddist")
 fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data = cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
-forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
-  new_page = TRUE
-)
+list(`First model` = fit1, 
+     `Second model` = fit2) |> 
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)")
 
-modifyNameFunction <- function(x) {
-  if (x == "x1") {
-    return("Covariate A")
-  }
-
-  if (x == "x2") {
-    return(expression(paste("My ", beta[2])))
-  }
-
-  return(x)
-}
-
-forestplotCombineRegrObj(
-  regr.obj = list(fit1, fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
-  rowname.fn = modifyNameFunction,
-  new_page = TRUE
-)
+# How to add expressions to the plot label
+list(fit1, fit2) |> 
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)",
+                           reference.names = c("First model", "Second model"),
+                           post_process_data = \(data) {
+                             data$column_label[4] <- c(rlang::expr(expression(Fever >= 38.5)))
+                             return(data)
+                           })
 
 par(org.par)
 }

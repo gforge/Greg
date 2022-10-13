@@ -2,7 +2,7 @@
 % Please edit documentation in R/private_functions.R
 \name{prConvertShowMissing}
 \alias{prConvertShowMissing}
-\title{A functuon for converting a useNA variable}
+\title{A function for converting a useNA variable}
 \usage{
 prConvertShowMissing(useNA)
 }

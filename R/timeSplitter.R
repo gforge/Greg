@@ -217,13 +217,12 @@ timeSplitter <- function(data, by, time_var,
   # This is necessary as the Lexis uses substitute
   # with the data as a co-argument and thus very
   # complex to handle with parse()/deparse()/expression()
-  lxs_data <-
-    paste0("Lexis(entry = list(u___timeband__ = Start_time),
-                    exit = ", exit_list, ",
-                    exit.status = ", event_var, ",
-                    entry.status = Entry,
-                    data = data)") %>%
-    parse(text = .) %>%
+  lxs_data <- paste0("Lexis(entry = list(u___timeband__ = Start_time),
+                      exit = ", exit_list, ",
+                      exit.status = ", event_var, ",
+                      entry.status = Entry,
+                      data = data)") |>
+    (\(txt) parse(text = txt))() |>
     eval()
 
   if (length(by) == 1) {

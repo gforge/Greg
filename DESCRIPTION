@@ -1,5 +1,5 @@
 Package: Greg
-Version: 1.4.1
+Version: 2.0.0
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -12,35 +12,44 @@ Description: Methods for manipulating regression models and for describing these
   time-splitting a dataset when modeling non-proportional hazards in Cox regressions.
 License: GPL (>= 3)
 URL: http://gforge.se
+BugReports: https://github.com/gforge/Greg/issues
 Biarch: yes
 Encoding: UTF-8
 Imports:
+    broom,
+    Epi,
+    dplyr,
+    glue,
+    graphics,
+    grDevices,
+    htmlTable (>= 2.0.0),
     Hmisc,
-    stringr,
+    knitr,
+    methods,
+    nlme,
+    purrr,
+    rlang,
     rms,
     sandwich,
     stats,
-    nlme,
-    methods,
-    htmlTable (>= 2.0.0),
-    magrittr,
-    knitr,
-    Epi,
-    utils,
-    graphics,
-    grDevices
+    stringr,
+    tibble,
+    tidyr,
+    tidyselect,
+    utils
 Depends:
-    forestplot,
-    Gmisc (>= 1.0.3)
+    Gmisc (>= 1.0.3),
+    forestplot (>= 3.1.0),
+    R (>= 4.1.0)
 Suggests:
     boot,
     testthat,
     cmprsk,
     survival,
-    dplyr,
     ggplot2,
     parallel,
     rmarkdown,
-    rmeta
+    rmeta,
+    tidyverse
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1

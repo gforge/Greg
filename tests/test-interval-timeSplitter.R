@@ -1,18 +1,20 @@
 library(Greg)
-library(magrittr)
+library(dplyr)
 data("melanoma", package = "boot")
-melanoma$status %<>%
-  factor(
+melanoma <- melanoma  |>
+mutate(
+  status = factor(
+    status,
     levels = 1:3,
     labels = c("melanoma-specific death", "alive", "other death")
-  )
-melanoma$ulcer %<>%
-  factor(
+  ),
+  ulcer = factor(
+    ulcer,
     levels = 0:1,
     labels = c("Absent", "Present")
-  )
-melanoma$time <-
-  melanoma$time / 365.25
+  ),
+  time = time / 365.25
+)
 
 library(survival)
 regular_model <- coxph(Surv(time, status == "melanoma-specific death") ~
@@ -21,7 +23,7 @@ data = melanoma,
 x = TRUE, y = TRUE
 )
 spl_melanoma <-
-  melanoma %>%
+  melanoma |>
   timeSplitter(
     by = .1,
     event_var = "status",
