@@ -39,7 +39,7 @@ Imports:
     utils
 Depends:
     Gmisc (>= 1.0.3),
-    forestplot (>= 3.0.0),
+    forestplot,
     R (>= 4.1.0)
 Suggests:
     boot,
