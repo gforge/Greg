@@ -1,5 +1,9 @@
 NEWS for the **Greg** package
 
+Changes for 2.0.1
+-----------------
+* Improved forestplot integration so that fp_... functions are available (see example for `forestplotRegrObj`)
+
 Changes for 2.0.0
 -----------------
 * BREAKING: Refactored the forestplogRegrObj function to S3-format

@@ -27,7 +27,10 @@ options(datadist = "dd")
 
 fit1 <- cph(Surv(ftime, fstatus1 == 1) ~ x1 + x2 + x3, data = cov)
 fit1 |> 
-  forestplotRegrObj()
+  forestplotRegrObj() |> 
+  # Note that we need to convert the regression object first to a forestplot object
+  forestplot() |> 
+  fp_set_zebra_style("#f0f0f0")
 
 fit2 <- update(fit1, Surv(ftime, fstatus2 == 1) ~ .)
 list("Frist model" = fit1, "Second model"  = fit2) |> 

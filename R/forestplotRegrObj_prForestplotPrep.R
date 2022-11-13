@@ -109,8 +109,9 @@ prForestPlotPrep <- function(regressions,
 utils::globalVariables(c("Model", "est_txt"))
 
 #' @export
-#' @importFrom rlang as_name
-print.forestplotRegrObj.grouped <- function(x, ...) {
+forestplot.forestplotRegrObj.grouped <- function(x, ...) {
+  # Drop both forestplotRegrObj.grouped and grouped_df class
+  class(x) <- class(x)[3:length(class(x))]
   args <- list(x = x,
                ...,
                align = c("l", "c", "c")) |> 
@@ -123,14 +124,13 @@ print.forestplotRegrObj.grouped <- function(x, ...) {
   args$upper <- as_name(quote(conf.high))
   args$is.summary <- as_name(quote(is_summary))
   args$legend <- NULL
-
-  do.call(forestplot, args) |> 
-    print()
+  
+  do.call(forestplot, args)
 }
 
 #' @export
-#' @importFrom rlang as_name
-print.forestplotRegrObj.single <- function(x, ...) {
+forestplot.forestplotRegrObj.single <- function(x, ...) {
+  class(x) <- class(x)[2:length(class(x))]
   args <- list(x = tibble::tibble(x),
                ...,
                align = c("l", "c", "c")) |> 
@@ -143,6 +143,19 @@ print.forestplotRegrObj.single <- function(x, ...) {
   args$upper <- as_name(quote(conf.high))
   args$is.summary <- as_name(quote(is_summary))
   
-  do.call(forestplot, args) |> 
+  do.call(forestplot, args)
+}
+
+#' @export
+#' @importFrom rlang as_name
+print.forestplotRegrObj.grouped <- function(x, ...) {
+  forestplot(x, ...) |> 
+    print()
+}
+
+#' @export
+#' @importFrom rlang as_name
+print.forestplotRegrObj.single <- function(x, ...) {
+  forestplot(x, ...) |> 
     print()
 }

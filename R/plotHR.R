@@ -236,7 +236,7 @@ plotHR <- function(models,
       est_list$new_data <- attr(multi_data[[1]], "new_data")
     }
 
-    line_data <- fastDoCall(prPhEstimate, est_list)
+    line_data <- do.call(prPhEstimate, est_list)
     if (length(multi_data) == 0) {
       xvalues <- line_data$xvalues
     }
