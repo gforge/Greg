@@ -22,7 +22,7 @@ test_that("Simple linear regression", {
     (\(x) lm(mpg ~ cyl + disp + hp, data = x))()
 
   expect_s3_class(forestplotRegrObj(regr.obj = fit),
-                  "forestplotRegrObj.single")
+                  "gforge_forestplot")
 })
 
 test_that("Simple linear regression", {
@@ -32,7 +32,7 @@ test_that("Simple linear regression", {
     (\(x) glm(mpg ~ cyl + disp + hp, data = x, family = gaussian()))()
   
   expect_s3_class(forestplotRegrObj(regr.obj = fit),
-                  "forestplotRegrObj.single")
+                  "gforge_forestplot")
 })
 
 test_that("Simple linear regression", {
@@ -43,7 +43,7 @@ test_that("Simple linear regression", {
   fit2 <- lm(mpg ~ cyl + disp + gear, data = data)
   
   expect_s3_class(forestplotRegrObj(regr.obj = list(fit1, fit2)),
-                  "forestplotRegrObj.grouped")
+                  "gforge_forestplot")
 })
 
 test_that("Basic test for coverage for forestplotRegrObj", {
@@ -56,5 +56,5 @@ test_that("Basic test for coverage for forestplotRegrObj", {
     postprocess_estimates.fn = \(x) filter(x, str_detect(column_term, "(x2|x3)")),
     legend = c("First model", "Second model"),
     legend_args = fpLegend(title = "Models"))
-  expect_equal(ret$is_summary, rep(c(TRUE, FALSE, FALSE), 2))
+  expect_equal(ret$is.summary, rep(c(TRUE, FALSE, FALSE), 2))
 })

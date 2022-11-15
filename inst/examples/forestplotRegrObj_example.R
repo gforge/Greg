@@ -34,7 +34,10 @@ fit1 |>
 fit2 <- update(fit1, Surv(ftime, fstatus2 == 1) ~ .)
 list("Frist model" = fit1, "Second model"  = fit2) |> 
   forestplotRegrObj(legend_args = fpLegend(title = "Type of regression"),
-                    postprocess_estimates.fn = \(x) filter(x, str_detect(column_term, "(x2|x3)"))) |> 
+                    postprocess_estimates.fn = function(x) {
+                      x |> 
+                        filter(str_detect(column_term, "(x2|x3)"))
+                    }) |> 
   fp_set_style(box = rep(c("darkblue", "darkred"), each = 3))
 
 
