@@ -93,7 +93,9 @@ fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data = cov)
 
 list(`First model` = fit1, 
      `Second model` = fit2) |> 
-  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)")
+  forestplotCombineRegrObj(variablesOfInterest.regexp = "(x2|x3)") |> 
+  fp_set_style(lines = "steelblue",
+               box = "darkblue")
 
 # How to add expressions to the plot label
 list(fit1, fit2) |> 
