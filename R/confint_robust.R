@@ -20,11 +20,12 @@
 #'
 #' @inheritParams stats::confint
 #' @importFrom stats confint qnorm
-#' @references \href{https://www.tandfonline.com/doi/abs/10.1080/00949650801935327}{
+#' @references {
 #'  F. Cribari-Neto and M. da G. A. Lima,
 #'  "Heteroskedasticity-consistent interval estimators",
 #'  Journal of Statistical Computation and Simulation,
-#'  vol. 79, no. 6, pp. 787-803, 2009.}
+#'  vol. 79, no. 6, pp. 787-803, 2009 (\doi{10.1080/00949650801935327})
+#'}
 #' @export
 confint_robust <- function(object, parm, level = 0.95,
                            HC_type = "HC3", t_distribution = FALSE, ...) {
