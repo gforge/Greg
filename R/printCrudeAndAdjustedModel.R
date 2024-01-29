@@ -542,7 +542,6 @@ cbind.printCrudeAndAdjusted <- function(..., alt.names, deparse.level = 1) {
 
 #' Removes the printCrudeAndAdjusted class from arguments
 #'
-#' @param ... The parameters to the cbind/rbind functions
 #' @return list
 #' @keywords internal
 prClearPCAclass <- function(pca) {

@@ -1,5 +1,5 @@
 Package: Greg
-Version: 2.0.1
+Version: 2.0.2
 Title: Regression Helper Functions
 Maintainer: Max Gordon <max@gforge.se>
 Authors@R: c(person("Max", "Gordon", email = "max@gforge.se", role = c("aut", "cre")),
@@ -52,4 +52,4 @@ Suggests:
     rmeta,
     tidyverse
 VignetteBuilder: knitr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2

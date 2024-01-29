@@ -11,11 +11,11 @@ prCaSetRownames(reordered_groups, var_order, rowname.fn, use_labels, ds)
 
 \item{var_order}{The output from the \code{\link{prMapVariable2Name}}}
 
+\item{rowname.fn}{A rowname function for tailoring names}
+
 \item{use_labels}{Whether to use labels or not}
 
 \item{ds}{The model data set}
-
-\item{rownames.fn}{A rowname function for tailoring names}
 }
 \value{
 \code{matrix} Returns the reordered_groups

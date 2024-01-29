@@ -6,9 +6,6 @@
 \usage{
 prClearPCAclass(pca)
 }
-\arguments{
-\item{...}{The parameters to the cbind/rbind functions}
-}
 \value{
 list
 }

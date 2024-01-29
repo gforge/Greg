@@ -1,5 +1,9 @@
 NEWS for the **Greg** package
 
+Changes for 2.0.2
+-----------------
+* Fixed minor documentation issue with hidden functions
+
 Changes for 2.0.1
 -----------------
 * Improved forestplot integration so that fp_... functions are available (see example for `forestplotRegrObj`)

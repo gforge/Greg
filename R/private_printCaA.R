@@ -900,7 +900,7 @@ prCaGetRowname <- function(vn, use_labels, dataset) {
 #'
 #' @param reordered_groups The value matrix that needs refrences
 #' @param var_order The output from the \code{\link{prMapVariable2Name}}
-#' @param rownames.fn A rowname function for tailoring names
+#' @param rowname.fn A rowname function for tailoring names
 #' @param use_labels Whether to use labels or not
 #' @param ds The model data set
 #'
