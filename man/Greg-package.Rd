@@ -2,58 +2,61 @@
 % Please edit documentation in R/Greg.R
 \docType{package}
 \name{Greg-package}
+\alias{Greg}
 \alias{Greg-package}
 \title{Regression Helper Functions}
 \description{
-This R-package provides functions that primarily aimed at helping 
-you work with regression models. While much of the data presented by the
-standard regression output is useful and important - there is often a
-need for further simplification prior to publication. The methods implemented
-in this package are inspired by some of the top journals such as NEJM, BMJ,
-and other medical journals as this is my research field.
+This package provides utilities that streamline working with regression
+models. Standard regression output offers a wealth of information, but for
+publication—especially in journals such as *NEJM* and *BMJ*—results often
+need additional simplification. The functions here help you get there.
 }
 \section{Output functions}{
 
 
-The package has function that automatically prints the crude unadjusted estimates
-of a function next to the adjusted estimates, a common practice for medical
-publications. 
+The package contains functions that automatically print crude (unadjusted)
+estimates alongside adjusted estimates, a presentation style expected in
+many medical papers.
 
-The forestplot wrappers allows for easily displaying regression
-estimates, often convenient for models with a large number of variables. 
-There is also functionality that can help you comparing different models,
-e.g. subsets of patients or compare different regression types.
+Forest-plot wrappers let you visualise regression estimates—handy when
+you’re dealing with a long list of covariates. Utilities are also included
+for comparing models (e.g., patient subsets or different regression types).
 }
 
-\section{Time-splitter}{
+\section{Time splitter}{
 
 
-When working with Cox regressions the proportional hazards can sometimes be violated.
-As the \code{tt()} approach doesn't lend itself that well to big datasets I often
-rely on time-splitting the dataset and then using the start time as an interaction
-term. See the function \code{\link{timeSplitter}()} and the associated 
-\code{vignette("timeSplitter")}.
+Cox models sometimes violate proportional-hazards assumptions. When the
+`tt()` approach becomes unwieldy on large data sets, you can time-split the
+data and use start time as an interaction term. See
+\code{\link{timeSplitter}()} and \code{vignette("timeSplitter")}.
 }
 
 \section{Other regression functions}{
 
 
-In addition to these funciton the package has some extentions to linear regression
-where it extends the functionality by allowing for robust covariance matrices. 
-by integrating the \pkg{'sandwich'}-package for \code{rms::\link[rms]{ols}()}.
+The package extends linear regression by enabling robust covariance
+matrices through the \pkg{sandwich} framework for
+\code{rms::\link[rms]{ols}()}. Additional helpers target \pkg{stats} and
+\pkg{survival} workflows, including \code{\link[survival]{coxph}()}.
 }
 
 \section{Important notice}{
 
 
-This package has an extensive test-set for ensuring that everything behaves as expected.
-Despite this I strongly urge you to check that the values make sense. I commonly use
-the regression methods available in the \pkg{'rms'}-package and in the \pkg{'stats'}-package.
-In addition I use the \code{\link[survival]{coxph}()} in many of my analyses and should
-also be safe. Please send me a notice if you are using the package with some other 
-regression models, especially if you have some tests verifying the functionality.
+Extensive tests guard against regressions, but always verify results in your
+own context. If you use the package with other model classes—and have tests
+to share—please let me know.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{http://gforge.se}
+  \item Report bugs at \url{https://github.com/gforge/Greg/issues}
+}
+
+}
 \author{
 Max Gordon
 }

@@ -1,5 +1,10 @@
 NEWS for the **Greg** package
 
+Changes for 2.0.3
+-----------------
+* Fix documentation links (new CRAN policy)
+* Fixed dplyr deprecation warning for across
+
 Changes for 2.0.2
 -----------------
 * Fixed minor documentation issue with hidden functions

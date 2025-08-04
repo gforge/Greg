@@ -282,11 +282,11 @@ prGetModelVariables <- function(model,
 #'  sex - if you know gender then automatically you know the distribution of the
 #'  other sex as it's 100 \% - other \%.
 #' @param continuous_fn A function for describing continuous variables
-#'  defaults to \code{\link{describeMean}()}
+#'  defaults to \code{\link[Gmisc]{describeMean}()}
 #' @param prop_fn A function for describing proportions, defaults to
 #'  the factor function
 #' @param factor_fn A function for describing factors, defaults to
-#'  \code{\link{describeFactors}()}
+#'  \code{\link[Gmisc]{describeFactors}()}
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.

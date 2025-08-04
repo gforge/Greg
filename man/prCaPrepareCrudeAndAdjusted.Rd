@@ -31,8 +31,8 @@ Other printCrudeAndAdjusted functions:
 \code{\link{prCaGetImputationCols}()},
 \code{\link{prCaGetRowname}()},
 \code{\link{prCaGetVnStats}()},
-\code{\link{prCaReorderReferenceDescribe}()},
 \code{\link{prCaReorder}()},
+\code{\link{prCaReorderReferenceDescribe}()},
 \code{\link{prCaSelectAndOrderVars}()},
 \code{\link{prCaSetRownames}()}
 }

@@ -669,12 +669,12 @@ latex.printCrudeAndAdjusted <- function(object, ...) {
 #' @param show_tot_perc Show percentages for the total column
 #' @param numb_first Whether to show the number before the percentages
 #' @param continuous_fn Stat function used for the descriptive statistics,
-#'  defaults to \code{\link{describeMean}()}
+#'  defaults to \code{\link[Gmisc]{describeMean}()}
 #' @param prop_fn Stat function used for the descriptive statistics,
-#'  defaults to \code{\link{describeFactors}()} since there has to be a reference
+#'  defaults to \code{\link[Gmisc]{describeFactors}()} since there has to be a reference
 #'  in the current setup.
 #' @param factor_fn Stat function used for the descriptive statistics,
-#'  defaults to \code{\link{describeFactors}()}
+#'  defaults to \code{\link[Gmisc]{describeFactors}()}
 #' @param digits Number of digits to use in the descriptive columns.
 #'  Defaults to the general digits if not specified.
 #' @param colnames The names of the two descriptive columns. By default

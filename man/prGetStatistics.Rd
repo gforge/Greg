@@ -39,10 +39,10 @@ sex - if you know gender then automatically you know the distribution of the
 other sex as it's 100 \% - other \%.}
 
 \item{continuous_fn}{A function for describing continuous variables
-defaults to \code{\link{describeMean}()}}
+defaults to \code{\link[Gmisc]{describeMean}()}}
 
 \item{factor_fn}{A function for describing factors, defaults to
-\code{\link{describeFactors}()}}
+\code{\link[Gmisc]{describeFactors}()}}
 
 \item{prop_fn}{A function for describing proportions, defaults to
 the factor function}

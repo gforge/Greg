@@ -20,14 +20,14 @@ caDescribeOpts(
 \item{numb_first}{Whether to show the number before the percentages}
 
 \item{continuous_fn}{Stat function used for the descriptive statistics,
-defaults to \code{\link{describeMean}()}}
+defaults to \code{\link[Gmisc]{describeMean}()}}
 
 \item{prop_fn}{Stat function used for the descriptive statistics,
-defaults to \code{\link{describeFactors}()} since there has to be a reference
+defaults to \code{\link[Gmisc]{describeFactors}()} since there has to be a reference
 in the current setup.}
 
 \item{factor_fn}{Stat function used for the descriptive statistics,
-defaults to \code{\link{describeFactors}()}}
+defaults to \code{\link[Gmisc]{describeFactors}()}}
 
 \item{digits}{Number of digits to use in the descriptive columns.
 Defaults to the general digits if not specified.}

@@ -58,3 +58,4 @@ test_that("Basic test for coverage for forestplotRegrObj", {
     legend_args = fpLegend(title = "Models"))
   expect_equal(ret$is.summary, rep(c(TRUE, FALSE, FALSE), 2))
 })
+

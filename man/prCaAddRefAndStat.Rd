@@ -68,8 +68,8 @@ Other printCrudeAndAdjusted functions:
 \code{\link{prCaGetRowname}()},
 \code{\link{prCaGetVnStats}()},
 \code{\link{prCaPrepareCrudeAndAdjusted}()},
-\code{\link{prCaReorderReferenceDescribe}()},
 \code{\link{prCaReorder}()},
+\code{\link{prCaReorderReferenceDescribe}()},
 \code{\link{prCaSelectAndOrderVars}()},
 \code{\link{prCaSetRownames}()}
 }
